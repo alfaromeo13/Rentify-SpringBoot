@@ -1,6 +1,11 @@
 package com.example.rentify.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "addresses")
@@ -16,9 +21,14 @@ public class Address {
     @Column
     private String number;
 
-    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "city_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private City city;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "address")
+    private List<Apartment> apartments = new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -50,5 +60,13 @@ public class Address {
 
     public void setCity(City city) {
         this.city = city;
+    }
+
+    public List<Apartment> getApartments() {
+        return apartments;
+    }
+
+    public void setApartments(List<Apartment> apartments) {
+        this.apartments = apartments;
     }
 }

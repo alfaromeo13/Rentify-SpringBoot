@@ -1,5 +1,7 @@
 package com.example.rentify.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -21,12 +23,14 @@ public class Review {
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "apartment_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Apartment apartment;
 
-    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     public Integer getId() {
@@ -76,6 +80,4 @@ public class Review {
     public void setUser(User user) {
         this.user = user;
     }
-
-
 }

@@ -1,5 +1,7 @@
 package com.example.rentify.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -25,12 +27,14 @@ public class Rental {
     @Column
     private Boolean available;
 
-    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "apartment_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Apartment apartment;
 
     public Integer getId() {

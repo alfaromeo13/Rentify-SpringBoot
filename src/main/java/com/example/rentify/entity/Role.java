@@ -1,7 +1,6 @@
 package com.example.rentify.entity;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,8 +17,9 @@ public class Role {
     @Column
     private String name;
 
-    @JsonIgnore//?
-    @ManyToMany(mappedBy = "roles") //procitaj instrukcije za join preko polja roles u entitetu User
+    @JsonBackReference
+    @ManyToMany(mappedBy = "roles")
+    //join instruction on 'roles' field inside User entity
     private List<User> users = new ArrayList<>();
 
     public Integer getId() {
@@ -44,5 +44,13 @@ public class Role {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

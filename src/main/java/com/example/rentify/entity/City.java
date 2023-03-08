@@ -1,5 +1,8 @@
 package com.example.rentify.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +18,12 @@ public class City {
     @Column
     private String name;
 
-    //preko ove kolone se povezujemo sa countries entitetom
-    //tj ovako mapiramo foreign key
-    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "country_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Country country;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "city")
     private List<Address> addresses = new ArrayList<>();
 
@@ -54,5 +57,14 @@ public class City {
 
     public void setAddresses(List<Address> addresses) {
         this.addresses = addresses;
+    }
+
+    @Override
+    public String toString() {
+        return "City{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", country=" + country +
+                '}';
     }
 }

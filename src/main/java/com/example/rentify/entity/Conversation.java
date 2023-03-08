@@ -1,8 +1,12 @@
 package com.example.rentify.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "conversations")
@@ -12,13 +16,19 @@ public class Conversation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_1_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user1;
 
-    @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_2_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user2;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "conversation")
+    private List<Message> messages = new ArrayList<>();
 
     @Column
     @Temporal(value = TemporalType.TIMESTAMP)
@@ -54,5 +64,13 @@ public class Conversation {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
     }
 }

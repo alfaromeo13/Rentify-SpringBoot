@@ -1,5 +1,7 @@
 package com.example.rentify.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,37 +31,56 @@ public class User {
     private String password;
 
     @Column(name = "created_at")
-    @Temporal(value = TemporalType.TIMESTAMP) // DATE ,TIMESTAMP i TIME
+    @Temporal(value = TemporalType.TIMESTAMP)
     private Date createdAt;
 
     @Column(name = "is_active")
     private Boolean isActive;
 
-    //we set in phpMyAdmin current_timestamp(0) and isActive=1 as default values
+    // we set in phpMyAdmin current_timestamp(0) and isActive=1 as default values
     // also we said that the field can be null,meaning if someone inserts this object in database
     // without these 2 fields,the default values will be set for them
 
     @ManyToMany
-    @JoinTable(name = "users_roles", //joinuj se na tabelu name na polje @JoinColumn name
+    @JsonManagedReference
+    @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    //ovo oznad je obrnuti join sa strane rola
     private List<Role> roles = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<Apartment> apartments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user")
-    private List<Rental> rentals = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(name = "favorites",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "apartment_id", referencedColumnName = "id"))
-    private List<Apartment> favoriteApartments = new ArrayList<>();
+    private List<Apartment> favoriteApartments = new ArrayList<>();//unidirectional relationship
 
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user1") //treba li mi?
+    private List<Conversation> user1 = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user2") //second user is the one we talk to
+    private List<Conversation> user2 = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "receiver")
+    private List<Message> messagesFromReceiver = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "sender")
+    private List<Message> messagesFromSender = new ArrayList<>();
+
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Review> reviews = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user")
+    private List<Apartment> apartments = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user")
+    private List<Rental> rentals = new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -155,6 +176,38 @@ public class User {
 
     public void setFavoriteApartments(List<Apartment> favoriteApartments) {
         this.favoriteApartments = favoriteApartments;
+    }
+
+    public List<Conversation> getUser1() {
+        return user1;
+    }
+
+    public void setUser1(List<Conversation> user1) {
+        this.user1 = user1;
+    }
+
+    public List<Conversation> getUser2() {
+        return user2;
+    }
+
+    public void setUser2(List<Conversation> user2) {
+        this.user2 = user2;
+    }
+
+    public List<Message> getMessagesFromReceiver() {
+        return messagesFromReceiver;
+    }
+
+    public void setMessagesFromReceiver(List<Message> messagesFromReceiver) {
+        this.messagesFromReceiver = messagesFromReceiver;
+    }
+
+    public List<Message> getMessagesFromSender() {
+        return messagesFromSender;
+    }
+
+    public void setMessagesFromSender(List<Message> messagesFromSender) {
+        this.messagesFromSender = messagesFromSender;
     }
 
     public List<Review> getReviews() {

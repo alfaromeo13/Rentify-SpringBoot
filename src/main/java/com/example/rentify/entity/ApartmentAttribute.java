@@ -1,36 +1,43 @@
 package com.example.rentify.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "apartments_attributes")
 @IdClass(ApartmentAttributeId.class)
+//we defined our composite key in ApartmentAttributeId class
 public class ApartmentAttribute {
     @Id
-    @Column(name = "apartment_id")
-    private Long apartmentId;
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "apartment_id")
+    private Apartment apartment;
 
     @Id
-    @Column(name = "attribute_name")
-    private String attributeName;
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "attribute_name")
+    private Attribute attribute;
 
     @Column(name = "attribute_value")
     private String attributeValue;
 
-    public Long getApartmentId() {
-        return apartmentId;
+    public Apartment getApartment() {
+        return apartment;
     }
 
-    public void setApartmentId(Long apartmentId) {
-        this.apartmentId = apartmentId;
+    public void setApartment(Apartment apartment) {
+        this.apartment = apartment;
     }
 
-    public String getAttributeName() {
-        return attributeName;
+    public Attribute getAttribute() {
+        return attribute;
     }
 
-    public void setAttributeName(String attributeName) {
-        this.attributeName = attributeName;
+    public void setAttribute(Attribute attribute) {
+        this.attribute = attribute;
     }
 
     public String getAttributeValue() {

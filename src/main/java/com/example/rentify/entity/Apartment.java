@@ -1,5 +1,8 @@
 package com.example.rentify.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,25 +41,38 @@ public class Apartment {
     @Column(name = "contact_number")
     private String number;
 
-
     @Column(name = "is_available")
     private Boolean isAvailable;
 
-    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "address_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Address address;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "apartment")
+    private List<ApartmentAttribute> apartmentAttributes = new ArrayList<>();
+
+    @JsonBackReference
     @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @ManyToMany
-    @JoinTable(name = "apartments_attributes",
-            joinColumns = @JoinColumn(name = "apartment_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "attribute_name", referencedColumnName = "name"))
-    private List<Attribute> attributes = new ArrayList<>();//sta cemo sa value????
+    @JsonManagedReference
+    @OneToMany(mappedBy = "apartment")
+    private List<Review> reviews = new ArrayList<>();
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "apartment")
     private List<Rental> rentals = new ArrayList<>();
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "apartment")
-    private List<Review> reviews = new ArrayList<>();
+    private List<Video> videos = new ArrayList<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "apartment")
+    private List<Image> images = new ArrayList<>();
 
     public Integer getId() {
         return id;
@@ -72,14 +88,6 @@ public class Apartment {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public List<Attribute> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(List<Attribute> attributes) {
-        this.attributes = attributes;
     }
 
     public String getDescription() {
@@ -104,6 +112,38 @@ public class Apartment {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public List<ApartmentAttribute> getApartmentAttributes() {
+        return apartmentAttributes;
+    }
+
+    public void setApartmentAttributes(List<ApartmentAttribute> apartmentAttributes) {
+        this.apartmentAttributes = apartmentAttributes;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public List<Rental> getRentals() {
+        return rentals;
+    }
+
+    public void setRentals(List<Rental> rentals) {
+        this.rentals = rentals;
     }
 
     public Integer getNumOfBedrooms() {
@@ -150,15 +190,23 @@ public class Apartment {
         return user;
     }
 
-    public List<Rental> getRentals() {
-        return rentals;
-    }
-
-    public void setRentals(List<Rental> rentals) {
-        this.rentals = rentals;
-    }
-
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Video> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(List<Video> videos) {
+        this.videos = videos;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 }

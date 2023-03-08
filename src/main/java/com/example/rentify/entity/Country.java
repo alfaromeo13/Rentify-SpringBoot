@@ -1,5 +1,7 @@
 package com.example.rentify.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +20,8 @@ public class Country {
     @Column(name = "short_code")
     private String shortCode;
 
-    //ne mozemo staviti column dekorator
-    @OneToMany(mappedBy = "country") //vec smo definisali mapiranje u polju country iz entitea City
-    //ovo sluzi samo ako instrukcija na koji nacin da se napravi taj join izmedju ova 2 entiteta
+    @JsonManagedReference
+    @OneToMany(mappedBy = "country")
     private List<City> cities = new ArrayList<>();
 
     public Integer getId() {
@@ -53,5 +54,14 @@ public class Country {
 
     public void setCities(List<City> cities) {
         this.cities = cities;
+    }
+
+    @Override
+    public String toString() {
+        return "Country{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", shortCode='" + shortCode + '\'' +
+                '}';
     }
 }

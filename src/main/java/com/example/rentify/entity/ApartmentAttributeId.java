@@ -4,15 +4,15 @@ import java.io.Serializable;
 
 public class ApartmentAttributeId implements Serializable {
 
-    private Long apartmentId;
+    private Integer apartmentId;
 
     private String attributeName;
 
-    public Long getApartmentId() {
+    public Integer getApartmentId() {
         return apartmentId;
     }
 
-    public void setApartmentId(Long apartmentId) {
+    public void setApartmentId(Integer apartmentId) {
         this.apartmentId = apartmentId;
     }
 

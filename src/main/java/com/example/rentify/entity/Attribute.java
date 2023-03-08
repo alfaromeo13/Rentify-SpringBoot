@@ -1,5 +1,7 @@
 package com.example.rentify.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +13,9 @@ public class Attribute {
     @Column
     private String name;
 
-    @ManyToMany(mappedBy = "attributes")
-    private List<Apartment> apartments = new ArrayList<>();
+    @JsonManagedReference
+    @OneToMany(mappedBy = "attribute")
+    private List<ApartmentAttribute> apartmentAttributes = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -21,13 +24,4 @@ public class Attribute {
     public void setName(String name) {
         this.name = name;
     }
-
-    public List<Apartment> getApartments() {
-        return apartments;
-    }
-
-    public void setApartments(List<Apartment> apartments) {
-        this.apartments = apartments;
-    }
-
 }

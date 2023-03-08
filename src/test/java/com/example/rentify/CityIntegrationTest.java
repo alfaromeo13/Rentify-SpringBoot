@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @SpringBootTest(classes = RentifyApplication.class)
 public class CityIntegrationTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RoleIntegrationTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CityIntegrationTest.class);
 
     @Autowired
     private CityRepository cityRepository;

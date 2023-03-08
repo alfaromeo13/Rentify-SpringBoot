@@ -4,23 +4,23 @@ import java.io.Serializable;
 
 public class ApartmentAttributeId implements Serializable {
 
-    private Integer apartmentId;
+    private Apartment apartment;
 
-    private String attributeName;
+    private Attribute attribute;
 
-    public Integer getApartmentId() {
-        return apartmentId;
+    public Apartment getApartment() {
+        return apartment;
     }
 
-    public void setApartmentId(Integer apartmentId) {
-        this.apartmentId = apartmentId;
+    public void setApartment(Apartment apartment) {
+        this.apartment = apartment;
     }
 
-    public String getAttributeName() {
-        return attributeName;
+    public Attribute getAttribute() {
+        return attribute;
     }
 
-    public void setAttributeName(String attributeName) {
-        this.attributeName = attributeName;
+    public void setAttribute(Attribute attribute) {
+        this.attribute = attribute;
     }
 }

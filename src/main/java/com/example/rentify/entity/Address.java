@@ -21,6 +21,9 @@ public class Address {
     @Column
     private String number;
 
+    @Column(name = "postal_code")
+    private String code;
+
     @JsonBackReference
     @JoinColumn(name = "city_id")
     @ManyToOne(fetch = FetchType.LAZY)
@@ -68,5 +71,24 @@ public class Address {
 
     public void setApartments(List<Apartment> apartments) {
         this.apartments = apartments;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "id=" + id +
+                ", street='" + street + '\'' +
+                ", number='" + number + '\'' +
+                ", code='" + code + '\'' +
+              //  ", city=" + city +
+                '}';
     }
 }

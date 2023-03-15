@@ -54,4 +54,17 @@ public class CityIntegrationTest {
         }
         //LOGGER.info("{}", cities);
     }
+
+    @Test
+    public void insertCityCascadeTest() {
+        Country country = new Country();
+        country.setId(1);
+        City city = new City();
+        city.setName("Konik city");
+        city.setCountry(country);
+        cityRepository.save(city);
+        //prvo ce se izvrsiti insert into countries pa insert into cities tj 2 upita\
+        //jer da bi se unio grad treba nam prvo drzava na koju se grad odnosi
+        //zapisi ovo na papir
+    }
 }

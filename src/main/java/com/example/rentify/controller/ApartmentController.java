@@ -1,8 +1,10 @@
 package com.example.rentify.controller;
 
 import com.example.rentify.dto.ApartmentDTO;
+import com.example.rentify.entity.Apartment;
 import com.example.rentify.search.ApartmentSearch;
 import com.example.rentify.service.ApartmentService;
+import com.example.rentify.specs.ApartmentSearchSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,7 @@ public class ApartmentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApartmentController.class);
 
 
-    //http://localhost:8080/api/product/
+    //http://localhost:8080/api/apartment/
     @GetMapping  // /api/apartment
     public ResponseEntity<List<ApartmentDTO>> getAll() {
         List<ApartmentDTO> apartments = apartmentService.getAll();
@@ -53,20 +55,20 @@ public class ApartmentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping(value="searchhhEx") //name=""&category=""&price""
-    public ResponseEntity<List<ApartmentDTO>> searchByMany(@RequestParam Map<String, Object> parameters) {
-        //moramo praviti precizan skup query parametara koje mapiramo pa ce nam trebati klasa za ovo pa pisemo ovo ispoid
-
-//        NAPRAVICEMO KLASU KOJA PREDTVALJA QUERY PARAMETRE
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @GetMapping(value="search")
-    public ResponseEntity<List<ApartmentDTO>> search(ApartmentSearch apartmentSearch) {//u ApartmentSearch ce se mapirati svaki
+    //http://localhost:8080/api/apartment/search?numOfBathrooms=2&price=2000&addressStreet=Broadway
+    @GetMapping(value = "search")
+    public ResponseEntity<List<Apartment>> search(ApartmentSearch apartmentSearch) {//u ApartmentSearch ce se mapirati svaki
         //query parametar ako je definisan.Razlika izmedju ovakvog definisanja request param je sto ovdje vriejdnosti
         //mogu biti nulli i bice samo mnapirane vrijednosti koje proslijedimo ovdje
         //svi dodatni quey parametri ce biti ignorisdani
-        LOGGER.info("Apartment search: {}",apartmentSearch);
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        //ovim imamo pristup poslatim query parametrima
+        ApartmentSearchSpecification apartmentSearchSpecification = new ApartmentSearchSpecification(apartmentSearch);
+        //da bi pzoavli ovu specvifikaciju predajemo je servisnom sloju a ApartmentSearch ne predajemo jer je to klasa
+        //koju smo prosliejdili do search specifikacije.Nama treba sama Search specifikacija tj where dio upita
+        List<Apartment> apartments = apartmentService.search(apartmentSearchSpecification);
+//        LOGGER.info("Apartment search: {}",apartmentSearch);
+        return new ResponseEntity<>(apartments, HttpStatus.OK);
     }
+
 }

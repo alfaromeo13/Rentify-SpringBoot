@@ -1,13 +1,17 @@
 package com.example.rentify.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "apartments_attributes")
 @IdClass(ApartmentAttributeId.class)
-//we defined our composite key in ApartmentAttributeId class
+//defined composite key in ApartmentAttributeId class
 public class ApartmentAttribute {
     @Id
     @JsonBackReference
@@ -23,28 +27,4 @@ public class ApartmentAttribute {
 
     @Column(name = "attribute_value")
     private String attributeValue;
-
-    public Apartment getApartment() {
-        return apartment;
-    }
-
-    public void setApartment(Apartment apartment) {
-        this.apartment = apartment;
-    }
-
-    public Attribute getAttribute() {
-        return attribute;
-    }
-
-    public void setAttribute(Attribute attribute) {
-        this.attribute = attribute;
-    }
-
-    public String getAttributeValue() {
-        return attributeValue;
-    }
-
-    public void setAttributeValue(String attributeValue) {
-        this.attributeValue = attributeValue;
-    }
 }

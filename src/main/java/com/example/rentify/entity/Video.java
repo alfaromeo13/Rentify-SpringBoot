@@ -1,10 +1,16 @@
 package com.example.rentify.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
+@Getter
+@Setter
+@ToString
 @Table(name = "videos")
 public class Video {
     @Id
@@ -12,26 +18,11 @@ public class Video {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    //map the path or video?
+    //map the path or video haven't decided yet ... ?
 
+    @ToString.Exclude
     @JsonBackReference
     @JoinColumn(name = "apartment_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Apartment apartment;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Apartment getApartment() {
-        return apartment;
-    }
-
-    public void setApartment(Apartment apartment) {
-        this.apartment = apartment;
-    }
 }

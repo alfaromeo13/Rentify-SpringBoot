@@ -2,17 +2,17 @@ package com.example.rentify.controller;
 
 import com.example.rentify.dto.RoleDTO;
 import com.example.rentify.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/role")
 public class RoleController {
 
-    @Autowired
-    private RoleService roleService;
+    private final RoleService roleService;
 
     @PostMapping
     public ResponseEntity<Void> store(@RequestBody RoleDTO roleDTO) {
@@ -23,14 +23,15 @@ public class RoleController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> store(@PathVariable Integer id,
-                                      @RequestBody RoleDTO roleDTO) {
-        if (roleDTO.getId() == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Void> update(@PathVariable Integer id,
+                                       @RequestBody RoleDTO roleDTO) {
         boolean updated = roleService.update(id, roleDTO);
-        return updated ?
-                new ResponseEntity<>(HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(updated ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
     }
-
+/*
+    PUT http://localhost:8080/api/role/2
+    {
+        "name":"user"
+    }
+ */
 }

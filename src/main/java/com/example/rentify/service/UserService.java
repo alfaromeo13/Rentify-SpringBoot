@@ -5,31 +5,32 @@ import com.example.rentify.dto.UserDTO;
 import com.example.rentify.dto.UserWithRolesDTO;
 import com.example.rentify.entity.Role;
 import com.example.rentify.entity.User;
+import com.example.rentify.mapper.RoleMapper;
 import com.example.rentify.mapper.UserMapper;
 import com.example.rentify.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private UserMapper userMapper;
+    private final RoleMapper roleMapper;
+    private final UserMapper userMapper;
+    private final UserRepository userRepository;
 
     public void addRole(Integer id, RoleDTO roleDTO) {
-        Optional<User> userOptional = userRepository.findWithRolesById(id);
+        //id is user's id
+        Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            Role role = new Role();
-            role.setName(roleDTO.getName());
-            role.setId(roleDTO.getId());
+            Role role = roleMapper.toEntity(roleDTO);
             user.addRole(role);
             userRepository.save(user);
-        }
+        } else throw new EntityNotFoundException("User with id " + id + " not found!");
     }
 
     public UserWithRolesDTO findWithRoles(Integer id) {
@@ -37,7 +38,7 @@ public class UserService {
     }
 
     public void store(UserDTO userDTO) {
-        User user=userMapper.toEntity(userDTO);
+        User user = userMapper.toEntity(userDTO);
         userRepository.save(user);
     }
 }

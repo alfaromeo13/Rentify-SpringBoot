@@ -5,7 +5,7 @@ import com.example.rentify.entity.Country;
 import com.example.rentify.mapper.CountryMapper;
 import com.example.rentify.projections.CountryIdAndShortCodeProjection;
 import com.example.rentify.repository.CountryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,12 +14,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CountryService {
-    @Autowired
-    private CountryRepository countryRepository;
 
-    @Autowired
-    private CountryMapper countryMapper;
+    private final CountryRepository countryRepository;
+    private final CountryMapper countryMapper;
 
     public List<Country> findAll() {
         return countryRepository.findAllCountries();

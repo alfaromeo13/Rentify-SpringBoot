@@ -1,9 +1,9 @@
 package com.example.rentify.entity;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -12,6 +12,10 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "reviews")
 public class Review {
     @Id
@@ -25,7 +29,9 @@ public class Review {
     @Column
     private String comment;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at",
+            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP",
+            insertable = false, updatable = false)
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date createdAt;
 

@@ -2,20 +2,23 @@ package com.example.rentify.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 @Entity
 @Getter
 @Setter
 @ToString
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "apartments")
 public class Apartment {
     @Id
@@ -41,7 +44,9 @@ public class Apartment {
     @Column(name = "number_of_bathrooms")
     private Integer numOfBathrooms;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at",
+            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP",
+            insertable = false, updatable = false)
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date createdAt;
 

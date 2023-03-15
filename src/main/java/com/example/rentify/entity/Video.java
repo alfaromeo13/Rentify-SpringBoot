@@ -1,9 +1,9 @@
 package com.example.rentify.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
@@ -11,6 +11,10 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "videos")
 public class Video {
     @Id

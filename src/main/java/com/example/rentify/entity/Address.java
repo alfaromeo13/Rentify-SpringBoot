@@ -2,9 +2,9 @@ package com.example.rentify.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,6 +14,10 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "addresses")
 public class Address {
     @Id

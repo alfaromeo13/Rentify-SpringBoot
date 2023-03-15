@@ -37,18 +37,21 @@ public class UserController {
     }
      */
 
-    @PostMapping("with-categories")
-    public ResponseEntity<Void> insertVoid(@RequestBody UserWithRolesDTO user) {//mapiramo korisnika u odredjnu klasu
-        LOGGER.info("User to be stored: {} ", user);//treba nam u user toString metoda
-        return new ResponseEntity<>(HttpStatus.CREATED);//201 za insert tj ako je sv4e proslo ok 201 created
-    }
-
-
-    @PutMapping("{id}/add-role")
-    public ResponseEntity<Void> updateUserRole(@PathVariable Integer id, @RequestBody RoleDTO role) {
+    @PutMapping("{id}/add-role") //id je id  od usera
+    public ResponseEntity<Void> updateUserRole(@PathVariable Integer id,
+                                               @RequestBody RoleDTO role) {
         userService.addRole(id, role);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+/*
+PUT http://localhost:8080/api/user/10/add-role
+{
+    "id":3,
+    "name":"admin"
+}
+ */
+
+
 
 //    @GetMapping("/with-roles/{id}")
 //    public ResponseEntity<UserWithRolesDTO> getById(@PathVariable Integer id) {

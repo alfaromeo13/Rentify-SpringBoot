@@ -1,9 +1,9 @@
 package com.example.rentify.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -12,6 +12,10 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@DynamicInsert
+@DynamicUpdate
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "messages")
 public class Message {
     @Id
@@ -22,7 +26,9 @@ public class Message {
     @Column
     private String message;
 
-    @Column
+    @Column(name = "timestamp",
+            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP",
+            insertable = false, updatable = false)
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date timestamp; //time of message being sent
 

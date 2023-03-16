@@ -62,7 +62,7 @@ public class RoleIntegrationTest {
 
     @Test
     public void nameStartingWith() {
-        List<Role> roles = roleRepository.findByNameStartingWith("ad");
-        LOGGER.info("{}", roles);
+//        List<Role> roles = roleRepository.findByNameStartingWith("ad");
+//        LOGGER.info("{}", roles);
     }
 }

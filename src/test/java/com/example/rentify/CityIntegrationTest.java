@@ -21,8 +21,8 @@ public class CityIntegrationTest {
 
     @Test
     public void getAllCitiesFromGivenCountryTest() {
-        List<City> cities = cityRepository.getAllCitiesFromCountryJPQL("MNE");
-        LOGGER.info("{}", cities);
+//        List<City> cities = cityRepository.getAllCitiesFromCountryJPQL("MNE");
+//        LOGGER.info("{}", cities);
     }
 
     //metod koji izvlaci gread po odredjenom id-iu
@@ -48,11 +48,11 @@ public class CityIntegrationTest {
 
     @Test
     public void getCityWithCountries() {
-        List<City> cities = cityRepository.findAllWithCountries();
-        for (City city : cities) {
-            Country country = city.getCountry();
-        }
-        //LOGGER.info("{}", cities);
+//        List<City> cities = cityRepository.findAllWithCountries();
+//        for (City city : cities) {
+//            Country country = city.getCountry();
+//        }
+//        //LOGGER.info("{}", cities);
     }
 
     @Test

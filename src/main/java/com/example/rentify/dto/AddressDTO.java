@@ -7,8 +7,9 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class CountryDTO {
+public class AddressDTO {
     private Integer id;
-    private String name;
-    private String shortCode;
+    private String street;
+    private String number;
+    private String code;
 }

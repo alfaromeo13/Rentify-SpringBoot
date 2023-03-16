@@ -11,7 +11,6 @@ import com.example.rentify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 @Service
@@ -22,23 +21,23 @@ public class UserService {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 
-    public void addRole(Integer id, RoleDTO roleDTO) {
-        //id is user's id
+    public void save(UserDTO userDTO) {
+        userRepository.save(userMapper.toEntity(userDTO));
+    }
+
+    public boolean addRole(Integer id, RoleDTO roleDTO) { //id is user's id
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             Role role = roleMapper.toEntity(roleDTO);
             user.addRole(role);
             userRepository.save(user);
-        } else throw new EntityNotFoundException("User with id " + id + " not found!");
+            return true;
+        } else return false;
     }
 
     public UserWithRolesDTO findWithRoles(Integer id) {
-        return userRepository.userWithRolesDTO(id);
-    }
-
-    public void store(UserDTO userDTO) {
-        User user = userMapper.toEntity(userDTO);
-        userRepository.save(user);
+        User user = userRepository.userWithRoles(id);
+        return userMapper.toDTO(user);
     }
 }

@@ -1,17 +1,14 @@
 package com.example.rentify.dto;
 
-import java.util.ArrayList;
+import lombok.*;
+
 import java.util.List;
 
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserWithRolesDTO extends UserDTO {
-//ako ne bude radilo sa nasljedjivanjem onda dodaj sve atribute iz parent klase ovdje
-    private List<RoleDTO> roles = new ArrayList<>();
-
-    public List<RoleDTO> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<RoleDTO> roles) {
-        this.roles = roles;
-    }
+    private List<RoleDTO> roles;
 }

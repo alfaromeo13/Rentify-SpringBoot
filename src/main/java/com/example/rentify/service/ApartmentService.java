@@ -2,34 +2,30 @@ package com.example.rentify.service;
 
 import com.example.rentify.dto.ApartmentDTO;
 import com.example.rentify.entity.Apartment;
+import com.example.rentify.mapper.ApartmentMapper;
 import com.example.rentify.repository.ApartmentRepository;
 import com.example.rentify.specs.ApartmentSearchSpecification;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ApartmentService {
 
-    @Autowired
-    ApartmentRepository apartmentRepository;
+    private final ApartmentMapper apartmentMapper;
+    private final ApartmentRepository apartmentRepository;
 
-    public List<ApartmentDTO> getAll() {
-        return null;
-    }
-
-    public ApartmentDTO findOneById(Integer id) {
-        return null;
-    }
-
-    public List<ApartmentDTO> findByCategory(String category) {
-        return null;
-    }
-
-    public List<Apartment> search(ApartmentSearchSpecification apartmentSearchSpecification) {
-        return apartmentRepository.findAll(apartmentSearchSpecification);
-        //da bi ovo pozvali ovako iznad tj da bi samo predali searchSpecifikaciju upitu
+    public List<ApartmentDTO> search(Pageable pageable, ApartmentSearchSpecification apartmentSearchSpecification) {
+        Page<Apartment> apartmentsPage = apartmentRepository.findAll(apartmentSearchSpecification, pageable);
+        if (apartmentsPage.hasContent()) {
+            return apartmentMapper.toDTOList(apartmentsPage.getContent());
+        } else return new ArrayList<>();
+        //da bi samo predali searchSpecifikaciju upitu
         //moramo nasliejditi u repozitori sloju JpaSpecificationExecutor i ako ovo sad nasliejdimo
         //moci cemo da pozovemo neke nove metode koje su ugradjene pa sada mozemo pzovati
         //.findAll(apartmentSearchSpecification); ranije nismo mogli

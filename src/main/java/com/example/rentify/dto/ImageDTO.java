@@ -7,8 +7,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class CountryDTO {
+public class ImageDTO {
     private Integer id;
-    private String name;
-    private String shortCode;
+    //map the path or video haven't decided yet ... ?
 }

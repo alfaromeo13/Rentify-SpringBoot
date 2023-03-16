@@ -12,6 +12,4 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Integer>, 
 //JPQL upit koji povlaci id, ime korisnika, broj telefona i sve adrese na kojima su njegovi apartmani
 //JPQL upit koji povlači sve apartmane čije adrese pripadaju određenom gradu (po imenu grada). Upit treba da vrati: ime izdavaca, email adresu, naziv grada, naziv drzave i naziv adrese. Za mapiranje iskoristiti projekciju (custom interfejs)
 //JPQL upit sa straničenjem koji vraća sve apartmane čija adresa pripada državi (Veličina stranice treba da bude 15 npr)
-
-
 }

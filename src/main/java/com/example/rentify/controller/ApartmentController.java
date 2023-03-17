@@ -1,13 +1,11 @@
 package com.example.rentify.controller;
 
 import com.example.rentify.dto.ApartmentDTO;
-import com.example.rentify.entity.Apartment;
 import com.example.rentify.search.ApartmentSearch;
 import com.example.rentify.service.ApartmentService;
 import com.example.rentify.specs.ApartmentSearchSpecification;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,25 +13,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/apartment")
 public class ApartmentController {
 
     private final ApartmentService apartmentService;
-    private final Logger LOGGER = LoggerFactory.getLogger(ApartmentController.class);
 
-    //GET http://localhost:8080/api/apartment/search?numOfBathrooms=2&price=2000&addressStreet=Broadway
+    //GET http://localhost:8080/api/apartment/search?page=0&size=2&cityName=New York&addressStreet=Broadway
     @GetMapping(value = "search")  //search?minPrice=500&maxPrice=1000&minRooms=2&maxRooms=3&page=0&size=10
-    public ResponseEntity<List<ApartmentDTO>> search(Pageable pageable, ApartmentSearch apartmentSearch) {
-        //u oApartmentSearch ce se mapirti samo proslijedjeni queriji ostali ce biti null i po tome filtriramo
-        //ovim imamo pristup poslatim query parametrima.Ova klasa ispod generise where dio upita
-        ApartmentSearchSpecification aps = new ApartmentSearchSpecification(apartmentSearch);
-        List<ApartmentDTO> apartments = apartmentService.search(pageable, aps);
-        LOGGER.info("Apartments : {}", apartments);
-
-//        https://stackoverflow.com/questions/26379522/can-i-combine-a-query-definition-with-a-specification-in-a-spring-data-jpa-repo?noredirect=1&lq=1
-
+    public ResponseEntity<List<ApartmentDTO>> search(Pageable pageable, ApartmentSearch apSearch) {
+        List<ApartmentDTO> apartments = apartmentService.search(pageable, new ApartmentSearchSpecification(apSearch));
         return new ResponseEntity<>(apartments, HttpStatus.OK);
     }
 
@@ -61,6 +52,6 @@ public class ApartmentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //get review for an aartment
+
 
 }

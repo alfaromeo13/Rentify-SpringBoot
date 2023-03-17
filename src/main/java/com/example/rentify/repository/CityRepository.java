@@ -10,19 +10,12 @@ import java.util.List;
 
 @Repository
 public interface CityRepository extends JpaRepository<City, Integer> {
-    List<City> findByNameStartingWith(String name);
+    @Query(value = "select city from City city join fetch city.country where city.name like :name%")
+    List<City> findByNameStartingWith(@Param("name") String name);
 
-    @Query(value = "select city from City city" +
-            " join city.country country where country.name = :name")
+    @Query(value = "select city from City city join city.country country where country.name = :name")
     List<City> findAllCitiesFromCountryNameJPQL(@Param("name") String countryName);
 
-    //ne treba nam 'join on' Samo nam treba 'join' jer smo sami join definisali
-    // u City entitetu na  polju country
-    @Query(value = "select city from City city " +
-            "join city.country country where country.shortCode = :shortCode")
+    @Query(value = "select city from City city join city.country country where country.shortCode = :shortCode")
     List<City> findAllCitiesFromCountryCodeJPQL(@Param("shortCode") String code);
-
-
-//    @Query(value = "select city from City as city join fetch city.country")
-//    List<City> findAllWithCountries();
 }

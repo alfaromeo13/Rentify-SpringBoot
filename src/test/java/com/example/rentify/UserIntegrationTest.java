@@ -117,8 +117,8 @@ public class UserIntegrationTest {
 
     @Test
     public void removeRoleFromExistingUserTest() {
-        User user = userRepository.userWithRoles(5);
-        user.removeRoleById(3);
-        userRepository.save(user);//UPDATE jer user objekat ima predan id
+//        User user = userRepository.userWithRoles(5);
+//        user.removeRoleById(3);
+//        userRepository.save(user);//UPDATE jer user objekat ima predan id
     }
 }

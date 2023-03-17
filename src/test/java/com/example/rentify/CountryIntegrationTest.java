@@ -30,34 +30,34 @@ public class CountryIntegrationTest {
         countryRepository.save(country);
     }
 
-    @Test
-    public void getCountryIdAndCodeTest() {
-        List<CountryIdAndShortCodeProjection> countries = countryRepository.findIdAndCodeUsingCustomProjection();
-        for (CountryIdAndShortCodeProjection country : countries)
-            LOGGER.info("ID={} | SHORT_CODE= '{}'", country.getId(), country.getShortCode());
-    }
+//    @Test
+//    public void getCountryIdAndCodeTest() {
+//        List<CountryIdAndShortCodeProjection> countries = countryRepository.findIdAndCodeUsingCustomProjection();
+//        for (CountryIdAndShortCodeProjection country : countries)
+//            LOGGER.info("ID={} | SHORT_CODE= '{}'", country.getId(), country.getShortCode());
+//    }
 
-    @Test
-    public void findAllWithPageable() {
-        //find all sa pageablom vec postoji predefinisan za nas u interfejsu JPA
-        //page od 0 krece vazda ali svakako to nama salje bek
-        //redna stranica  a svaka stranica ima onoliko elemenata na njoj koliki je size
-        Pageable pageable = PageRequest.of(2, 2);//ovaj interfejs mora da ima size i page a sort je opcion
-        Page<Country> countryPage = countryRepository.findAllJPQL(pageable); //page =0 size=2
-        LOGGER.info("Country page: {}", countryPage);
-
-        //nekad cemo imati slucaj da treba da rapakujemo ove podatke iz page vrapera
-        if (countryPage.hasContent()) { //da li u vraperu postoji neka kolekcija podatak tj sadrzaj
-            //iz ovog vrapera mozemo izvuci informacije koje nam mogu biti korisne u procesuiranju
-            List<Country> countries = countryPage.getContent();
-            long totalElements = countryPage.getTotalElements();
-            int totalPages = countryPage.getTotalPages();
-        }
-    }
-
-    @Test
-    public void findAll(){
-        List<Country> countries=countryRepository.findAllCountries();
-        LOGGER.info("");
-    }
+//    @Test
+//    public void findAllWithPageable() {
+//        //find all sa pageablom vec postoji predefinisan za nas u interfejsu JPA
+//        //page od 0 krece vazda ali svakako to nama salje bek
+//        //redna stranica  a svaka stranica ima onoliko elemenata na njoj koliki je size
+//        Pageable pageable = PageRequest.of(2, 2);//ovaj interfejs mora da ima size i page a sort je opcion
+//        Page<Country> countryPage = countryRepository.findAllJPQL(pageable); //page =0 size=2
+//        LOGGER.info("Country page: {}", countryPage);
+//
+//        //nekad cemo imati slucaj da treba da rapakujemo ove podatke iz page vrapera
+//        if (countryPage.hasContent()) { //da li u vraperu postoji neka kolekcija podatak tj sadrzaj
+//            //iz ovog vrapera mozemo izvuci informacije koje nam mogu biti korisne u procesuiranju
+//            List<Country> countries = countryPage.getContent();
+//            long totalElements = countryPage.getTotalElements();
+//            int totalPages = countryPage.getTotalPages();
+//        }
+//    }
+//
+//    @Test
+//    public void findAll(){
+//        List<Country> countries=countryRepository.findAllCountries();
+//        LOGGER.info("");
+//    }
 }

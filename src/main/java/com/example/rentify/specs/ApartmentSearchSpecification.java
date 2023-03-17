@@ -37,8 +37,9 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
         if (apartmentSearch.getCityName() != null) {
             Join<Apartment, Address> addressJoin = root.join("address", JoinType.LEFT);
             Join<Address, City> cityJoin = addressJoin.join("city");
-            // Join<City, Country> countryJoin = cityJoin.join("country"); da smo htjeli da prosirimo
-            // filtirranje po drzvai dodali bi jos jedan join na country
+            // Join<City, Country> countryJoin = cityJoin.join("country");
+            // da smo htjeli da prosirimo filtirranje po drzvai dodali bi jos jedan join
+            // na country
             Predicate cityNamePredicate = criteriaBuilder.equal(
                     cityJoin.get("name"), apartmentSearch.getCityName());
             predicateList.add(cityNamePredicate);

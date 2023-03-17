@@ -117,11 +117,7 @@ public class User {
     }
 
     public void removeRoleById(int id) {
-        for (Role role : roles) {
-            if (role.getId() == id) {
-                roles.remove(role);
-                break;
-            }
-        }
+        roles.stream().filter(role -> role.getId() == id)
+                .findFirst().ifPresent(role -> roles.remove(role));
     }
 }

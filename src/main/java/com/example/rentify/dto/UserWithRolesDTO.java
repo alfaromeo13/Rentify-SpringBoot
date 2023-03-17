@@ -2,6 +2,7 @@ package com.example.rentify.dto;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter

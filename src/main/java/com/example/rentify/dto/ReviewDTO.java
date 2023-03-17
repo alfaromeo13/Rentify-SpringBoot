@@ -2,6 +2,7 @@ package com.example.rentify.dto;
 
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Getter
@@ -9,7 +10,7 @@ import java.util.Date;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class ReviewDTO {
+public class ReviewDTO implements Serializable {
     private Integer id;
     private Integer grade;
     private String comment;

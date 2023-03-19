@@ -36,7 +36,7 @@ public class ApartmentService {
         apartmentRepository.save(apartmentMapper.toEntity(apartmentDTO));
     }
 
-    public boolean update(Integer id, ApartmentDTO apartmentDTO) {
+    public Boolean update(Integer id, ApartmentDTO apartmentDTO) {
         boolean apartmentExists = apartmentRepository.existsById(id);
         if (apartmentExists) {
             apartmentDTO.setId(id);
@@ -45,7 +45,7 @@ public class ApartmentService {
         } else return false;
     }
 
-    public boolean delete(Integer id) {
+    public Boolean delete(Integer id) {
         Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
         if (apartmentOptional.isPresent()) {
             Apartment apartment = apartmentOptional.get();

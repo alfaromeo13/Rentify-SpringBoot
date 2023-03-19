@@ -25,7 +25,7 @@ public class UserService {
         userRepository.save(userMapper.toEntity(userDTO));
     }
 
-    public boolean addRole(Integer id, RoleDTO roleDTO) { //id is user's id
+    public Boolean addRole(Integer id, RoleDTO roleDTO) { //id is user's id
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();

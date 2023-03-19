@@ -32,7 +32,7 @@ public class RoleService {
         } else return false;
     }
 
-    public boolean delete(Integer id) {
+    public Boolean delete(Integer id) {
         boolean roleExists = roleRepository.existsById(id);
         if (roleExists) {
             roleRepository.deleteById(id);

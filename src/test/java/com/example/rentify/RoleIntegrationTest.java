@@ -2,9 +2,8 @@ package com.example.rentify;
 
 import com.example.rentify.entity.Role;
 import com.example.rentify.repository.RoleRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -12,11 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @SpringBootTest(classes = RentifyApplication.class)
 public class RoleIntegrationTest {
-    //injectujemo repozitori sloj da bi testirali upite
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(RoleIntegrationTest.class);
 
     @Autowired
     private RoleRepository roleRepository;
@@ -37,9 +34,15 @@ public class RoleIntegrationTest {
     }
 
     @Test
-    public void finAllTest() {
+    public void findAllTest() {
         List<Role> roles = roleRepository.findAll();
-        LOGGER.info("{}", roles);
+        log.info("{}", roles);
+    }
+
+    @Test
+    public void findAllJPQLTest() {
+        List<String> roleNames = roleRepository.findAllNamesJPQL();
+        log.info("{}", roleNames);
     }
 
     @Test
@@ -47,22 +50,13 @@ public class RoleIntegrationTest {
         Optional<Role> roleOptional = roleRepository.findById(1);
         if (roleOptional.isPresent()) {
             Role role = roleOptional.get();
-            LOGGER.info("{}", role);
+            log.info("{}", role);
         } else
-            LOGGER.error("no such role found");
+            log.error("no such role found");
     }
 
     @Test
     public void deleteByIdTest() {
-//ili .delete(objekat) ali objekat mora imati primarni kljuc ddefinisan
         roleRepository.deleteById(1);
-    }
-
-    //testiranje nasih metoda
-
-    @Test
-    public void nameStartingWith() {
-//        List<Role> roles = roleRepository.findByNameStartingWith("ad");
-//        LOGGER.info("{}", roles);
     }
 }

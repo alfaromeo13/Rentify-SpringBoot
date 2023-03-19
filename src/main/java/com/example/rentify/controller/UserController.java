@@ -28,6 +28,16 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    //update user
+
+    //delete user
+
+    //get all user info
+
+    //get favourite apartments
+
+    //get rentals-kome si sto izdao
+
     //{"id":3, "name":"admin"}
     @PutMapping("{id}/add-role") //PUT http://localhost:8080/api/user/10/add-role
     public ResponseEntity<Void> updateUserRole(@PathVariable Integer id, @RequestBody RoleDTO roleDTO) {
@@ -42,13 +52,4 @@ public class UserController {
         log.info("User : {} ", user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
-
-    //add user apartment
-
-    //update user apartment
-
-    //delete user apartment
-
-    //get user apartments(JPQL upit koji povlaci id, ime korisnika,
-    // broj telefona i sve adrese na kojima su njegovi apartmani i sl.)
 }

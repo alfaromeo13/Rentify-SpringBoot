@@ -10,20 +10,32 @@ import java.util.List;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
-    //Metod koji vraca sve adrese po odredjenom postanskom broju (postal_code)
-    @Query(value = "select address from Address as address where address.code = :code")
+    //sve adrese koje pripadaju naselju sa odredjenim nazivom
+    @Query(value = "select address from Address address " +
+            "join address.neighborhood neighborhood where neighborhood.name like :name%")
+    List<Address> getAllInNeighborhood(@Param("name") String neighborhoodName);
+
+    // sve adrese po odredjenom postanskom broju (postal_code)
+    @Query(value = "select address from Address address where address.code = :code")
     List<Address> getByCode(@Param("code") String postalCode);
 
-    //Metod koji vraca sve adrese koje pripadaju gradu sa odredjenim nazivom
-    @Query(value = "select address from Address as address join address.city as city where city.name = :name")
+    //sve adrese koje pripadaju gradu sa odredjenim nazivom
+    @Query(value = "select address from Address address " +
+            "join address.neighborhood neighborhood " +
+            "join neighborhood.city city where city.name like :name%")
     List<Address> getAllInCity(@Param("name") String cityName);
 
-    //Metod koji vraca sve adrese koje pripadaju odredjenoj drzavi(po short codu)
-    @Query(value = "select address from Address as address " +
-            "join address.city as city join city.country as country where country.shortCode = :code")
-    List<Address> getAllInCountry(@Param("code") String shortCode);
+    //sve adrese koje pripadaju drzavi(po nazivu drzave)
+    @Query(value = "select address from Address address " +
+            "join address.neighborhood neighborhood " +
+            "join neighborhood.city city " +
+            "join city.country country where country.name like :name%")
+    List<Address> getAllInCountryByName(@Param("name") String name);
 
-    //Metod koji vraca adresu po jedinstvenom identifikatoru ukljucujuci podatak o gradu
-    @Query(value = "select address from Address as address join fetch address.city where address.id= :id")
-    List<Address> getByIdWithCity(@Param("id") Integer id);
+    //sve adrese koje pripadaju drzavi(po short codu drzave)
+    @Query(value = "select address from Address address " +
+            "join address.neighborhood neighborhood " +
+            "join neighborhood.city city " +
+            "join city.country country where country.shortCode like :code%")
+    List<Address> getAllInCountryByCode(@Param("code") String shortCode);
 }

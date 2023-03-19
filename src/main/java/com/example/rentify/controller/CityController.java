@@ -24,7 +24,7 @@ public class CityController {
 
     @GetMapping //GET http://localhost:8080/api/city?name=B
     public ResponseEntity<List<CityWithCountryDTO>> findByName(@RequestParam("name") String name) {
-        List<CityWithCountryDTO> cities = cityService.findByNameStarting(name);
+        List<CityWithCountryDTO> cities = cityService.findByName(name);
         log.info("Cities : {} ", cities);
         return new ResponseEntity<>(cities, HttpStatus.OK);
     }

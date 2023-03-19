@@ -53,12 +53,14 @@ public class Apartment {
     @Column(name = "contact_number")
     private String number;
 
-    @Column(name = "is_available")
+    @Column(name = "is_available",
+            columnDefinition = "TINYINT(1) DEFAULT 1",
+            insertable = false, updatable = false)
     private Boolean isAvailable;
 
     @Column(name = "is_active",
             columnDefinition = "TINYINT(1) DEFAULT 1",
-            insertable = false, updatable = false)
+            insertable = false)
     private Boolean isActive;
 
     @ToString.Exclude
@@ -87,11 +89,6 @@ public class Apartment {
     @JsonManagedReference
     @OneToMany(mappedBy = "apartment")
     private List<Rental> rentals = new ArrayList<>();
-
-    @ToString.Exclude
-    @JsonManagedReference
-    @OneToMany(mappedBy = "apartment")
-    private List<Video> videos = new ArrayList<>();
 
     @ToString.Exclude
     @JsonManagedReference

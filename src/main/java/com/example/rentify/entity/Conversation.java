@@ -28,7 +28,7 @@ public class Conversation {
 
     @Column(name = "is_active",
             columnDefinition = "TINYINT(1) DEFAULT 1",
-            insertable = false, updatable = false)
+            insertable = false)
     private Boolean isActive;
 
     @Column(name = "timestamp",

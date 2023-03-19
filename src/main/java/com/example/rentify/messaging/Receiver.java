@@ -1,4 +1,4 @@
-package com.example.rentify.messagingRedis;
+package com.example.rentify.messaging;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

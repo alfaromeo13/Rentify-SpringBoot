@@ -6,13 +6,16 @@ import com.example.rentify.mapper.ApartmentMapper;
 import com.example.rentify.repository.ApartmentRepository;
 import com.example.rentify.specs.ApartmentSearchSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ApartmentService {
@@ -22,17 +25,33 @@ public class ApartmentService {
 
     public List<ApartmentDTO> search(Pageable pageable, ApartmentSearchSpecification apartmentSearchSpecification) {
         Page<Apartment> apartmentsPage = apartmentRepository.findAll(apartmentSearchSpecification, pageable);
+        log.info("Cache miss..Getting data from database.");
         if (apartmentsPage.hasContent()) {
             return apartmentMapper.toDTOList(apartmentsPage.getContent());
         } else return new ArrayList<>();
-        //da bi samo predali searchSpecifikaciju upitu
-        //moramo nasliejditi u repozitori sloju JpaSpecificationExecutor i ako ovo sad nasliejdimo
-        //moci cemo da pozovemo neke nove metode koje su ugradjene pa sada mozemo pzovati
-        //.findAll(apartmentSearchSpecification); ranije nismo mogli
-        //sada posto smo proslijedili search specifikaciju hibernater ce pozvati toPredicate metrodu
-        //koja vrace glavni where uslov! :D
-        //kada predamo odredjenu specifikaciju mozda i ne bude where uslova ako niko nije specificirao sta zeli
-        //dakle pozivom findAll hibernate poziva toPredicate da bi dobili dinamicki where uslov i dalje
-        //ga nihbernate uvrstava u sami upit
+        //hibernate calls toPredicate which generates where... and passes it to query
+    }
+
+    public void save(ApartmentDTO apartmentDTO) {
+        apartmentRepository.save(apartmentMapper.toEntity(apartmentDTO));
+    }
+
+    public boolean update(Integer id, ApartmentDTO apartmentDTO) {
+        boolean apartmentExists = apartmentRepository.existsById(id);
+        if (apartmentExists) {
+            apartmentDTO.setId(id);
+            save(apartmentDTO);
+            return true;
+        } else return false;
+    }
+
+    public boolean delete(Integer id) {
+        Optional<Apartment> apartmentOptional = apartmentRepository.findById(id);
+        if (apartmentOptional.isPresent()) {
+            Apartment apartment = apartmentOptional.get();
+            apartment.setIsActive(false);
+            apartmentRepository.save(apartment);
+            return true;
+        } else return false;
     }
 }

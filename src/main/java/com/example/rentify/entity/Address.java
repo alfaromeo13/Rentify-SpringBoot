@@ -36,9 +36,9 @@ public class Address {
 
     @ToString.Exclude
     @JsonBackReference
-    @JoinColumn(name = "city_id")
+    @JoinColumn(name = "neighborhood_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private City city;
+    private Neighborhood neighborhood;
 
     @ToString.Exclude
     @JsonManagedReference

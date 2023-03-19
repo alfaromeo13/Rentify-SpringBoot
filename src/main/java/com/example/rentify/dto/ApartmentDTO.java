@@ -27,7 +27,6 @@ public class ApartmentDTO implements Serializable {
     private UserDTO user; //owner
     private AddressDTO address;
     private List<ReviewDTO> reviews;
-    private List<VideoDTO> videos;
     private List<ImageDTO> images;
     private List<ApartmentAttributeDTO> apartmentAttributes;
 }

@@ -37,5 +37,5 @@ public class City {
     @ToString.Exclude
     @JsonManagedReference
     @OneToMany(mappedBy = "city")
-    private List<Address> addresses = new ArrayList<>();
+    private List<Neighborhood> neighborhoods = new ArrayList<>();
 }

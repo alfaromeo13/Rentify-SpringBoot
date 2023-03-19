@@ -13,9 +13,9 @@ public interface CityRepository extends JpaRepository<City, Integer> {
     @Query(value = "select city from City city join fetch city.country where city.name like :name%")
     List<City> findByNameStartingWith(@Param("name") String name);
 
-    @Query(value = "select city from City city join city.country country where country.name = :name")
+    @Query(value = "select city from City city join city.country country where country.name like :name%")
     List<City> findAllCitiesFromCountryNameJPQL(@Param("name") String countryName);
 
-    @Query(value = "select city from City city join city.country country where country.shortCode = :shortCode")
-    List<City> findAllCitiesFromCountryCodeJPQL(@Param("shortCode") String code);
+    @Query(value = "select city from City city join city.country country where country.shortCode like :code%")
+    List<City> findAllCitiesFromCountryCodeJPQL(@Param("code") String shortCode);
 }

@@ -21,37 +21,101 @@ public class ApartmentController {
 
     private final ApartmentService apartmentService;
 
-    //GET http://localhost:8080/api/apartment/search?page=0&size=2&cityName=New York&addressStreet=Broadway
-    @GetMapping(value = "search")  //search?minPrice=500&maxPrice=1000&minRooms=2&maxRooms=3&page=0&size=10
-    public ResponseEntity<List<ApartmentDTO>> search(Pageable pageable, ApartmentSearch apSearch) {
-        List<ApartmentDTO> apartments = apartmentService.search(pageable, new ApartmentSearchSpecification(apSearch));
+    //GET http://localhost:8080/api/apartment/pageable-search?page=0&size=4&sort=title,asc&cityName=New York&minPrice=1100&maxPrice=4900
+    //or GET http://localhost:8080/api/apartment/pageable-search?page=0&size=2&cityName=New York&addressStreet=Broadway
+    @GetMapping("pageable-search")
+    public ResponseEntity<List<ApartmentDTO>> search(Pageable pageable, ApartmentSearch params) {
+        List<ApartmentDTO> apartments = apartmentService.search(pageable, new ApartmentSearchSpecification(params));
         return new ResponseEntity<>(apartments, HttpStatus.OK);
     }
 
-//    @GetMapping(value = "{id}")
-//    // "/api/product/{id}"    //da smo imali jos jednu patrh vcariablu bilo bi {}/{} a ovamo ,PathVariable pa ta druga
-//    public ResponseEntity<ApartmentDTO> getById(@PathVariable Integer id) {  //ako je naziv path variable u {id} isti kao u metodi tj INteger id odnosno imaju isti naziv pa ne treba value="id"
-//        ApartmentDTO apartment = apartmentService.findOneById(id);
-//        return apartment != null ?
-//                new ResponseEntity<>(apartment, HttpStatus.OK) ://200
-//                new ResponseEntity<>(HttpStatus.NOT_FOUND);//404
-//    }
-
-
-//    //http://localhost:8080/api/product/by-category?category=Kat 1
-//    @GetMapping(value = "by-category") // /api/product/by-category} prosljejdumeo kao query p[arametar jer nije unique
-//    //mozemo dodati required false jer je po defasultu tru i ako se ne proslijedi query param bice odbijen
-//    public ResponseEntity<List<ApartmentDTO>> getByCategory(@RequestParam(value = "category") String category) {
-//        List<ApartmentDTO> apartments = apartmentService.findByCategory(category);
-//        return new ResponseEntity<>(apartments, HttpStatus.OK); //vratice se prazna lista nece null tj vratice se []
-//    }
-
-    @GetMapping(value = "by-categories") //api/product/by-categories
-    //predajmeo listu kategorijia u POSTAMN npr odajemo ...by-categpories?category=Kat 1&category=Kat 2 itd..
-    public ResponseEntity<List<ApartmentDTO>> getByCategories(@RequestParam(value = "category") List<String> categories) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PostMapping  //POST http://localhost:8080/api/apartment/
+    public ResponseEntity<Void> insert(@RequestBody ApartmentDTO apartmentDTO) {
+        if (apartmentDTO.getId() != null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        log.info("Storing new apartment: {}", apartmentDTO);
+        apartmentService.save(apartmentDTO);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PutMapping("{id}") //PUT http://localhost:8080/api/apartment/2
+    public ResponseEntity<Void> update(@PathVariable Integer id, @RequestBody ApartmentDTO apartmentDTO) {
+        log.info("Updating apartment with id : {} ", id);
+        boolean updated = apartmentService.update(id, apartmentDTO);
+        return new ResponseEntity<>(updated ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
 
+    @DeleteMapping("{id}") //DELETE http://localhost:8080/api/apartment/2
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        log.info("Deleting apartment with id: {} ", id);
+        boolean deleted = apartmentService.delete(id);
+        return new ResponseEntity<>(deleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
 
+    /*JSON example for POST
+    {
+    "title":"test123",
+    "description":"neki opis",
+    "sqMeters":123,
+    "price":122,
+    "numOfBedrooms":3,
+    "numOfBathrooms":2,
+    "number": "+3838676878",
+    "user":{
+        "id":12,
+        "firstName":"Marko",
+        "lastName":"Vukovic",
+        "email":"bula20@gmail.com",
+        "username":"bula12345!"
+    },
+    "address":{
+        "id":36,
+        "street":"Broadway",
+        "number":"789",
+        "code":"12345"
+    },
+    "images":[
+        {
+            "id":1
+        },
+        {
+            "id":2
+        },
+        {
+            "id":2
+        }
+    ],
+    "apartmentAttributes": [
+            {
+                "attribute": {
+                    "name": "Air Conditioning"
+                },
+                "attributeValue": "Central"
+            },
+            {
+                "attribute": {
+                    "name": "Balcony"
+                },
+                "attributeValue": "Yes"
+            },
+            {
+                "attribute": {
+                    "name": "Gym"
+                },
+                "attributeValue": "No"
+            },
+            {
+                "attribute": {
+                    "name": "Parking"
+                },
+                "attributeValue": "Underground"
+            },
+            {
+                "attribute": {
+                    "name": "Swimming Pool"
+                },
+                "attributeValue": "Yes"
+            }
+        ]
+}
+     */
 }

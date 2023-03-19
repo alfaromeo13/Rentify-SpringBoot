@@ -55,7 +55,7 @@ public class User {
 
     @Column(name = "is_active",
             columnDefinition = "TINYINT(1) DEFAULT 1",
-            insertable = false, updatable = false)
+            insertable = false)
     private Boolean isActive;
 
     // we set in phpMyAdmin current_timestamp(0) and isActive=1 as default values
@@ -79,7 +79,7 @@ public class User {
 
     @ToString.Exclude
     @JsonManagedReference
-    @OneToMany(mappedBy = "user1") //treba li mi?
+    @OneToMany(mappedBy = "user1") //treba li mi???
     private List<Conversation> user1 = new ArrayList<>();
 
     @ToString.Exclude

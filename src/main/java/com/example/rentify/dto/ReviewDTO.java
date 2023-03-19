@@ -8,8 +8,8 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ReviewDTO implements Serializable {
     private Integer id;
     private Integer grade;
@@ -17,5 +17,5 @@ public class ReviewDTO implements Serializable {
     private Date createdAt;
     private Boolean isActive;
 
-    private UserDTO user;
+    private UserDTO user;//user who made review
 }

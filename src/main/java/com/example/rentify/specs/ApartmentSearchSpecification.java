@@ -27,7 +27,6 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
         filterByPrice(root, criteriaBuilder, predicateList);
         filterByTitle(root, criteriaBuilder, predicateList);
         filterByDescription(root, criteriaBuilder, predicateList);
-        filterByNumber(root, criteriaBuilder, predicateList);
         filterByNumOfBathrooms(root, criteriaBuilder, predicateList);
         filterByAddressStreet(criteriaBuilder, predicateList, addressJoin);
         filterByCityName(criteriaBuilder, predicateList, cityJoin);
@@ -126,15 +125,6 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
                     root.get("numOfBathrooms"), apartmentSearch.getMaxNumOfBathrooms());
             predicateList.add(maxNumOfBathroomsPredicate);
             //... where apartments.numOfBathrooms <=:numOfBathrooms
-        }
-    }
-
-    private void filterByNumber(Root<Apartment> root, CriteriaBuilder criteriaBuilder, List<Predicate> predicateList) {
-        if (apartmentSearch.getNumber() != null) {
-            Predicate numberPredicate = criteriaBuilder.like(
-                    root.get("number"), "%" + apartmentSearch.getNumber() + "%");
-            predicateList.add(numberPredicate);
-            //... where apartments.number like '%555757%';
         }
     }
 

@@ -8,5 +8,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewApartmentDTO extends ReviewDTO {
-    private Integer apartmentId;////
+    private Integer apartmentId;
 }

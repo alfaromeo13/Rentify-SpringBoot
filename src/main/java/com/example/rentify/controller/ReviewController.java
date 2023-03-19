@@ -17,6 +17,21 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
+    /*
+    {
+    "grade":5,
+    "comment":"komentar",
+    "apartmentId":5,
+        "user" : {
+            "id":12,
+            "firstName":"Marko",
+            "lastName":"Vukovic",
+            "email":"bula20@gmail.com",
+            "username":"bula12345!"
+        }
+    }
+     */
+
     @PostMapping //POST http://localhost:8080/api/review/
     public ResponseEntity<Void> insert(@RequestBody ReviewApartmentDTO reviewApartmentDTO) {
         if (reviewApartmentDTO.getId() != null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -25,6 +40,7 @@ public class ReviewController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+
     @DeleteMapping("{id}") //DELETE http://localhost:8080/api/review/55
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         log.info("Deleting review with id: {} ", id);
@@ -32,10 +48,26 @@ public class ReviewController {
         return new ResponseEntity<>(deleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
+    /*
+        {
+        "grade":1,
+        "comment":"kkkkkkk",
+        "apartmentId":4,
+        "isActive":1,
+            "user" : {
+                "id":12,
+                "firstName":"Marko",
+                "lastName":"Vukovic",
+                "email":"bula20@gmail.com",
+                "username":"bula12345!"
+            }
+        }
+ */
+
     @PutMapping("{id}") //PUT http://localhost:8080/api/review/55 -> when we edit a review
-    public ResponseEntity<Void> update(@PathVariable Integer id, @RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<Void> update(@PathVariable Integer id, @RequestBody ReviewApartmentDTO reviewApartmentDTO) {
         log.info("Edited review with id : {} ", id);
-        boolean updated = reviewService.update(id, reviewDTO);
+        boolean updated = reviewService.update(id, reviewApartmentDTO);
         return new ResponseEntity<>(updated ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 }

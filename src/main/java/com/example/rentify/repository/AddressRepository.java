@@ -15,7 +15,7 @@ public interface AddressRepository extends JpaRepository<Address, Integer> {
             "join address.neighborhood neighborhood where neighborhood.name like :name%")
     List<Address> getAllInNeighborhood(@Param("name") String neighborhoodName);
 
-    // sve adrese po odredjenom postanskom broju (postal_code)
+    // sve adrese po odredjenom postanskom broju
     @Query(value = "select address from Address address where address.code = :code")
     List<Address> getByCode(@Param("code") String postalCode);
 
@@ -25,14 +25,14 @@ public interface AddressRepository extends JpaRepository<Address, Integer> {
             "join neighborhood.city city where city.name like :name%")
     List<Address> getAllInCity(@Param("name") String cityName);
 
-    //sve adrese koje pripadaju drzavi(po nazivu drzave)
+    //sve adrese koje pripadaju odredjenoj drzavi(name)
     @Query(value = "select address from Address address " +
             "join address.neighborhood neighborhood " +
             "join neighborhood.city city " +
             "join city.country country where country.name like :name%")
     List<Address> getAllInCountryByName(@Param("name") String name);
 
-    //sve adrese koje pripadaju drzavi(po short codu drzave)
+    //sve adrese koje pripadaju drzavi(short_code)
     @Query(value = "select address from Address address " +
             "join address.neighborhood neighborhood " +
             "join neighborhood.city city " +

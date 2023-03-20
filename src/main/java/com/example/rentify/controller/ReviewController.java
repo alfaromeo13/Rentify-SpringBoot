@@ -1,7 +1,6 @@
 package com.example.rentify.controller;
 
 import com.example.rentify.dto.ReviewApartmentDTO;
-import com.example.rentify.dto.ReviewDTO;
 import com.example.rentify.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

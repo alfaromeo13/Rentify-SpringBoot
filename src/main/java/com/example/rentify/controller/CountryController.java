@@ -1,6 +1,5 @@
 package com.example.rentify.controller;
 
-import com.example.rentify.dto.CityDTO;
 import com.example.rentify.dto.CountryDTO;
 import com.example.rentify.service.CountryService;
 import lombok.RequiredArgsConstructor;

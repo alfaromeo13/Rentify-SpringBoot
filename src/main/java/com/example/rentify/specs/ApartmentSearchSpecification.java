@@ -5,23 +5,38 @@ import com.example.rentify.search.ApartmentSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.FetchType;
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 public class ApartmentSearchSpecification implements Specification<Apartment> {
-
+    private final List<Integer> ids;
     private final ApartmentSearch apartmentSearch;
 
     @Override
     public Predicate toPredicate(Root<Apartment> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicateList = new ArrayList<>();
+        if (!query.getResultType().equals(Long.class)) {
+            root.fetch("address");
+            root.fetch("user");
+            root.fetch("images");
+            root.fetch("apartmentAttributes");
+            //mapper makes get request in background for us
+        }
+
         Join<Apartment, Address> addressJoin = root.join("address", JoinType.LEFT);
         Join<Address, Neighborhood> neighborhoodJoin = addressJoin.join("neighborhood");
         Join<Neighborhood, City> cityJoin = neighborhoodJoin.join("city");
         Join<City, Country> countryJoin = cityJoin.join("country");
         Join<Apartment, User> userJoin = root.join("user", JoinType.LEFT);
+
+        //filterByApartmentsIDs
+        if (ids != null && !ids.isEmpty()) {
+            Predicate apartmentIdPredicate = root.get("id").in(ids);
+            predicateList.add(apartmentIdPredicate);
+        }
 
         filterById(root, criteriaBuilder, predicateList);
         filterByPrice(root, criteriaBuilder, predicateList);

@@ -20,7 +20,7 @@ public class CityService {
     private final CityMapper cityMapper;
     private final CityRepository cityRepository;
 
-    @Cacheable(value = "cities", key = "#name")
+    @Cacheable(value = "cityCountry", key = "#name")
     public List<CityWithCountryDTO> findByName(String name) {
         log.info("Cache miss..Getting data from database.");
         List<City> cities = cityRepository.findByNameStartingWith(name);

@@ -7,9 +7,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -67,23 +65,23 @@ public class Apartment {
     @JsonBackReference
     @JoinColumn(name = "address_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Address address;
+    private Address address; //
 
     @ToString.Exclude
     @JsonManagedReference
-    @OneToMany(mappedBy = "apartment")
+    @OneToMany(mappedBy = "apartment") //
     private List<ApartmentAttribute> apartmentAttributes = new ArrayList<>();
 
     @ToString.Exclude
     @JsonBackReference
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private User user;//
 
     @ToString.Exclude
     @JsonManagedReference
     @OneToMany(mappedBy = "apartment")
-    private List<Review> reviews = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();//<- separate controller and service
 
     @ToString.Exclude
     @JsonManagedReference
@@ -93,5 +91,5 @@ public class Apartment {
     @ToString.Exclude
     @JsonManagedReference
     @OneToMany(mappedBy = "apartment")
-    private List<Image> images = new ArrayList<>();
+    private Set<Image> images = new HashSet<>();
 }

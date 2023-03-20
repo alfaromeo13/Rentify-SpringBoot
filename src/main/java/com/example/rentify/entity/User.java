@@ -79,13 +79,13 @@ public class User {
 
     @ToString.Exclude
     @JsonManagedReference
-    @OneToMany(mappedBy = "user1") //treba li mi???
-    private List<Conversation> user1 = new ArrayList<>();
+    @OneToMany(mappedBy = "user1")
+    private List<Conversation> sender = new ArrayList<>();
 
     @ToString.Exclude
     @JsonManagedReference
     @OneToMany(mappedBy = "user2") //second user is the one we talk to
-    private List<Conversation> user2 = new ArrayList<>();
+    private List<Conversation> receiver = new ArrayList<>();
 
     @ToString.Exclude
     @JsonManagedReference

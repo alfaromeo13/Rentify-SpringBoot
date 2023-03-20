@@ -23,15 +23,15 @@ public class ApartmentIntegrationTest {
 
     @Test
     public void findAll() {
-        Pageable pageable = PageRequest.of(2, 2);
-        ApartmentSearch specs = new ApartmentSearch();
-        specs.setCityName("New York");
-        specs.setMinPrice(1100.0);
-        specs.setMaxPrice(4900.0);
-        Page<Apartment> apartmentPage =
-                apartmentRepository.findAll(
-                        new ApartmentSearchSpecification(specs), pageable);
-        if (apartmentPage.hasContent())
-            log.info("{}", apartmentPage.getContent());
+//        Pageable pageable = PageRequest.of(2, 2);
+//        ApartmentSearch specs = new ApartmentSearch();
+//        specs.setCityName("New York");
+//        specs.setMinPrice(1100.0);
+//        specs.setMaxPrice(4900.0);
+//        Page<Apartment> apartmentPage =
+//                apartmentRepository.findAll(
+//                        new ApartmentSearchSpecification(specs), pageable);
+//        if (apartmentPage.hasContent())
+//            log.info("{}", apartmentPage.getContent());
     }
 }

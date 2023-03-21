@@ -19,31 +19,31 @@ public class AddressIntegrationTest {
 
     @Test
     public void getAddressesByPostalCodeTest() {
-        List<Address> addresses = addressRepository.getByCode("81000");
+        List<Address> addresses = addressRepository.findByCode("81000");
         log.info("{}", addresses);
     }
 
     @Test
     public void getAllAddressesInSpecificNeighbourhoodTest() {
-        List<Address> addresses = addressRepository.getAllInNeighborhood("Manhattan");
+        List<Address> addresses = addressRepository.findAllInNeighborhood("Manhattan");
         log.info("{}", addresses);
     }
 
     @Test
     public void getAllAddressesInSpecificCityTest() {
-        List<Address> addresses = addressRepository.getAllInCity("Pod");
+        List<Address> addresses = addressRepository.findAllInCity("Pod");
         log.info("{}", addresses);
     }
 
     @Test
     public void getAllAddressesInCountryByNameTest() {
-        List<Address> addresses = addressRepository.getAllInCountryByName("Mont");
+        List<Address> addresses = addressRepository.findAllInCountryByName("Mont");
         log.info("{}", addresses);
     }
 
     @Test
     public void getAllAddressesInCountryByCodeTest() {
-        List<Address> addresses = addressRepository.getAllInCountryByCode("ME");
+        List<Address> addresses = addressRepository.findAllInCountryByCode("ME");
         log.info("{}", addresses);
     }
 }

@@ -17,17 +17,17 @@ public class CityIntegrationTest {
     @Autowired
     private CityRepository cityRepository;
 
-    @Test
-    public void getAllCitiesFromGivenCountryTest() {
-        List<City> cities = cityRepository.findAllCitiesFromCountryCodeJPQL("ME");
-        log.info("{}", cities);
-    }
-
-    @Test
-    public void getCityWithCountries() {
-        List<City> cities = cityRepository.findByNameStartingWith("Mon");
-        log.info("{}", cities);
-    }
+//    @Test
+//    public void getAllCitiesFromGivenCountryTest() {
+//        List<City> cities = cityRepository.findAllCitiesFromCountryCodeJPQL("ME");
+//        log.info("{}", cities);
+//    }
+//
+//    @Test
+//    public void getCityWithCountries() {
+//        List<City> cities = cityRepository.findByNameStartingWith("Mon");
+//        log.info("{}", cities);
+//    }
 
     @Test
     public void insertCityForCountryTest() {

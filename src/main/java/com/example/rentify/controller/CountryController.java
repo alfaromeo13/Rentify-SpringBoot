@@ -21,14 +21,14 @@ public class CountryController {
     @GetMapping("by-country-code") //GET http://localhost:8080/api/country/by-country-code?code=ME
     public ResponseEntity<List<CountryDTO>> findByCode(@RequestParam("code") String code) {
         List<CountryDTO> countries = countryService.findByShortCode(code);
-        log.info("Cities : {} ", countries);
+        log.info("Countries : {} ", countries);
         return new ResponseEntity<>(countries, HttpStatus.OK);
     }
 
     @GetMapping("by-country-name") //GET http://localhost:8080/api/country/by-country-name?name=Mon
     public ResponseEntity<List<CountryDTO>> findByNameStartingWith(@RequestParam("name") String name) {
         List<CountryDTO> countries = countryService.findByNameStartingWith(name);
-        log.info("Cities : {} ", countries);
+        log.info("Countries : {} ", countries);
         return new ResponseEntity<>(countries, HttpStatus.OK);
     }
 }

@@ -62,9 +62,8 @@ public class User {
     // also we said that the field can be null,meaning if someone inserts this object in database
     // without these 2 fields,the default values will be set for them
 
-    @ToString.Exclude
-    @JsonManagedReference
     @ManyToMany
+    @ToString.Exclude
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(
             name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))

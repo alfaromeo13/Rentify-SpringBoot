@@ -37,7 +37,7 @@ public class UserService {
     }
 
     public UserWithRolesDTO findWithRoles(Integer id) {
-        User user = userRepository.userWithRoles(id);
+        User user = userRepository.findUserWithRoles(id);
         return userMapper.toDTO(user);
     }
 }

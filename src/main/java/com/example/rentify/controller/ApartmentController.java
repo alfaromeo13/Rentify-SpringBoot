@@ -21,11 +21,12 @@ public class ApartmentController {
 
     private final ApartmentService apartmentService;
 
-    //GET http://localhost:8080/api/apartment/pageable-search?page=0&size=4&sort=title,asc&cityName=New York&minPrice=1100&maxPrice=4900
-    //or GET http://localhost:8080/api/apartment/pageable-search?page=0&size=2&cityName=New York&addressStreet=Broadway
+    //ex.
+    //1) GET http://localhost:8080/api/apartment/pageable-search?page=0&size=2&cityName=New York&addressStreet=Broadway
+    //2) GET http://localhost:8080/api/apartment/pageable-search?page=0&size=4&sort=title,asc&cityName=New York&minPrice=1100&maxPrice=4900
     @GetMapping("pageable-search")
-    public ResponseEntity<List<ApartmentDTO>> search(ApartmentSearch params,Pageable pageable) {
-        List<ApartmentDTO> apartments = apartmentService.search(pageable, new ApartmentSearchSpecification(null,params),params);
+    public ResponseEntity<List<ApartmentDTO>> search(ApartmentSearch params, Pageable pageable) {
+        List<ApartmentDTO> apartments = apartmentService.search(pageable, new ApartmentSearchSpecification(null, params), params);
         return new ResponseEntity<>(apartments, HttpStatus.OK);
     }
 

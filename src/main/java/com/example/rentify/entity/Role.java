@@ -26,10 +26,4 @@ public class Role {
 
     @Column
     private String name;
-
-    @ToString.Exclude
-    @JsonBackReference
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users = new ArrayList<>();
-    //join instruction defined on 'roles' field inside User entity
 }

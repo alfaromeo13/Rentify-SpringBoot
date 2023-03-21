@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "select user from User user join fetch user.roles where user.id = :id")
-    User userWithRoles(@Param("id") Integer id);
+    User findUserWithRoles(@Param("id") Integer id);
 }

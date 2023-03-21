@@ -62,7 +62,7 @@ public class UserIntegrationTest {
 
     @Test
     public void getUserWithRoles() {
-        User user = userRepository.userWithRoles(8);
+        User user = userRepository.findUserWithRoles(8);
         log.info("{}", user);
     }
 
@@ -93,7 +93,7 @@ public class UserIntegrationTest {
 
     @Test
     public void addAnotherRoleToExistingUserTest() {
-        User user = userRepository.userWithRoles(8);
+        User user = userRepository.findUserWithRoles(8);
         Role role = roleRepository.findById(3).orElse(null);
         user.addRole(role);
         userRepository.save(user);
@@ -101,7 +101,7 @@ public class UserIntegrationTest {
 
     @Test
     public void removeRoleFromExistingUserTest() {
-        User user = userRepository.userWithRoles(8);
+        User user = userRepository.findUserWithRoles(8);
         user.removeRoleById(3);
         userRepository.save(user);
     }

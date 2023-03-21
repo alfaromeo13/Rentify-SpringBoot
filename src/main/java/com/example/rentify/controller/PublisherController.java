@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublisherController {
 
     private final ChannelTopic topic;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     //naziv bean-a kojeg injectujemo mora da
     // bude siti kao naziv beana u config klasi
     // a taj bean dobija naziv po nazivu nejgove metode u toj klasi

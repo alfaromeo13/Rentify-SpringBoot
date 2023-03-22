@@ -1,4 +1,4 @@
-package com.example.rentify.controller;
+package com.example.rentify.publisher;
 
 import com.example.rentify.dto.MessageDTO;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class PublisherController {
+public class PublishMessageController {
 
     private final ChannelTopic topic;
     private final RedisTemplate<String, Object> redisTemplate;
-    //naziv bean-a kojeg injectujemo mora da
+    // naziv bean-a kojeg injectujemo mora da
     // bude siti kao naziv beana u config klasi
     // a taj bean dobija naziv po nazivu nejgove metode u toj klasi
 

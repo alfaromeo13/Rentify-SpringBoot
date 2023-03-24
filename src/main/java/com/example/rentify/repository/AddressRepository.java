@@ -12,7 +12,7 @@ import java.util.List;
 public interface AddressRepository extends JpaRepository<Address, Integer> {
     //sve adrese koje pripadaju naselju sa odredjenim nazivom
     @Query(value = "select address from Address address " +
-            "join address.neighborhood neighborhood where neighborhood.name like :name%")
+            "join address.neighborhood neighborhood where neighborhood.name like concat(:name,'%')")
     List<Address> findAllInNeighborhood(@Param("name") String neighborhoodName);
 
     // sve adrese po odredjenom postanskom broju
@@ -22,20 +22,20 @@ public interface AddressRepository extends JpaRepository<Address, Integer> {
     //sve adrese koje pripadaju gradu sa odredjenim nazivom
     @Query(value = "select address from Address address " +
             "join address.neighborhood neighborhood " +
-            "join neighborhood.city city where city.name like :name%")
+            "join neighborhood.city city where city.name like concat(:name,'%')")
     List<Address> findAllInCity(@Param("name") String cityName);
 
     //sve adrese koje pripadaju odredjenoj drzavi(name)
     @Query(value = "select address from Address address " +
             "join address.neighborhood neighborhood " +
             "join neighborhood.city city " +
-            "join city.country country where country.name like :name%")
+            "join city.country country where country.name like concat(:name,'%')")
     List<Address> findAllInCountryByName(@Param("name") String name);
 
     //sve adrese koje pripadaju drzavi(short_code)
     @Query(value = "select address from Address address " +
             "join address.neighborhood neighborhood " +
             "join neighborhood.city city " +
-            "join city.country country where country.shortCode like :code%")
+            "join city.country country where country.shortCode like concat(:code, '%')")
     List<Address> findAllInCountryByCode(@Param("code") String shortCode);
 }

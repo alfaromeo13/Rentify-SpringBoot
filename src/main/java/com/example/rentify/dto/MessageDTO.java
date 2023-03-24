@@ -10,6 +10,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageDTO implements Serializable {
+    private Integer id;
     private String message;
-    //...map all
+    private Integer senderId;
+    private Integer receiverId;
+    private Integer conversationId;//important
 }

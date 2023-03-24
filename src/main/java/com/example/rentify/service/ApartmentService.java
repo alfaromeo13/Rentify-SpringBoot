@@ -2,7 +2,11 @@ package com.example.rentify.service;
 
 import com.example.rentify.dto.ApartmentDTO;
 import com.example.rentify.entity.Apartment;
+import com.example.rentify.entity.ApartmentAttribute;
+import com.example.rentify.mapper.ApartmentAttributeMapper;
 import com.example.rentify.mapper.ApartmentMapper;
+import com.example.rentify.mapper.AttributeMapper;
+import com.example.rentify.repository.ApartmentAttributeRepository;
 import com.example.rentify.repository.ApartmentRepository;
 import com.example.rentify.search.ApartmentSearch;
 import com.example.rentify.specs.ApartmentSearchSpecification;
@@ -24,6 +28,7 @@ public class ApartmentService {
 
     private final ApartmentMapper apartmentMapper;
     private final ApartmentRepository apartmentRepository;
+    private final ApartmentAttributeRepository apartmentAttributeRepository;
 
     public List<ApartmentDTO> search(Pageable pageable, ApartmentSearchSpecification apartmentSearchSpecification, ApartmentSearch params) {
         Page<Apartment> apartmentsPage = apartmentRepository.findAll(apartmentSearchSpecification, pageable);
@@ -36,8 +41,13 @@ public class ApartmentService {
         //hibernate calls toPredicate which generates where... and passes it to query
     }
 
+    //@CacheEvict cemo da radimo
     public void save(ApartmentDTO apartmentDTO) {
-        apartmentRepository.save(apartmentMapper.toEntity(apartmentDTO));
+        //our apartment when saved has an 'id' given by db.
+        Apartment apartment = apartmentRepository.save(
+                apartmentMapper.toEntity(apartmentDTO));
+        apartment.getApartmentAttributes().forEach(at -> at.setApartment(apartment));
+        apartmentAttributeRepository.saveAll(apartment.getApartmentAttributes());
     }
 
     public Boolean update(Integer id, ApartmentDTO apartmentDTO) {

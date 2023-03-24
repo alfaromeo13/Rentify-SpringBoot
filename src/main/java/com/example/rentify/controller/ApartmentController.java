@@ -21,7 +21,6 @@ public class ApartmentController {
 
     private final ApartmentService apartmentService;
 
-    //ex.
     //1) GET http://localhost:8080/api/apartment/pageable-search?page=0&size=2&cityName=New York&addressStreet=Broadway
     //2) GET http://localhost:8080/api/apartment/pageable-search?page=0&size=4&sort=title,asc&cityName=New York&minPrice=1100&maxPrice=4900
     @GetMapping("pageable-search")
@@ -53,70 +52,61 @@ public class ApartmentController {
     }
 
     /*JSON example for POST
-    {
-    "title":"test123",
-    "description":"neki opis",
-    "sqMeters":123,
-    "price":122,
-    "numOfBedrooms":3,
-    "numOfBathrooms":2,
-    "number": "+3838676878",
-    "user":{
-        "id":12,
-        "firstName":"Marko",
-        "lastName":"Vukovic",
-        "email":"bula20@gmail.com",
-        "username":"bula12345!"
-    },
-    "address":{
-        "id":36,
-        "street":"Broadway",
-        "number":"789",
-        "code":"12345"
-    },
-    "images":[
-        {
-            "id":1
+      {
+        "title": "test123",
+        "description": "neki opis",
+        "sqMeters": 123,
+        "price": 122,
+        "numOfBedrooms": 3,
+        "numOfBathrooms": 2,
+        "number": "+3838676878",
+        "user": {
+            "id": 12,
+            "firstName": "Marko",
+            "lastName": "Vukovic",
+            "email": "bula20@gmail.com",
+            "username": "bula12345!"
         },
-        {
-            "id":2
+        "address": {
+            "id": 36,
+            "street": "Broadway",
+            "number": "789",
+            "code": "12345"
         },
-        {
-            "id":2
-        }
-    ],
-    "apartmentAttributes": [
+        "images": [
             {
-                "attribute": {
-                    "name": "Air Conditioning"
-                },
-                "attributeValue": "Central"
+                "id": 1
             },
             {
+                "id": 2
+            },
+            {
+                "id": 2
+            }
+        ],
+        "apartmentAttributes": [
+            {
+                "id": 2,
                 "attribute": {
                     "name": "Balcony"
                 },
                 "attributeValue": "Yes"
             },
             {
+                "id": 1,
                 "attribute": {
-                    "name": "Gym"
+                    "name": "Air Conditioning"
                 },
-                "attributeValue": "No"
+                "attributeValue": "Central"
             },
             {
+                "id": 4,
                 "attribute": {
                     "name": "Parking"
                 },
                 "attributeValue": "Underground"
-            },
-            {
-                "attribute": {
-                    "name": "Swimming Pool"
-                },
-                "attributeValue": "Yes"
             }
         ]
-}
+    }
      */
 }

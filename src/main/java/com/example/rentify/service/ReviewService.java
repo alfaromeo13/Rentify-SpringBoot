@@ -8,7 +8,7 @@ import com.example.rentify.mapper.ReviewMapper;
 import com.example.rentify.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +26,8 @@ public class ReviewService {
     private final ReviewMapper reviewMapper;
     private final ReviewRepository reviewRepository;
 
+    //we also use Redis for caching
+    @CacheEvict(value = "reviews", allEntries = true)
     public void save(ReviewApartmentDTO reviewApartmentDTO) {
         Review review = reviewMapper.toEntity(reviewApartmentDTO);
         Apartment apartment = new Apartment();
@@ -34,15 +36,7 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-    @Cacheable(value = "reviews", key = "#id")
-    public List<ReviewDTO> findByApartmentId(Integer id, Pageable pageable) {
-        Page<Review> reviews = reviewRepository.findReviewsByApartmentId(id, pageable);
-        return reviews.hasContent() ?
-                reviewMapper.toDTOList(reviews.getContent()) :
-                Collections.emptyList();
-    }
-
-    @CachePut(value = "reviews", key = "#id")
+    @CacheEvict(value = "reviews", allEntries = true)
     public Boolean delete(Integer id) {
         Optional<Review> reviewOptional = reviewRepository.findById(id);
         if (reviewOptional.isPresent()) {
@@ -53,7 +47,7 @@ public class ReviewService {
         } else return false;
     }
 
-    @CachePut(value = "reviews", key = "#reviewApartmentDTO.id")
+    @CacheEvict(value = "reviews", allEntries = true)
     public Boolean update(Integer id, ReviewApartmentDTO reviewApartmentDTO) {
         boolean reviewExists = reviewRepository.existsById(id);
         if (reviewExists) {
@@ -62,5 +56,13 @@ public class ReviewService {
             save(reviewApartmentDTO);
             return true;
         } else return false;
+    }
+
+    @Cacheable(value = "reviews", key = "#id + ':' + #pageable.toString()")
+    public List<ReviewDTO> findByApartmentId(Integer id, Pageable pageable) {
+        Page<Review> reviewsPage = reviewRepository.findReviewsByApartmentId(id, pageable);
+        return reviewsPage.hasContent() ?
+                reviewMapper.toDTOList(reviewsPage.getContent()) :
+                Collections.emptyList();
     }
 }

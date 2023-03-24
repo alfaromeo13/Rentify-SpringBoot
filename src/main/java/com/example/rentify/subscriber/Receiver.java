@@ -6,6 +6,7 @@ import org.springframework.data.redis.connection.MessageListener;
 
 @Slf4j
 public class Receiver implements MessageListener {
+    //with this class we are able to get messages that someone sent to us
     @Override
     public void onMessage(Message message, byte[] pattern) {
         log.info("Received a message {} from Topic: '{}'", message, new String(pattern));

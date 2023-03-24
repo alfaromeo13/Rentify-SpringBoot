@@ -1,5 +1,6 @@
 package com.example.rentify.entity;
 
+import com.example.rentify.dto.ApartmentDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
@@ -70,7 +71,7 @@ public class Apartment {
     @ToString.Exclude
     @JsonManagedReference
     @OneToMany(mappedBy = "apartment") //
-    private List<ApartmentAttribute> apartmentAttributes = new ArrayList<>();
+    private Set<ApartmentAttribute> apartmentAttributes = new HashSet<>();
 
     @ToString.Exclude
     @JsonBackReference

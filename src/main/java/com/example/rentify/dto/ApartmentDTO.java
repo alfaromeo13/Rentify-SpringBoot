@@ -4,7 +4,9 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,5 +29,5 @@ public class ApartmentDTO implements Serializable {
     private UserDTO user; //owner
     private AddressDTO address;
     private List<ImageDTO> images;
-    private List<ApartmentAttributeDTO> apartmentAttributes;
+    private Set<ApartmentAttributeDTO> apartmentAttributes = new HashSet<>();
 }

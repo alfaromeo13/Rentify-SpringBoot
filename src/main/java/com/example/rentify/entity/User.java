@@ -119,4 +119,13 @@ public class User {
         roles.stream().filter(role -> role.getId() == id)
                 .findFirst().ifPresent(role -> roles.remove(role));
     }
+
+    public void addFavouriteApartment(Apartment apartment) {
+        favoriteApartments.add(apartment);
+    }
+
+    public void removeFavouriteApartmentById(int id) {
+        favoriteApartments.stream().filter(apartment -> apartment.getId() == id)
+                .findFirst().ifPresent(apartment -> apartments.remove(apartment));
+    }
 }

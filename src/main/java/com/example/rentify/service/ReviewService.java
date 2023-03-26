@@ -58,6 +58,7 @@ public class ReviewService {
         } else return false;
     }
 
+    //with # we read param value and we cache it into RAM
     @Cacheable(value = "reviews", key = "#id + ':' + #pageable.toString()")
     public List<ReviewDTO> findByApartmentId(Integer id, Pageable pageable) {
         Page<Review> reviewsPage = reviewRepository.findReviewsByApartmentId(id, pageable);

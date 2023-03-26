@@ -12,6 +12,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class ApartmentSearchSpecification implements Specification<Apartment> {
+
     private final List<Integer> ids;
     private final ApartmentSearch apartmentSearch;
 
@@ -51,6 +52,8 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
         filterByCountryName(criteriaBuilder, predicateList, countryJoin);
         filterByUserId(criteriaBuilder, predicateList, userJoin);
 
+        query.distinct(true);
+
         //We return one predicate by combining all predicates with AND
         // which acts as the WHERE condition for query satisfaction"
         return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
@@ -86,7 +89,6 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
             Predicate addressStreetPredicate = criteriaBuilder.equal(
                     addressJoin.get("street"), apartmentSearch.getAddressStreet());
             predicateList.add(addressStreetPredicate);
-            //join Apartment.address ...
         }
     }
 

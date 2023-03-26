@@ -1,6 +1,5 @@
 package com.example.rentify.entity;
 
-import com.example.rentify.dto.ApartmentDTO;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;

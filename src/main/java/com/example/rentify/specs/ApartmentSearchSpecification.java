@@ -24,21 +24,28 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
             root.fetch("user");
             root.fetch("images");
             root.fetch("apartmentAttributes");
-            //mapper makes get request in background for us
+            //mapper makes get request in background for us when get() is called and therefore we first need to fetch
         }
+        if (ids != null && !ids.isEmpty()) {   //filterByApartmentsIDs
+            Predicate apartmentIdPredicate = root.get("id").in(ids);
+            predicateList.add(apartmentIdPredicate);
+        }
+        filter(root, criteriaBuilder, predicateList);
+        query.distinct(true);
+        //We return one predicate by combining all predicates with AND
+        // which acts as the WHERE condition for query satisfaction"
+        return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
+    }
 
+    private void filter(Root<Apartment> root, CriteriaBuilder criteriaBuilder, List<Predicate> predicateList) {
         Join<Apartment, Address> addressJoin = root.join("address", JoinType.LEFT);
         Join<Address, Neighborhood> neighborhoodJoin = addressJoin.join("neighborhood");
         Join<Neighborhood, City> cityJoin = neighborhoodJoin.join("city");
         Join<City, Country> countryJoin = cityJoin.join("country");
         Join<Apartment, User> userJoin = root.join("user", JoinType.LEFT);
-
-        //filterByApartmentsIDs
-        if (ids != null && !ids.isEmpty()) {
-            Predicate apartmentIdPredicate = root.get("id").in(ids);
-            predicateList.add(apartmentIdPredicate);
-        }
-
+        Join<Apartment, Rental> rentalJoin = root.join("rentals", JoinType.LEFT);
+        Join<Apartment, ApartmentAttribute> apartmentAttributesJoin = root
+                .join("apartmentAttributes", JoinType.LEFT);
         filterById(root, criteriaBuilder, predicateList);
         filterByPrice(root, criteriaBuilder, predicateList);
         filterByTitle(root, criteriaBuilder, predicateList);
@@ -51,16 +58,59 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
         filterByNumOfBedrooms(root, criteriaBuilder, predicateList);
         filterByCountryName(criteriaBuilder, predicateList, countryJoin);
         filterByUserId(criteriaBuilder, predicateList, userJoin);
-
-        query.distinct(true);
-
-        //We return one predicate by combining all predicates with AND
-        // which acts as the WHERE condition for query satisfaction"
-        return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
+        filterByAvailabilityDate(root, criteriaBuilder, predicateList, rentalJoin);
+        filterByAttribute(criteriaBuilder, predicateList, apartmentAttributesJoin
+                , "WiFi", apartmentSearch.getWiFi());
+        filterByAttribute(criteriaBuilder, predicateList, apartmentAttributesJoin,
+                "Air Conditioning", apartmentSearch.getAirConditioning());
+        filterByAttribute(criteriaBuilder, predicateList, apartmentAttributesJoin,
+                "Pool", apartmentSearch.getPool());
+        filterByAttribute(criteriaBuilder, predicateList, apartmentAttributesJoin,
+                "Furnished", apartmentSearch.getFurnished());
+        filterByAttribute(criteriaBuilder, predicateList, apartmentAttributesJoin,
+                "Balcony", apartmentSearch.getBalcony());
+        filterByAttribute(criteriaBuilder, predicateList, apartmentAttributesJoin,
+                "Pets Allowed", apartmentSearch.getPetsAllowed());
+        filterByAttribute(criteriaBuilder, predicateList, apartmentAttributesJoin,
+                "Parking", apartmentSearch.getParking());
+        filterByAttribute(criteriaBuilder, predicateList, apartmentAttributesJoin,
+                "Distance to public transport", apartmentSearch.getPublicTransportDist());
+        filterByAttribute(criteriaBuilder, predicateList, apartmentAttributesJoin,
+                "Appliances", apartmentSearch.getAppliances());
+        filterByAttribute(criteriaBuilder, predicateList, apartmentAttributesJoin,
+                "Elevator", apartmentSearch.getElevator());
     }
 
-    private void filterByUserId(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList, Join<Apartment, User> userJoin) {
-        //get all apartments for specific user
+    private void filterByAvailabilityDate(Root<Apartment> root, CriteriaBuilder criteriaBuilder,
+                                          List<Predicate> predicateList, Join<Apartment, Rental> rentalJoin) {
+        if (apartmentSearch.getAvailableFrom() != null) {
+            Predicate availableFromPredicate = criteriaBuilder.equal(
+                    rentalJoin.get("startDate"), apartmentSearch.getAvailableFrom());
+            predicateList.add(availableFromPredicate);
+        }
+        if (apartmentSearch.getAvailableTo() != null) {
+            Predicate availableToPredicate = criteriaBuilder.equal(
+                    root.get("endDate"), apartmentSearch.getAvailableTo());
+            predicateList.add(availableToPredicate);
+        }
+    }
+
+    private void filterByAttribute(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,
+                                   Join<Apartment, ApartmentAttribute> apartmentAttributesJoin,
+                                   String attributeName, String attributeValue) {
+        if (attributeValue != null) {
+            Predicate attributePredicate = criteriaBuilder.equal(
+                    apartmentAttributesJoin.get("attribute"), new Attribute(attributeName));
+            predicateList.add(attributePredicate);
+            Predicate attributeValuePredicate = criteriaBuilder.equal(
+                    apartmentAttributesJoin.get("attributeValue"), attributeValue);
+            predicateList.add(attributeValuePredicate);
+        }
+    }
+
+    private void filterByUserId(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,
+                                Join<Apartment, User> userJoin) {
+        //get all apartments for specific user(when user logs and want to check his apartments)
         if (apartmentSearch.getUserId() != null) {
             Predicate userIdPredicate = criteriaBuilder.equal(
                     userJoin.get("id"), apartmentSearch.getUserId());
@@ -75,7 +125,8 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
         }
     }
 
-    private void filterByCountryName(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList, Join<City, Country> countryJoin) {
+    private void filterByCountryName(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,
+                                     Join<City, Country> countryJoin) {
         if (apartmentSearch.getCountryName() != null) {
             Predicate countryNamePredicate = criteriaBuilder.like(
                     countryJoin.get("name"), apartmentSearch.getCountryName() + "%");

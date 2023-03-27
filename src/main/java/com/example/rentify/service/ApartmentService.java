@@ -8,6 +8,7 @@ import com.example.rentify.mapper.ApartmentMapper;
 import com.example.rentify.mapper.AttributeMapper;
 import com.example.rentify.repository.ApartmentAttributeRepository;
 import com.example.rentify.repository.ApartmentRepository;
+import com.example.rentify.repository.ImageRepository;
 import com.example.rentify.search.ApartmentSearch;
 import com.example.rentify.specs.ApartmentSearchSpecification;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class ApartmentService {
 
     private final ApartmentMapper apartmentMapper;
+    private final ImageRepository imageRepository;
     private final ApartmentRepository apartmentRepository;
     private final ApartmentAttributeRepository apartmentAttributeRepository;
 
@@ -43,11 +45,13 @@ public class ApartmentService {
 
     //@CacheEvict cemo da radimo
     public void save(ApartmentDTO apartmentDTO) {
-        //our apartment when saved has an 'id' given by db.
+        //our apartment when saved has an 'id' given by db. table and we need it!
         Apartment apartment = apartmentRepository.save(
                 apartmentMapper.toEntity(apartmentDTO));
         apartment.getApartmentAttributes().forEach(at -> at.setApartment(apartment));
         apartmentAttributeRepository.saveAll(apartment.getApartmentAttributes());
+        apartment.getImages().forEach(im -> im.setApartment(apartment));
+        imageRepository.saveAll(apartment.getImages());
     }
 
     public Boolean update(Integer id, ApartmentDTO apartmentDTO) {

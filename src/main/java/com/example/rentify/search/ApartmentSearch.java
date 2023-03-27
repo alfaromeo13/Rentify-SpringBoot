@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -25,16 +28,18 @@ public class ApartmentSearch {
     private String neighborhoodName;//search for apartments by specific neighborhoods //
     private String cityName;//
     private String countryName; //
-    private String availabilityDate;
-    private Integer userId;//
+    private Integer userId;//we get all apartments for specific user.When user logs in he wants a list of apartments he owns
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date availableFrom, availableTo;// filters available apartments for that period
     //attributes:
-    private Boolean parking;
-    private Boolean petsAllowed;
-    private Boolean balcony;
-    private Boolean airConditioning;
-    private Boolean furnished;
-    private Boolean wiFi;
-    private Boolean elevator;
-    private Integer distanceToPublicTransport;//Allow users to filter apartments by their proximity to public transportation options, such as bus stops or subway stations.
-    private Boolean appliances; //" These are all common household appliances that are commonly found in kitchens, and are used for cooking, baking, and storing food.
+    private String parking;//
+    private String petsAllowed;//
+    private String balcony;//
+    private String pool;//
+    private String airConditioning;//
+    private String furnished;//
+    private String wiFi;//
+    private String elevator;//
+    private String publicTransportDist; // Allow users to filter apartments by their proximity to public transportation options, such as bus stops or subway stations.
+    private String appliances; // These are all common household appliances that are commonly found in kitchens, and are used for cooking, baking, and storing food.
 }

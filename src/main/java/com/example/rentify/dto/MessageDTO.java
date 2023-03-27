@@ -14,5 +14,5 @@ public class MessageDTO implements Serializable {
     private String message;
     private Integer senderId;
     private Integer receiverId;
-    private Integer conversationId;//important
+    private Integer conversationId;// important!
 }

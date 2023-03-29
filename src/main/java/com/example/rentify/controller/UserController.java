@@ -1,9 +1,6 @@
 package com.example.rentify.controller;
 
-import com.example.rentify.dto.ApartmentDTO;
-import com.example.rentify.dto.RoleDTO;
-import com.example.rentify.dto.UserDTO;
-import com.example.rentify.dto.UserWithRolesDTO;
+import com.example.rentify.dto.*;
 import com.example.rentify.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +19,20 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("{id}") //GET http://localhost:8080/api/user/2
+    public ResponseEntity<FullUserDTO> find(@PathVariable Integer id) {
+        FullUserDTO user = userService.find(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    //update user(samo njegove informacije,a za update stana ima ApartmentController)
+    @PutMapping("{id}") //PUT http://localhost:8080/api/user/2
+    public ResponseEntity<Void> update(@PathVariable Integer id, @RequestBody UserDTO userDTO) {
+        log.info("Updating user with id : {} ", id);
+        boolean updated = userService.update(id, userDTO);
+        return new ResponseEntity<>(updated ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
+
     /*{"firstName":"Jovan","lastName": "Vukovic","email":"bula20@gmail.com",
        "username":"bula12345!","password":"`1212344312134"} */
     @PostMapping //POST http://localhost:8080/api/user
@@ -30,6 +41,13 @@ public class UserController {
         log.info("Storing user : {} ", userDTO);
         userService.save(userDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("{id}") //DELETE http://localhost:8080/api/user/9
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
+        log.info("Deleting user with id: {} ", id);
+        boolean deleted = userService.delete(id);
+        return new ResponseEntity<>(deleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     //{"id":3, "name":"admin"}
@@ -43,7 +61,7 @@ public class UserController {
     //{"id":3, "name":"admin"}
     @PutMapping("{id}/delete-role") //PUT http://localhost:8080/api/user/10/delete-role
     public ResponseEntity<Void> deleteUserRole(@PathVariable Integer id, @RequestBody RoleDTO roleDTO) {
-        boolean deleted = userService.deleteRole(id, roleDTO);
+        boolean deleted = userService.deleteRoleForUser(id, roleDTO);
         log.info("Deleting a role to user with id: {}", id);
         return new ResponseEntity<>(deleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
@@ -53,13 +71,6 @@ public class UserController {
         UserWithRolesDTO user = userService.findWithRoles(id);
         log.info("User : {} ", user);
         return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
-    @DeleteMapping("{id}") //DELETE http://localhost:8080/api/user/9
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        log.info("Deleting user with id: {} ", id);
-        boolean deleted = userService.delete(id);
-        return new ResponseEntity<>(deleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     //POST http://localhost:8080/api/user/for-user/9/add-fav-apartment/3
@@ -76,7 +87,7 @@ public class UserController {
     public ResponseEntity<Void> deleteFavourite(@PathVariable("user-id") Integer userId,
                                                 @PathVariable("apartment-id") Integer apartmentId) {
         log.info("For user with id:{} deleting favourite apartment with id: {} ", userId, apartmentId);
-        boolean deleted = userService.deleteFavApartment(userId, apartmentId);
+        boolean deleted = userService.deleteFavourites(userId, apartmentId);
         return new ResponseEntity<>(deleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
@@ -88,17 +99,11 @@ public class UserController {
         return new ResponseEntity<>(apartments, HttpStatus.OK);
     }
 
-    //update user
-
-    //get by user id
-
     //get all users with paging(this is important for admin)
-
-    //get rentals(kome si sto izdao i sl)
-
-    //add rental
-
-    //update rental
-
-    //delete rental
+    @GetMapping("all-users") //GET http://localhost:8080/api/user/all-users?page=0&size=5
+    public ResponseEntity<List<UserDTO>> findAll(Pageable pageable) {
+        List<UserDTO> users = userService.findAll(pageable);
+        log.info("Users with page : {} ", users);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
 }

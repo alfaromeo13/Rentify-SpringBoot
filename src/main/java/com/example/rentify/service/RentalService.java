@@ -2,11 +2,11 @@ package com.example.rentify.service;
 
 import com.example.rentify.dto.RentalDTO;
 import com.example.rentify.entity.Rental;
-import com.example.rentify.entity.Review;
 import com.example.rentify.mapper.RentalMapper;
 import com.example.rentify.repository.RentalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +19,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@CacheEvict(value = "rentals", allEntries = true)
 public class RentalService {
 
     private final RentalMapper rentalMapper;

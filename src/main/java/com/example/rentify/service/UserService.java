@@ -1,19 +1,19 @@
 package com.example.rentify.service;
 
-import com.example.rentify.dto.ApartmentDTO;
-import com.example.rentify.dto.RoleDTO;
-import com.example.rentify.dto.UserDTO;
-import com.example.rentify.dto.UserWithRolesDTO;
+import com.example.rentify.dto.*;
 import com.example.rentify.entity.Apartment;
+import com.example.rentify.entity.Message;
 import com.example.rentify.entity.Role;
 import com.example.rentify.entity.User;
 import com.example.rentify.mapper.ApartmentMapper;
+import com.example.rentify.mapper.FullUserMapper;
 import com.example.rentify.mapper.RoleMapper;
 import com.example.rentify.mapper.UserMapper;
 import com.example.rentify.repository.ApartmentRepository;
 import com.example.rentify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,14 +29,47 @@ public class UserService {
 
     private final RoleMapper roleMapper;
     private final UserMapper userMapper;
+    private final FullUserMapper fullUserMapper;
     private final UserRepository userRepository;
     private final ApartmentMapper apartmentMapper;
     private final ApartmentRepository apartmentRepository;
 
+    @Cacheable(value = "user", key = "#id")
+    public FullUserDTO find(Integer id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            return fullUserMapper.toFullDTO(user);
+        } else return new FullUserDTO();
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
     public void save(UserDTO userDTO) {
         userRepository.save(userMapper.toEntity(userDTO));
     }
 
+    @CachePut(value = "user", key = "#id")
+    public Boolean update(Integer id, UserDTO userDTO) {
+        boolean userExists = userRepository.existsById(id);
+        if (userExists) {
+            userDTO.setId(id);
+            save(userDTO);
+            return true;
+        } else return false;
+    }
+
+    @CacheEvict(value = "user", key = "#id")
+    public Boolean delete(Integer id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setIsActive(false);
+            userRepository.save(user);
+            return true;
+        } else return false;
+    }
+
+    @CachePut(value = "user-roles", key = "#id")
     public Boolean addRole(Integer id, RoleDTO roleDTO) { //id is user's id
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
@@ -48,7 +81,8 @@ public class UserService {
         } else return false;
     }
 
-    public Boolean deleteRole(Integer id, RoleDTO roleDTO) {
+    @CachePut(value = "user-roles", key = "#id")
+    public Boolean deleteRoleForUser(Integer id, RoleDTO roleDTO) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -58,25 +92,13 @@ public class UserService {
         } else return false;
     }
 
+    @Cacheable(value = "user-roles", key = "#id")
     public UserWithRolesDTO findWithRoles(Integer id) {
-        User user = userRepository.findUserWithRoles(id);
-        return userMapper.toDTO(user);
+        return userMapper.toDTO(userRepository.findUserWithRoles(id));
     }
 
     @CacheEvict(value = "favourite", allEntries = true)
-    //izbrisi i favourite i sve sto ima ukesirano
-    public Boolean delete(Integer id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setIsActive(false);
-            userRepository.save(user);
-            return true;
-        } else return false;
-    }
-
-    @CacheEvict(value = "favourite", allEntries = true)
-    public boolean addFavourites(Integer userId, Integer apartmentId) {
+    public Boolean addFavourites(Integer userId, Integer apartmentId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -88,7 +110,7 @@ public class UserService {
     }
 
     @CacheEvict(value = "favourite", allEntries = true)
-    public Boolean deleteFavApartment(Integer userId, Integer apartmentId) {
+    public Boolean deleteFavourites(Integer userId, Integer apartmentId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -103,6 +125,14 @@ public class UserService {
         Page<Apartment> apartmentsPage = userRepository.favouriteApartmentsForUserById(id, pageable);
         return apartmentsPage.hasContent() ?
                 apartmentMapper.toDTOList(apartmentsPage.getContent()) :
+                Collections.emptyList();
+    }
+
+    @Cacheable(value = "users", key = "#pageable.toString()")
+    public List<UserDTO> findAll(Pageable pageable) {
+        Page<User> usersPage = userRepository.findAll(pageable);
+        return usersPage.hasContent() ?
+                userMapper.toDTOList(usersPage.getContent()) :
                 Collections.emptyList();
     }
 }

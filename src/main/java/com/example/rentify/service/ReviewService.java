@@ -21,13 +21,13 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@CacheEvict(value = "reviews", allEntries = true)
 public class ReviewService {
 
     private final ReviewMapper reviewMapper;
     private final ReviewRepository reviewRepository;
 
     //we also use Redis for caching
-    @CacheEvict(value = "reviews", allEntries = true)
     public void save(ReviewApartmentDTO reviewApartmentDTO) {
         Review review = reviewMapper.toEntity(reviewApartmentDTO);
         Apartment apartment = new Apartment();
@@ -36,7 +36,6 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-    @CacheEvict(value = "reviews", allEntries = true)
     public Boolean delete(Integer id) {
         Optional<Review> reviewOptional = reviewRepository.findById(id);
         if (reviewOptional.isPresent()) {
@@ -47,7 +46,6 @@ public class ReviewService {
         } else return false;
     }
 
-    @CacheEvict(value = "reviews", allEntries = true)
     public Boolean update(Integer id, ReviewApartmentDTO reviewApartmentDTO) {
         boolean reviewExists = reviewRepository.existsById(id);
         if (reviewExists) {

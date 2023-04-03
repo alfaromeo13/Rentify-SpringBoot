@@ -32,7 +32,7 @@ public class ApartmentService {
     private final ApartmentAttributeRepository apartmentAttributeRepository;
 
     public List<ApartmentDTO> search(Pageable pageable, ApartmentSearch params) {
-        Filter filter = new Filter(params);
+        Filter filter = new Filter(params); // mozda da napravim bean??
         Page<Apartment> apartmentsPage = apartmentRepository.findAll(new ApartmentIdSpecification(filter), pageable);
         if (apartmentsPage.hasContent()) { //ids are apartment ids
             List<Integer> ids = apartmentsPage.getContent().stream().map(Apartment::getId).collect(Collectors.toList());

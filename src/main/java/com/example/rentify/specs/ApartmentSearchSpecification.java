@@ -18,16 +18,20 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
     public Predicate toPredicate(Root<Apartment> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicateList = new ArrayList<>();
         if (!query.getResultType().equals(Long.class)) {
-            root.fetch("address");
-            root.fetch("user");
-            root.fetch("images");
-            root.fetch("apartmentAttributes");
-            //mapper makes get request in background for us when get() is called and therefore we first need to fetch
+            root.fetch("address", JoinType.LEFT);
+            root.fetch("user", JoinType.LEFT);
+            root.fetch("images", JoinType.LEFT);
+            root.fetch("apartmentAttributes", JoinType.LEFT);
+            // we know that at the end we want to return DTO class instead of Entity class
+            // When mapping entity class fields to dto class fields our mapper calls 'get()'
+            // method in background.Get() method will if that field is null make additional
+            // sql query to fetch that data .That is why we need to join fetch so that we don't
+            // make additional calls for those values.Instead we fetch them with response
         }
-        if (ids != null && !ids.isEmpty()) { //filterByApartmentsIDs
-            Predicate apartmentIdPredicate = root.get("id").in(ids);
-            predicateList.add(apartmentIdPredicate);
-        }
+
+//        if (ids != null && !ids.isEmpty())
+        predicateList.add(root.get("id").in(ids)); //filter by apartment id's pise se ovako? i treba li mi if
+
         filter.all(root, criteriaBuilder, predicateList);
         query.distinct(true);
         //We return one predicate by combining all predicates with AND

@@ -3,7 +3,6 @@ package com.example.rentify.controller;
 import com.example.rentify.dto.ApartmentDTO;
 import com.example.rentify.search.ApartmentSearch;
 import com.example.rentify.service.ApartmentService;
-import com.example.rentify.specs.ApartmentSearchSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;

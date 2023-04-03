@@ -14,9 +14,9 @@ public class Filter {
 
     public void all(Root<Apartment> root, CriteriaBuilder criteriaBuilder, List<Predicate> predicateList) {
         Join<Apartment, Address> addressJoin = root.join("address", JoinType.LEFT);
-        Join<Address, Neighborhood> neighborhoodJoin = addressJoin.join("neighborhood");
-        Join<Neighborhood, City> cityJoin = neighborhoodJoin.join("city");
-        Join<City, Country> countryJoin = cityJoin.join("country");
+        Join<Address, Neighborhood> neighborhoodJoin = addressJoin.join("neighborhood", JoinType.LEFT);
+        Join<Neighborhood, City> cityJoin = neighborhoodJoin.join("city", JoinType.LEFT);
+        Join<City, Country> countryJoin = cityJoin.join("country", JoinType.LEFT);
         Join<Apartment, User> userJoin = root.join("user", JoinType.LEFT);
         Join<Apartment, Rental> rentalJoin = root.join("rentals", JoinType.LEFT);
         filterById(root, criteriaBuilder, predicateList);
@@ -73,7 +73,7 @@ public class Filter {
         if (attributeValue != null) {
             Join<Apartment, ApartmentAttribute> apartmentAttributesJoin = root
                     .join("apartmentAttributes", JoinType.LEFT);
-            Join<ApartmentAttribute, Attribute> attributeJoin = apartmentAttributesJoin.join("attribute");
+            Join<ApartmentAttribute, Attribute> attributeJoin = apartmentAttributesJoin.join("attribute", JoinType.LEFT);
             Predicate attributePredicate = criteriaBuilder.and(
                     criteriaBuilder.equal(attributeJoin.get("name"), attributeName)
                     , criteriaBuilder.equal(apartmentAttributesJoin.get("attributeValue"), attributeValue));

@@ -2,17 +2,21 @@ package com.example.rentify.specs;
 
 import com.example.rentify.entity.*;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
+@Component
 @RequiredArgsConstructor
 public class ApartmentSearchSpecification implements Specification<Apartment> {
 
+    private List<Integer> ids;
     private final Filter filter;
-    private final List<Integer> ids;
 
     @Override
     public Predicate toPredicate(Root<Apartment> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {

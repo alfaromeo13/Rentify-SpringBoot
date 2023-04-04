@@ -2,15 +2,17 @@ package com.example.rentify.specs;
 
 import com.example.rentify.entity.*;
 import com.example.rentify.search.ApartmentSearch;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.List;
 
-@RequiredArgsConstructor
+@Setter
+@Component
 public class Filter {
 
-    private final ApartmentSearch apartmentSearch;
+    private ApartmentSearch apartmentSearch;
 
     public void all(Root<Apartment> root, CriteriaBuilder criteriaBuilder, List<Predicate> predicateList) {
         Join<Apartment, Address> addressJoin = root.join("address", JoinType.LEFT);

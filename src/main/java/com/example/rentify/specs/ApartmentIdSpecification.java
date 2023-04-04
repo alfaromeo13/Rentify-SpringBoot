@@ -3,11 +3,13 @@ package com.example.rentify.specs;
 import com.example.rentify.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 @RequiredArgsConstructor
 public class ApartmentIdSpecification implements Specification<Apartment> {
 

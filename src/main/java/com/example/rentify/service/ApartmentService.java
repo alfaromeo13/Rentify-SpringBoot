@@ -25,18 +25,21 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ApartmentService {
-
+    private final Filter filter;
     private final ApartmentMapper apartmentMapper;
     private final ImageRepository imageRepository;
     private final ApartmentRepository apartmentRepository;
+    private final ApartmentIdSpecification idSpecification;
+    private final ApartmentSearchSpecification apartmentSearchSpecification;
     private final ApartmentAttributeRepository apartmentAttributeRepository;
 
     public List<ApartmentDTO> search(Pageable pageable, ApartmentSearch params) {
-        Filter filter = new Filter(params); // mozda da napravim bean??
-        Page<Apartment> apartmentsPage = apartmentRepository.findAll(new ApartmentIdSpecification(filter), pageable);
+        filter.setApartmentSearch(params);
+        Page<Apartment> apartmentsPage = apartmentRepository.findAll(idSpecification, pageable);
         if (apartmentsPage.hasContent()) { //ids are apartment ids
             List<Integer> ids = apartmentsPage.getContent().stream().map(Apartment::getId).collect(Collectors.toList());
-            List<Apartment> apartments = apartmentRepository.findAll(new ApartmentSearchSpecification(filter, ids));
+            apartmentSearchSpecification.setIds(ids);
+            List<Apartment> apartments = apartmentRepository.findAll(apartmentSearchSpecification);
             return apartmentMapper.toDTOList(apartments);
         } else return Collections.emptyList();
     }

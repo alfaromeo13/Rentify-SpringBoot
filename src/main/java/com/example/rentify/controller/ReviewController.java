@@ -1,6 +1,9 @@
 package com.example.rentify.controller;
 
 import com.example.rentify.dto.ReviewDTO;
+import com.example.rentify.exception.ValidationException;
+import com.example.rentify.validator.ReviewCreateValidator;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
 import com.example.rentify.dto.ReviewApartmentDTO;
@@ -8,6 +11,9 @@ import com.example.rentify.service.ReviewService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,10 +25,16 @@ import java.util.List;
 public class ReviewController {
 
     private final ReviewService reviewService;
+    private final ReviewCreateValidator reviewCreateValidator;
 
     @PostMapping //POST http://localhost:8080/api/review/
-    public ResponseEntity<Void> insert(@RequestBody ReviewApartmentDTO reviewApartmentDTO) {
-        if (reviewApartmentDTO.getId() != null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    @SneakyThrows
+    public ResponseEntity<Void> create(@RequestBody ReviewApartmentDTO reviewApartmentDTO) {
+        Errors errors = new BeanPropertyBindingResult(reviewApartmentDTO, "reviewApartmentDTO");//ovaj drugi parametar je buklvalno naziv objekta kojeg predajemo
+        ValidationUtils.invokeValidator(reviewCreateValidator, reviewApartmentDTO, errors);//na ovaj nacin pozivamo odredjeni validator
+        //kada se prodje kroz klasu za validiranje i sve potrebne mettode ide se na if ispod
+        if (errors.hasErrors()) throw new ValidationException("Validation error", errors);
+        //ovaj throw iznad ce uhvatiti RestExceptionHendler klasa
         log.info("Adding review : {} ", reviewApartmentDTO);
         reviewService.save(reviewApartmentDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);

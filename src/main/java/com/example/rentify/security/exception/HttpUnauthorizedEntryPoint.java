@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
-public class HttpUnauthorizedException implements AuthenticationEntryPoint {
+public class HttpUnauthorizedEntryPoint implements AuthenticationEntryPoint {
     @Override
     @SneakyThrows
     public void commence(
@@ -22,9 +22,9 @@ public class HttpUnauthorizedException implements AuthenticationEntryPoint {
             AuthenticationException authException) {
         UnauthorizedResponseDTO unauthorizedResponse =
                 new UnauthorizedResponseDTO("Access denied!", authException.getMessage());
+        ObjectMapper objectMapper = new ObjectMapper();
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        ObjectMapper objectMapper = new ObjectMapper();
         response.getOutputStream().write(objectMapper.writeValueAsBytes(unauthorizedResponse));
     }
 }

@@ -10,13 +10,16 @@ import com.example.rentify.mapper.FullUserMapper;
 import com.example.rentify.mapper.RoleMapper;
 import com.example.rentify.mapper.UserMapper;
 import com.example.rentify.repository.ApartmentRepository;
+import com.example.rentify.repository.RoleRepository;
 import com.example.rentify.repository.UserRepository;
+import com.example.rentify.security.dto.UserCreateDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -26,12 +29,13 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-
     private final RoleMapper roleMapper;
     private final UserMapper userMapper;
     private final FullUserMapper fullUserMapper;
+    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final ApartmentMapper apartmentMapper;
+    private final PasswordEncoder passwordEncoder;
     private final ApartmentRepository apartmentRepository;
 
     @Cacheable(value = "user", key = "#id")
@@ -134,5 +138,16 @@ public class UserService {
         return usersPage.hasContent() ?
                 userMapper.toDTOList(usersPage.getContent()) :
                 Collections.emptyList();
+    }
+
+    public void register(UserCreateDTO userCreateDTO) {
+        //Posto smo napravili bean PasswordEncodera u klasi SecurityConfiguration,ovdje ga injectujemo i
+        //i pozivamo njegovu metodu encode() koja ce izgenerisati proslijedjeni password u BCrypt formatu
+        String encodedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
+        User user = userMapper.createUserToEntity(userCreateDTO);
+        Role role = roleRepository.findRoleByName("registered user");
+        user.addRole(role);
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
     }
 }

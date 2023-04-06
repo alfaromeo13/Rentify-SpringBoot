@@ -4,3 +4,6 @@ spring:
   profiles: #we choose active profile
     active: dev
 
+jwt:
+  secret:  bjskdbvojbdvBVOUbdvjdbVodbvubdVUObdJBVueBosjVBweuVOIEWVBVBNOEWIVGUEGGGggsvbdvdjVWIOEVBOEIvsbvsjbdieuvhe
+  validityInMinutes: 15

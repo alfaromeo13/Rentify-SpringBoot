@@ -20,6 +20,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -45,11 +46,22 @@ public class AuthController {
         try {
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            String token = jwtTokenProvider.createToken(authentication);//token is generated and we send it back to user
-            return new ResponseEntity<>(Collections.singletonMap("token", token), HttpStatus.OK);
+            return new ResponseEntity<>(jwtTokenProvider.createToken(authentication), HttpStatus.OK);
+            //we send generated token back to the user
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);//401!
         }
+    }
+
+    @SneakyThrows
+    @PostMapping("refresh-token")
+    public ResponseEntity<Map<String, String>> refresh(@RequestHeader("refresh-token") String token) {
+        if (token != null && jwtTokenProvider.validateToken(token, "refresh")) {
+            Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            String newToken = jwtTokenProvider.refreshToken(authentication);
+            return new ResponseEntity<>(Collections.singletonMap("token", newToken), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     /*
@@ -71,20 +83,5 @@ public class AuthController {
         if (errors.hasErrors()) throw new ValidationException("Register user validation failed!", errors);
         userService.register(userCreateDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    @SneakyThrows
-    @PostMapping("refresh-token")//???
-    public ResponseEntity<Map<String, String>> refresh(@RequestHeader("Authorization") String token) {
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-            boolean isValid = jwtTokenProvider.validateToken(token);
-            if (isValid) {
-                Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                String newToken = jwtTokenProvider.createToken(authentication);
-                return new ResponseEntity<>(Collections.singletonMap("token", newToken), HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }

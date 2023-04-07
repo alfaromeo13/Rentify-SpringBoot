@@ -29,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) {
         try {
             String jwt = resolveToken(request);
-            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
+            if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt, "access")) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

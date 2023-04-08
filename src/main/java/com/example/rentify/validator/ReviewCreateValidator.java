@@ -13,24 +13,19 @@ import org.springframework.validation.Validator;
 @Component
 @RequiredArgsConstructor
 public class ReviewCreateValidator implements Validator {
-//validatori su read only i nikako ne smijemo da modifikujemo vr. koje smo dobili!!
-    //dakle citamo i kazemo d ali je nesto validno ili ne
-
-    //if we want to inject repository,
-    // validator must be bean so we add @Component on it
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final ApartmentRepository apartmentRepository;
 
     @Override
-    public boolean supports(Class<?> clazz) { //definisemo nad kojim objektom radimo validaciju.Ako pozovemo ovaj validator
+    public boolean supports(Class<?> clazz) {
+        //definisemo nad kojim objektom radimo validaciju.Ako pozovemo ovaj validator
         return clazz.isAssignableFrom(ReviewApartmentDTO.class); //nad nekom drugom klasom dobicemo automatski gresku!
     }
 
-    @Override //we write our validation logic for specific class.Ovdje vrsimo validaciju proslijedjenog objekta
+    @Override //Ovdje vrsimo validaciju proslijedjenog objekta
     public void validate(Object target, Errors errors) {
         //target-objekat koji primamo
-        // errors-interfejs u koji ubacamo ako detektujemo greske pri validaciji
         //ako je errors prazan znamo da je validacija prosla uspjesno i po tome gledamo!!
         ReviewApartmentDTO review = (ReviewApartmentDTO) target;
         validateApartmentId(review.getApartmentId(), errors);
@@ -48,7 +43,7 @@ public class ReviewCreateValidator implements Validator {
     private void validateComment(String comment, Errors errors) {
         if (comment == null) {
             //field - naziv polja iz klase koji nije validan tj nad kojim se desila greska
-            //error code - skraceni prevod greske(posebno korisno kod apliakcija koje podrzavaju visejezicnost
+            //error code - skraceni prevod greske(posebno korisno kod apliakcija koje podrzavaju visejezicnost)
             //prevodom se ne bavi bekend vec frontend klijentska aplikacija
             errors.rejectValue("comment", "comment.required", "Comment is required!");
         } else if (comment.trim().equals("")) { //if comment is empty

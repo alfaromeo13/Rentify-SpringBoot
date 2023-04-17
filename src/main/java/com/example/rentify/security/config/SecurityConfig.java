@@ -55,21 +55,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @SneakyThrows
     protected void configure(HttpSecurity http) {
-        http
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                //if user isn't authenticated we return our custom httpUnauthorizedException exception
-                .exceptionHandling().authenticationEntryPoint(httpUnauthorizedException)
-                .and()
-                .headers().frameOptions().disable()
-                .and()
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/api/messages/**").hasAnyRole("registered user", "admin") //Users with these roles have access
-                .antMatchers(HttpMethod.DELETE, "/api/country/**").hasRole("admin")//Delete on this api can oly do ADMIN
-                .antMatchers("/api/authenticate/**").permitAll()
-                .antMatchers("/api/**").authenticated() //with permitAll() any other api is available! (We won't define rules for all apis)
-                .anyRequest().authenticated();
+//        http
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+//                //if user isn't authenticated we return our custom httpUnauthorizedException exception
+//                .exceptionHandling().authenticationEntryPoint(httpUnauthorizedException)
+//                .and()
+//                .headers().frameOptions().disable()
+//                .and()
+//                .csrf().disable()
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .authorizeRequests()
+//                .antMatchers("/api/messages/**").hasAnyRole("registered user", "admin") //Users with these roles have access
+//                .antMatchers(HttpMethod.DELETE, "/api/country/**").hasRole("admin")//Delete on this api can oly do ADMIN
+//                .antMatchers("/api/authenticate/**").permitAll()
+//                .antMatchers("/api/**").authenticated() //with permitAll() any other api is available! (We won't define rules for all apis)
+//                .anyRequest().authenticated();
     }
 }

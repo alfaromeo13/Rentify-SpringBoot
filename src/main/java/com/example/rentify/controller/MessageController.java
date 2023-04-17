@@ -1,5 +1,6 @@
 package com.example.rentify.controller;
 
+import com.example.rentify.dto.ChatMessage;
 import com.example.rentify.dto.MessageDTO;
 import com.example.rentify.service.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,5 +51,11 @@ public class MessageController {
     public ResponseEntity<List<MessageDTO>> getMessages(@PathVariable Integer id, Pageable pageable) {
         List<MessageDTO> messages = messageService.getMessages(id, pageable);
         return new ResponseEntity<>(messages, HttpStatus.OK);
+    }
+
+    @MessageMapping("/sendic")//?
+    @SendTo("/messaging-channel") //send message to this topic
+    public ChatMessage publishMessage(ChatMessage a) {
+        return a;
     }
 }

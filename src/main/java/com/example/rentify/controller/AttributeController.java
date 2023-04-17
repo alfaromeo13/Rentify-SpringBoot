@@ -20,6 +20,7 @@ public class AttributeController {
 
     private final AttributeService attributeService;
 
+    //ovo ce nam sluziti da u filter sekciji prikazemo sve atribute
     @GetMapping //GET http://localhost:8080/api/attribute/
     public ResponseEntity<List<AttributeDTO>> findAll() {
         List<AttributeDTO> attributes = attributeService.findAll();

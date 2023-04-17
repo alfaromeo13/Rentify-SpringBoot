@@ -1,10 +1,16 @@
 spring:
   application:
     name: Rentify
-  profiles: #we choose active profile
+
+  #we choose active profile
+  profiles:
     active: dev
+
+  # Liquibase configuration
+  liquibase:
+    change-log: classpath:liquibase/master.xml
 
 jwt:
   secret:  bjskdbvojbdvBVOUbdvjdbVodbvubdVUObdJBVueBosjVBweuVOIEWVBVBNOEWIVGUEGGGggsvbdvdjVWIOEVBOEIvsbvsjbdieuvhe
   validityInMinutes: 15
-  refreshValidityInMinutes: 2880 #48h
+  refreshValidityInMinutes: 43200 # 30 days

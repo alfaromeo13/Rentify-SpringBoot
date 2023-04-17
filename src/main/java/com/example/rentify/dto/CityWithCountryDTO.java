@@ -9,7 +9,6 @@ import java.io.Serializable;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class CityWithCountryDTO implements Serializable {
-    private String name;
+public class CityWithCountryDTO extends CityDTO implements Serializable {
     private CountryDTO country;
 }

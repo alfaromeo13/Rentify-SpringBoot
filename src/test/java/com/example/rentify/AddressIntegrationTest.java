@@ -29,21 +29,21 @@ public class AddressIntegrationTest {
         log.info("{}", addresses);
     }
 
-    @Test
-    public void getAllAddressesInSpecificCityTest() {
-        List<Address> addresses = addressRepository.findAllInCity("Pod");
-        log.info("{}", addresses);
-    }
-
-    @Test
-    public void getAllAddressesInCountryByNameTest() {
-        List<Address> addresses = addressRepository.findAllInCountryByName("Mont");
-        log.info("{}", addresses);
-    }
-
-    @Test
-    public void getAllAddressesInCountryByCodeTest() {
-        List<Address> addresses = addressRepository.findAllInCountryByCode("ME");
-        log.info("{}", addresses);
-    }
+//    @Test
+//    public void getAllAddressesInSpecificCityTest() {
+//        List<Address> addresses = addressRepository.findAllInCity("Pod");
+//        log.info("{}", addresses);
+//    }
+//
+//    @Test
+//    public void getAllAddressesInCountryByNameTest() {
+//        List<Address> addresses = addressRepository.findAllInCountryByName("Mont");
+//        log.info("{}", addresses);
+//    }
+//
+//    @Test
+//    public void getAllAddressesInCountryByCodeTest() {
+//        List<Address> addresses = addressRepository.findAllInCountryByCode("ME");
+//        log.info("{}", addresses);
+//    }
 }

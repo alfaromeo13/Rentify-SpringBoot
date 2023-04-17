@@ -18,7 +18,7 @@ public class ApartmentDTO implements Serializable {
     private String title;
     private String description;
     private Integer sqMeters;
-    private Double price;
+    private Double price;//mjesecna cijena
     private Integer numOfBedrooms;
     private Integer numOfBathrooms;
     private Date createdAt;

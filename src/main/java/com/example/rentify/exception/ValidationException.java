@@ -8,5 +8,5 @@ import org.springframework.validation.Errors;
 @RequiredArgsConstructor
 public class ValidationException extends Exception {
     private final String message; //message we send to client
-    private final Errors errors; //errors occurred in validating
+    private final Errors errors; //errors occurred in validation
 }

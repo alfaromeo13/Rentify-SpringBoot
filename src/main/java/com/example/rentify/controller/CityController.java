@@ -23,6 +23,7 @@ public class CityController {
 
     private final CityService cityService;
 
+    //pozivamo na prvoj stanici sajta
     @GetMapping //GET http://localhost:8080/api/city?page=0&size=4&name=B
     public ResponseEntity<List<CityWithCountryDTO>> findByName(Pageable pageable, @RequestParam("name") String name) {
         List<CityWithCountryDTO> cities = cityService.findByName(name, pageable);
@@ -30,16 +31,13 @@ public class CityController {
         return new ResponseEntity<>(cities, HttpStatus.OK);
     }
 
-    @GetMapping("by-country-name") //GET http://localhost:8080/api/city/by-country-name?page=0&size=4&name=Montenegro
-    public ResponseEntity<List<CityDTO>> findAllForCountryName(Pageable pageable, @RequestParam("name") String name) {
-        List<CityDTO> cities = cityService.findByCountryName(name, pageable);
-        log.info("Cities : {} ", cities);
-        return new ResponseEntity<>(cities, HttpStatus.OK);
-    }
-
-    @GetMapping("by-country-code") //GET http://localhost:8080/api/city/by-country-code?page=0&size=4&code=ME
-    public ResponseEntity<List<CityDTO>> findAllForCountryCode(Pageable pageable, @RequestParam("code") String code) {
-        List<CityDTO> cities = cityService.findByCountryCode(code, pageable);
+    //kada u filtar sekciji izaberemo drzavu po izabranoj drzavi izlistaj gradove koje unesemo
+    //GET http://localhost:8080/api/city/by-country-city-name?page=0&size=5&countryName=Montenegro&cityName=P
+    @GetMapping("by-country-city-name")
+    public ResponseEntity<List<CityDTO>> findForCountryAndCityName(
+            @RequestParam("countryName") String countryName,
+            @RequestParam("cityName") String cityName, Pageable pageable) {
+        List<CityDTO> cities = cityService.findByCountryCityName(countryName, cityName, pageable);
         log.info("Cities : {} ", cities);
         return new ResponseEntity<>(cities, HttpStatus.OK);
     }

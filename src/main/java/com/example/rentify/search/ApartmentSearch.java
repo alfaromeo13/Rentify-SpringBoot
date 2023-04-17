@@ -1,17 +1,11 @@
 package com.example.rentify.search;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class ApartmentSearch {
     private Integer id;
     private String title;
@@ -24,10 +18,10 @@ public class ApartmentSearch {
     private Integer maxNumOfBathrooms;
     private Integer minSquareMeters;
     private Integer maxSquareMeters;
-    private String addressStreet;
-    private String neighborhoodName;
-    private String cityName;
+    private String addressStreet;//? treba li mi ovo
     private String countryName;
+    private String cityName;
+    private String neighborhoodName;
     private Integer userId;//we get all apartments for specific user.When user logs in he wants a list of apartments he owns
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date availableFrom, availableTo;// filters available apartments for that period

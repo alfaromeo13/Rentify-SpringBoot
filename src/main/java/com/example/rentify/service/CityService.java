@@ -4,6 +4,7 @@ import com.example.rentify.dto.CityDTO;
 import com.example.rentify.dto.CityWithCountryDTO;
 import com.example.rentify.entity.City;
 import com.example.rentify.mapper.CityMapper;
+import com.example.rentify.mapper.CityWithCountryMapper;
 import com.example.rentify.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,31 +23,20 @@ public class CityService {
 
     private final CityMapper cityMapper;
     private final CityRepository cityRepository;
+    private final CityWithCountryMapper cityWithCountryMapper;
 
-    @Cacheable(value = "cityCountry", key = "#name")
+    @Cacheable(value = "cityCountry", key = "{#name, #pageable.toString()}")
     public List<CityWithCountryDTO> findByName(String name, Pageable pageable) {
         log.info("Cache miss..Getting data from database.");
-        Page<City> cities = cityRepository.findByNameStartingWith(name, pageable);
-        return cities.hasContent() ?
-                cityMapper.toCityCountryDTOList(cities.getContent()) :
-                Collections.emptyList();
+        Page<Integer> countryIdsPage = cityRepository.findIdsPageable(pageable, name);
+        List<City> cities = cityRepository.findByNameStartingWith(countryIdsPage.getContent());
+        return cityWithCountryMapper.toDTOList(cities);
     }
 
-    @Cacheable(value = "cities", key = "#name")
-    public List<CityDTO> findByCountryName(String name, Pageable pageable) {
+    @Cacheable(value = "cities", key = "{#countryName , #cityName, #pageable.toString()}")
+    public List<CityDTO> findByCountryCityName(String countryName, String cityName, Pageable pageable) {
         log.info("Cache miss..Getting data from database.");
-        Page<City> cities = cityRepository.findAllCitiesFromCountryNameJPQL(name, pageable);
-        return cities.hasContent() ?
-                cityMapper.toDTOList(cities.getContent()) :
-                Collections.emptyList();
-    }
-
-    @Cacheable(value = "cities", key = "#code")
-    public List<CityDTO> findByCountryCode(String code, Pageable pageable) {
-        log.info("Cache miss..Getting data from database.");
-        Page<City> cities = cityRepository.findAllCitiesFromCountryCodeJPQL(code, pageable);
-        return cities.hasContent() ?
-                cityMapper.toDTOList(cities.getContent()) :
-                Collections.emptyList();
+        Page<City> cities = cityRepository.findAllCitiesFromCountryNameJPQL(countryName, cityName, pageable);
+        return cities.hasContent() ? cityMapper.toDTOList(cities.getContent()) : Collections.emptyList();
     }
 }

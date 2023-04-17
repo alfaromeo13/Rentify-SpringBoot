@@ -7,8 +7,11 @@ import com.example.rentify.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -19,17 +22,17 @@ public class CountryService {
     private final CountryMapper countryMapper;
     private final CountryRepository countryRepository;
 
-    @Cacheable(value = "country", key = "#name")
-    public List<CountryDTO> findByNameStartingWith(String name) {
+    @Cacheable(value = "country", key = "{#name, #pageable.toString()}")
+    public List<CountryDTO> findByNameStartingWith(String name, Pageable pageable) {
         log.info("Cache miss..Getting data from database.");
-        List<Country> countries = countryRepository.findByNameStartingWith(name);
-        return countryMapper.toDTOList(countries);
+        Page<Country> countries = countryRepository.findByNameStartingWith(name, pageable);
+        return countries.hasContent() ? countryMapper.toDTOList(countries.getContent()) : Collections.emptyList();
     }
 
-    @Cacheable(value = "country", key = "#shortCode")
-    public List<CountryDTO> findByShortCode(String shortCode) {
+    @Cacheable(value = "country", key = "{#shortCode,#pageable.toString()}")
+    public List<CountryDTO> findByShortCode(String shortCode, Pageable pageable) {
         log.info("Cache miss..Getting data from database.");
-        List<Country> countries = countryRepository.findByShortCode(shortCode);
-        return countryMapper.toDTOList(countries);
+        Page<Country> countries = countryRepository.findByShortCode(shortCode, pageable);
+        return countries.hasContent() ? countryMapper.toDTOList(countries.getContent()) : Collections.emptyList();
     }
 }

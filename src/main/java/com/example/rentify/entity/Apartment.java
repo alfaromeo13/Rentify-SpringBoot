@@ -53,7 +53,7 @@ public class Apartment {
 
     @Column(name = "is_available",
             columnDefinition = "TINYINT(1) DEFAULT 1",
-            insertable = false, updatable = false)
+            insertable = false)
     private Boolean isAvailable;
 
     @Column(name = "is_active",
@@ -62,10 +62,9 @@ public class Apartment {
     private Boolean isActive;
 
     @ToString.Exclude
-    @JsonBackReference
     @JoinColumn(name = "address_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Address address; //
+    private Address address;
 
     @ToString.Exclude
     @JsonManagedReference
@@ -81,7 +80,7 @@ public class Apartment {
     @ToString.Exclude
     @JsonManagedReference
     @OneToMany(mappedBy = "apartment")
-    private List<Review> reviews = new ArrayList<>();//<- separate controller and service
+    private List<Review> reviews = new ArrayList<>();
 
     @ToString.Exclude
     @JsonManagedReference

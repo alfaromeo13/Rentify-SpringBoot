@@ -15,7 +15,7 @@ public class RentalDTO implements Serializable {
     private Date startDate;
     private Date endDate;
     private Double rentalPrice;
-    private Boolean available;
+    private StatusDTO status;
     private UserDTO user;
     private ApartmentDTO apartment;
 }

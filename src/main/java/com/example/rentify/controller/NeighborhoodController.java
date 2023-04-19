@@ -19,6 +19,7 @@ public class NeighborhoodController {
 
     private final NeighborhoodService neighborhoodService;
 
+    //kada u filter sekciji izaberemo grad da mozemo dodatno vrsiti pretragu naselja za taj grad
     @GetMapping // GET http://localhost:8080/api/neighborhood?page=0&size=4&cityName=Podg&neighborhoodName=Star
     public ResponseEntity<List<NeighborhoodDTO>> findByCityNameAndNeighborhoodName(
             @RequestParam("cityName") String cityName,

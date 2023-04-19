@@ -1,6 +1,5 @@
 package com.example.rentify.controller;
 
-import com.example.rentify.dto.ChatMessage;
 import com.example.rentify.dto.MessageDTO;
 import com.example.rentify.service.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -53,9 +52,9 @@ public class MessageController {
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 
-    @MessageMapping("/sendic")//?
-    @SendTo("/messaging-channel") //send message to this topic
-    public ChatMessage publishMessage(ChatMessage a) {
-        return a;
-    }
+//    @MessageMapping("/chat.sendMessage")//
+//    @SendTo("/topic/javainuse") //send message to this topic
+//    public ChatMessage publishMessage(ChatMessage a) {
+//        return a;
+//    }
 }

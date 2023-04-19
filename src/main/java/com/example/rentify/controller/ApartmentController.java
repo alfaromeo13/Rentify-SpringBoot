@@ -20,8 +20,16 @@ public class ApartmentController {
 
     private final ApartmentService apartmentService;
 
-    //1) GET http://localhost:8080/api/apartment/pageable-search?page=0&size=2&cityName=New York&addressStreet=Broadway
-    //2) GET http://localhost:8080/api/apartment/pageable-search?page=0&size=2&cityName=New York&minPrice=1000&maxPrice=5000
+    //kada korisnik uradi filtriranje,dace mu se slobodni stanovi za trenutni datum kada je uradio filtriranje
+    //NAPRAVI DA TI IZLISTAVA NA SEARCH SVE STANOVE KOJI NISU ZAUZETI TJ RENTIRANI I KOJI NISU IZBRISANI
+    //ovaj search odmah pozivas autromatski sam na drugu stranicu posle citija
+    //kada kliknes na 'filters' dugme i izaberemo sve po cemu zelimo da filtriras i kliknemo dugme 'apply'
+    // onda to sto smo izabrali saljemo na ovaj servis
+
+    //dodaj tip apartmana condo,house,...vidji sta na buking.com ima sve i na ostale sajtove vezano za te kategorije
+    //i updejtuj dto i druge klase
+
+    //GET http://localhost:8080/api/apartment/pageable-search?page=0&size=2&cityName=New York&minPrice=1000&maxPrice=5000
     @GetMapping("pageable-search")
     public ResponseEntity<List<ApartmentDTO>> search(ApartmentSearch params, Pageable pageable) {
         List<ApartmentDTO> apartments = apartmentService.search(pageable, params);

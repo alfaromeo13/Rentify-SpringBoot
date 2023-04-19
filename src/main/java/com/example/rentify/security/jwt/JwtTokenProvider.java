@@ -108,4 +108,9 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
+    public String getTokenUser(String authToken) {
+        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(authToken).getBody();
+        return (String) claims.get("sub");
+    }
 }

@@ -14,8 +14,4 @@ public interface AddressRepository extends JpaRepository<Address, Integer> {
     @Query(value = "select address from Address address " +
             "join address.neighborhood neighborhood where neighborhood.name like concat(:name,'%')")
     List<Address> findAllInNeighborhood(@Param("name") String neighborhoodName);
-
-    // sve adrese po odredjenom postanskom broju
-    @Query(value = "select address from Address address where address.code = :code")
-    List<Address> findByCode(@Param("code") String postalCode);
 }

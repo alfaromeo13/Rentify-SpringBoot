@@ -28,18 +28,14 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
             root.fetch("apartmentAttributes", JoinType.LEFT);
             // we know that at the end we want to return DTO class instead of Entity class
             // When mapping entity class fields to dto class fields our mapper calls 'get()'
-            // method in background.Get() method will if that field is null make additional
+            // method in background.Get() method, will if that field is null make additional
             // sql query to fetch that data .That is why we need to join fetch so that we don't
             // make additional calls for those values.Instead we fetch them with response
         }
-
-//        if (ids != null && !ids.isEmpty())
-        predicateList.add(root.get("id").in(ids)); //filter by apartment id's pise se ovako? i treba li mi if
-
+        predicateList.add(root.get("id").in(ids));
         filter.all(root, criteriaBuilder, predicateList);
         query.distinct(true);
-        //We return one predicate by combining all predicates with AND
-        // which acts as the WHERE condition for query satisfaction"
+        //We return one predicate by combining all predicates with AND(we make our WHERE condition for later query)
         return criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
     }
 }

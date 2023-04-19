@@ -9,6 +9,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
-    Review toEntity(ReviewApartmentDTO reviewApartmentDTO);
     List<ReviewDTO> toDTOList(List<Review> reviews);
+    Review toEntity(ReviewApartmentDTO reviewApartmentDTO);
 }

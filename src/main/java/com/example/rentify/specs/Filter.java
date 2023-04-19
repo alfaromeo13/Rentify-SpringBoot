@@ -24,9 +24,7 @@ public class Filter {
         filterById(root, criteriaBuilder, predicateList);
         filterByPrice(root, criteriaBuilder, predicateList);
         filterByTitle(root, criteriaBuilder, predicateList);
-        filterByDescription(root, criteriaBuilder, predicateList);
         filterByNumOfBathrooms(root, criteriaBuilder, predicateList);
-        filterByAddressStreet(criteriaBuilder, predicateList, addressJoin);
         filterByCityName(criteriaBuilder, predicateList, cityJoin);
         filterBySquareMeters(root, criteriaBuilder, predicateList);
         filterByNeighborhoodName(criteriaBuilder, predicateList, neighborhoodJoin);
@@ -58,13 +56,14 @@ public class Filter {
 
     private void filterByAvailabilityDate(Root<Apartment> root, CriteriaBuilder criteriaBuilder,
                                           List<Predicate> predicateList, Join<Apartment, Rental> rentalJoin) {
+        //logika treba da bude da iz rentala uzme sve datume koji su razliciti od ovih vidji radi li ovo sto si napravio
         if (apartmentSearch.getAvailableFrom() != null) {
-            Predicate availableFromPredicate = criteriaBuilder.equal(
+            Predicate availableFromPredicate = criteriaBuilder.notEqual(
                     rentalJoin.get("startDate"), apartmentSearch.getAvailableFrom());
             predicateList.add(availableFromPredicate);
         }
         if (apartmentSearch.getAvailableTo() != null) {
-            Predicate availableToPredicate = criteriaBuilder.equal(
+            Predicate availableToPredicate = criteriaBuilder.notEqual(
                     root.get("endDate"), apartmentSearch.getAvailableTo());
             predicateList.add(availableToPredicate);
         }
@@ -109,15 +108,6 @@ public class Filter {
         }
     }
 
-    private void filterByAddressStreet(CriteriaBuilder criteriaBuilder,
-                                       List<Predicate> predicateList, Join<Apartment, Address> addressJoin) {
-        if (apartmentSearch.getAddressStreet() != null) { //join example
-            Predicate addressStreetPredicate = criteriaBuilder.equal(
-                    addressJoin.get("street"), apartmentSearch.getAddressStreet());
-            predicateList.add(addressStreetPredicate);
-        }
-    }
-
     private void filterByNeighborhoodName(CriteriaBuilder criteriaBuilder,
                                           List<Predicate> predicateList, Join<Address, Neighborhood> neighborhoodJoin) {
         if (apartmentSearch.getNeighborhoodName() != null) {//join example
@@ -133,16 +123,6 @@ public class Filter {
             Predicate cityNamePredicate = criteriaBuilder.equal(
                     cityJoin.get("name"), apartmentSearch.getCityName());
             predicateList.add(cityNamePredicate);
-        }
-    }
-
-    private void filterByDescription(Root<Apartment> root,
-                                     CriteriaBuilder criteriaBuilder, List<Predicate> predicateList) {
-        if (apartmentSearch.getDescription() != null) {
-            Predicate descriptionPredicate = criteriaBuilder.like(
-                    root.get("description"), "%" + apartmentSearch.getDescription() + "%");
-            predicateList.add(descriptionPredicate);
-            //... where apartments.description like '%some description%'
         }
     }
 

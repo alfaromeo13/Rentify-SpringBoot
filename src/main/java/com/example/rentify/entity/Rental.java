@@ -34,8 +34,10 @@ public class Rental {
     @Column(name = "rental_price")
     private Double rentalPrice;
 
-    @Column
-    private Boolean available;
+    @ToString.Exclude
+    @JoinColumn(name = "status")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Status status;
 
     @ToString.Exclude
     @JsonBackReference

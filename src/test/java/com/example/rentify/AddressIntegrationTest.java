@@ -17,11 +17,11 @@ public class AddressIntegrationTest {
     @Autowired
     private AddressRepository addressRepository;
 
-    @Test
-    public void getAddressesByPostalCodeTest() {
-        List<Address> addresses = addressRepository.findByCode("81000");
-        log.info("{}", addresses);
-    }
+//    @Test
+//    public void getAddressesByPostalCodeTest() {
+//        List<Address> addresses = addressRepository.findByCode("81000");
+//        log.info("{}", addresses);
+//    }
 
     @Test
     public void getAllAddressesInSpecificNeighbourhoodTest() {

@@ -3,8 +3,6 @@ package com.example.rentify.validator;
 import com.example.rentify.dto.ReviewApartmentDTO;
 import com.example.rentify.dto.UserDTO;
 import com.example.rentify.repository.ApartmentRepository;
-import com.example.rentify.repository.ReviewRepository;
-import com.example.rentify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -12,9 +10,7 @@ import org.springframework.validation.Validator;
 
 @Component
 @RequiredArgsConstructor
-public class ReviewCreateValidator implements Validator {
-    private final UserRepository userRepository;
-    private final ReviewRepository reviewRepository;
+public class ReviewValidator implements Validator {
     private final ApartmentRepository apartmentRepository;
 
     @Override
@@ -51,7 +47,6 @@ public class ReviewCreateValidator implements Validator {
         }
 //        if(comment.length()>128)
 //            errors.rejectValue("name","name.length-exceeded","name length is not valid!");
-
     }
 
     private void validateGrade(Integer grade, Errors errors) {
@@ -69,13 +64,7 @@ public class ReviewCreateValidator implements Validator {
     }
 
     private void validateUser(UserDTO user, Errors errors) {
-        if (user == null)
-            errors.rejectValue("user", "user.required", "User is required!");
-        else if (user.getId() == null)
-            errors.rejectValue("user.id", "user.id.required", "User identifier required!");
-        else if (!userRepository.existsById(user.getId()))
-            errors.rejectValue("user.id", "user.id.doesn't.exist", "User with specified " +
-                    "id doesn't exist");
-
+        if (user != null)
+            errors.rejectValue("user", "user.error", "User should't be sent!");
     }
 }

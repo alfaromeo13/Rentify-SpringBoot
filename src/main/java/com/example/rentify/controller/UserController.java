@@ -19,6 +19,9 @@ public class UserController {
 
     private final UserService userService;
 
+    //OBRATI ISTO PAZNJU NA LOGIN i REGISTER jesu li dobro napisani i ti validatoriu tamo valjju li
+    //da li dodati api za logout?
+
     @GetMapping("{id}") //GET http://localhost:8080/api/user/2
     public ResponseEntity<FullUserDTO> find(@PathVariable Integer id) {
         FullUserDTO user = userService.find(id);
@@ -50,7 +53,7 @@ public class UserController {
         return new ResponseEntity<>(deleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    //{"id":3, "name":"admin"}
+    //{"id":3, "name":"admin"}   ovo admin moze uraditi da dodijeli jos jednog usera kao admina??
     @PutMapping("{id}/add-role") //PUT http://localhost:8080/api/user/10/add-role
     public ResponseEntity<Void> addUserRole(@PathVariable Integer id, @RequestBody RoleDTO roleDTO) {
         boolean updated = userService.addRole(id, roleDTO);

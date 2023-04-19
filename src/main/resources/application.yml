@@ -12,5 +12,5 @@ spring:
 
 jwt:
   secret:  bjskdbvojbdvBVOUbdvjdbVodbvubdVUObdJBVueBosjVBweuVOIEWVBVBNOEWIVGUEGGGggsvbdvdjVWIOEVBOEIvsbvsjbdieuvhe
-  validityInMinutes: 15
+  validityInMinutes: 43200 #vrati na 15
   refreshValidityInMinutes: 43200 # 30 days

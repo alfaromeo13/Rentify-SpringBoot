@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtFilter jwtFilter;
@@ -28,10 +30,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final HttpUnauthorizedEntryPoint httpUnauthorizedException;
 
     @Override
-    @SneakyThrows //when users send login information
+    @SneakyThrows //when users send login information we define which password encoding will be used
     public void configure(AuthenticationManagerBuilder auth) {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        //with this we defined which password encoding will be used
     }
 
     @Override
@@ -55,21 +56,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @SneakyThrows
     protected void configure(HttpSecurity http) {
-//        http
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-//                //if user isn't authenticated we return our custom httpUnauthorizedException exception
-//                .exceptionHandling().authenticationEntryPoint(httpUnauthorizedException)
-//                .and()
-//                .headers().frameOptions().disable()
-//                .and()
-//                .csrf().disable()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers("/api/messages/**").hasAnyRole("registered user", "admin") //Users with these roles have access
-//                .antMatchers(HttpMethod.DELETE, "/api/country/**").hasRole("admin")//Delete on this api can oly do ADMIN
-//                .antMatchers("/api/authenticate/**").permitAll()
-//                .antMatchers("/api/**").authenticated() //with permitAll() any other api is available! (We won't define rules for all apis)
-//                .anyRequest().authenticated();
+        http    //if user isn't authenticated we return our custom httpUnauthorizedException exception
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling().authenticationEntryPoint(httpUnauthorizedException)
+                .and()
+                .headers().frameOptions().disable()
+                .and()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/api/messages/**").hasAnyRole("registered user", "admin") //Users with these roles have access
+                .antMatchers(HttpMethod.DELETE, "/api/country/**").hasRole("admin")//Delete on this api can oly do ADMIN
+                .antMatchers("/api/authenticate/**").permitAll()
+                .antMatchers("/api/**").authenticated() //with permitAll() any other api is available! (We won't define rules for all apis)
+                .anyRequest().authenticated();
     }
 }

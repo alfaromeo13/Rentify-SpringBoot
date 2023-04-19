@@ -9,7 +9,6 @@ import java.util.Date;
 public class ApartmentSearch {
     private Integer id;
     private String title;
-    private String description;
     private Double minPrice;
     private Double maxPrice;
     private Integer minNumOfBedrooms;
@@ -18,13 +17,16 @@ public class ApartmentSearch {
     private Integer maxNumOfBathrooms;
     private Integer minSquareMeters;
     private Integer maxSquareMeters;
-    private String addressStreet;//? treba li mi ovo
     private String countryName;
     private String cityName;
     private String neighborhoodName;
     private Integer userId;//we get all apartments for specific user.When user logs in he wants a list of apartments he owns
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
+    @DateTimeFormat(pattern = "dd-MM-yyyy") //<--ovo napravi da radi i tetiraj(vidji ovu metodu u Filter klasi)
     private Date availableFrom, availableTo;// filters available apartments for that period
+    //ovo ces da uradis tako sto ce se u serch-u uvijek slati trenutni datum pa ce ti za taj datum izlistati
+    //trenutno slobodne stanove
+
     //attributes:
     private String parking;
     private String petsAllowed;

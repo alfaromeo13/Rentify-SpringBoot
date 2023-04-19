@@ -25,6 +25,7 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    //umjesto ovoga troje treba cuvati x,y i String naziv adrese
     @Column
     private String street;
 
@@ -33,15 +34,10 @@ public class Address {
 
     @Column(name = "postal_code")
     private String code;
-
+    //
     @ToString.Exclude
     @JsonBackReference
     @JoinColumn(name = "neighborhood_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Neighborhood neighborhood;
-
-    @ToString.Exclude
-    @JsonManagedReference
-    @OneToMany(mappedBy = "address")
-    private List<Apartment> apartments = new ArrayList<>();
 }

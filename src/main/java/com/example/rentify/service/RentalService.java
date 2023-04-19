@@ -42,7 +42,7 @@ public class RentalService {
         Optional<Rental> rentalOptional = rentalRepository.findById(id);
         if (rentalOptional.isPresent()) {
             Rental rental = rentalOptional.get();
-            rental.setAvailable(false);//?????
+           // rental.setAvailable(false);//????? necemo ovo nego radimo pravi delete
             rentalRepository.save(rental);
             return true;
         } else return false;

@@ -11,7 +11,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class ApartmentIdSpecification implements Specification<Apartment> { //treba li va klasa uopste?
+public class ApartmentIdSpecification implements Specification<Apartment> {
 
     private final Filter filter;
 

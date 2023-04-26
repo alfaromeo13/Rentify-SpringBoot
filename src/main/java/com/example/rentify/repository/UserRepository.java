@@ -1,6 +1,5 @@
 package com.example.rentify.repository;
 
-import com.example.rentify.entity.Apartment;
 import com.example.rentify.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,8 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
@@ -20,9 +17,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             " where user.username = :username and user.isActive = true ")
     User findByUsername(@Param("username") String username);
 
-    @Query(value = "select apartment from User user " +
-            "join user.favoriteApartments apartment where user.id = :id")
-    Page<Apartment> favouriteApartmentsForUserById(@Param("id") Integer id, Pageable pageable);
+    @Query(value = "select apartment.id from User user " +
+            "join user.favoriteApartments apartment where user.username = :username")
+    Page<Integer> favouriteApartmentsForUser(@Param("username") String username, Pageable pageable);
 
     boolean existsByUsername(String username);
 }

@@ -26,6 +26,7 @@ public class UserCreateValidator implements Validator {
         validatePassword(userCreateDTO.getPassword(), userCreateDTO.getPasswordConfirm(), errors);
         validateFirstName(userCreateDTO.getFirstName(), errors);
         validateLastName(userCreateDTO.getLastName(), errors);
+        validateEmail(userCreateDTO.getEmail(), errors);
     }
 
     /**
@@ -113,6 +114,22 @@ public class UserCreateValidator implements Validator {
                     "lastName",
                     "lastName.required",
                     "Last name is required!"
+            );
+        }
+    }
+
+    /**
+     * Validate email
+     *
+     * @param email  given email
+     * @param errors reference to Errors
+     */
+    private void validateEmail(String email, Errors errors) {
+        if (StringUtils.isBlank(email)) {
+            errors.rejectValue(
+                    "email",
+                    "email.required",
+                    "Email is required!"
             );
         }
     }

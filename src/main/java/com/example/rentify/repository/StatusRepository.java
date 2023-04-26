@@ -9,6 +9,9 @@ import java.util.List;
 
 @Repository
 public interface StatusRepository extends JpaRepository<Status, String> {
-    @Query(value="select status.name from Status status")
+
+    Status findByName(String name);
+
+    @Query(value = "select status.name from Status status")
     List<String> findAllStatuses();
 }

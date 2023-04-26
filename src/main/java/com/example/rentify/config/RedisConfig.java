@@ -30,7 +30,7 @@ public class RedisConfig {
     @Bean
     ChannelTopic topic() {
         return new ChannelTopic("messaging-channel");
-    }
+    } //napravi dinamicki topic
 
     //here we specify who will consume the message(who is listening to published messages)
     @Bean

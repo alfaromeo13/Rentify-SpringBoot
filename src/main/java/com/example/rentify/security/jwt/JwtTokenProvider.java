@@ -40,7 +40,7 @@ public class JwtTokenProvider {
         String authorities = authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(",")); // (ROLE_USER,ROLE_ADMIN,ROLE_REGISTERED)
+                .collect(Collectors.joining(",")); // (ROLE_ADMIN,ROLE_REGISTERED)
         long now = new Date().getTime();
         Date tokenValidity = new Date(now + tokenValidityInMinutes * 60_000);
         Date refreshTokenValidity = new Date(now + refreshTokenValidityInMinutes * 60_000);
@@ -50,16 +50,6 @@ public class JwtTokenProvider {
         map.put("refresh-token", refreshToken);
         map.put("token", token);
         return map;
-    }
-
-    public String refreshToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(",")); // (ROLE_USER,ROLE_ADMIN,ROLE_REGISTERED)
-        long now = new Date().getTime();
-        Date tokenValidity = new Date(now + tokenValidityInMinutes * 60_000);
-        return generateToken(authentication, authorities, tokenValidity, "access");
     }
 
     private String generateToken(Authentication authentication, String authorities, Date validity, String tokenType) {
@@ -107,10 +97,5 @@ public class JwtTokenProvider {
         } catch (JwtException e) {// token is invalid or has expired
             return false;
         }
-    }
-
-    public String getTokenUser(String authToken) {
-        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(authToken).getBody();
-        return (String) claims.get("sub");
     }
 }

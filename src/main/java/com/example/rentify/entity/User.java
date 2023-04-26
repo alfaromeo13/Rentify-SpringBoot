@@ -111,21 +111,25 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Rental> rentals = new ArrayList<>();
 
-    public void addRole(Role role) {
-        roles.add(role);
+    public void addRole(Role role) { //adds role if it isn't already present
+        if (roles.stream().noneMatch(r -> r.getName().equals(role.getName())))
+            roles.add(role);
     }
 
-    public void removeRoleById(int id) {
-        roles.stream().filter(role -> role.getId() == id)
+    public void removeRoleById(int id) { //remove role if it exists
+        roles.stream()
+                .filter(role -> role.getId() == id)
                 .findFirst().ifPresent(role -> roles.remove(role));
     }
 
     public void addFavouriteApartment(Apartment apartment) {
-        favoriteApartments.add(apartment);
+        if (favoriteApartments.stream().noneMatch(a -> a.getId().equals(apartment.getId())))
+            favoriteApartments.add(apartment);
     }
 
     public void removeFavouriteApartmentById(int id) {
-        favoriteApartments.stream().filter(apartment -> apartment.getId() == id)
-                .findFirst().ifPresent(apartment -> apartments.remove(apartment));
+        favoriteApartments.stream()
+                .filter(apartment -> apartment.getId() == id)
+                .findFirst().ifPresent(apartment -> favoriteApartments.remove(apartment));
     }
 }

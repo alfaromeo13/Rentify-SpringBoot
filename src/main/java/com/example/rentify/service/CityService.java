@@ -28,8 +28,8 @@ public class CityService {
     @Cacheable(value = "cityCountry", key = "{#name, #pageable.toString()}")
     public List<CityWithCountryDTO> findByName(String name, Pageable pageable) {
         log.info("Cache miss..Getting data from database.");
-        Page<Integer> countryIdsPage = cityRepository.findIdsPageable(pageable, name);
-        List<City> cities = cityRepository.findByNameStartingWith(countryIdsPage.getContent());
+        Page<Integer> citiesIdsPage = cityRepository.findIdsPageable(pageable, name);
+        List<City> cities = cityRepository.findByNameStartingWith(citiesIdsPage.getContent());
         return cityWithCountryMapper.toDTOList(cities);
     }
 

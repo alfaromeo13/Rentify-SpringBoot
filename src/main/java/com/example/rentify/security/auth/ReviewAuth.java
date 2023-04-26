@@ -13,6 +13,7 @@ public class ReviewAuth { // reviewAuth <- name of the Bean
     private final ReviewRepository reviewRepository;
 
     public boolean hasPermission(Integer reviewId) {
+        //checking if we are the one who wrote the comment
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Review review = reviewRepository.findReviewWithUser(reviewId);
         if (review == null || !review.getIsActive()) return false;

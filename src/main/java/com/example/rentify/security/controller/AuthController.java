@@ -19,8 +19,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -39,7 +37,7 @@ public class AuthController {
         }
      */
 
-    @PostMapping(value = "login")
+    @PostMapping("login")
     public ResponseEntity<Map<String, String>> login(@RequestBody UserLogInDTO userLoginDTO) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(userLoginDTO.getUsername(), userLoginDTO.getPassword());
@@ -58,10 +56,8 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> refresh(@RequestHeader("refresh-token") String token) {
         if (token != null && jwtTokenProvider.validateToken(token, "refresh")) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            String newToken = jwtTokenProvider.refreshToken(authentication);
-            return new ResponseEntity<>(Collections.singletonMap("token", newToken), HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(jwtTokenProvider.createToken(authentication), HttpStatus.OK);
+        } else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
     /*
@@ -76,7 +72,7 @@ public class AuthController {
    */
 
     @SneakyThrows
-    @PostMapping(value = "register")
+    @PostMapping("register")
     public ResponseEntity<Void> register(@RequestBody UserCreateDTO userCreateDTO) {
         Errors errors = new BeanPropertyBindingResult(userCreateDTO, "userCreateDTO");
         ValidationUtils.invokeValidator(userCreateValidator, userCreateDTO, errors);

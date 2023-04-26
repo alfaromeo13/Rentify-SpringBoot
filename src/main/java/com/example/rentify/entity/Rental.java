@@ -37,7 +37,7 @@ public class Rental {
     @ToString.Exclude
     @JoinColumn(name = "status")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Status status;
+    private Status status = new Status("rented");
 
     @ToString.Exclude
     @JsonBackReference

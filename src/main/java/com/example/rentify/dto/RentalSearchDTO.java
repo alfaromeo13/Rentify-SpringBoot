@@ -11,11 +11,8 @@ import java.util.Date;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class RentalDTO implements Serializable {
+public class RentalSearchDTO implements Serializable {
     private Integer id;
-    private Double rentalPrice;
-    private StatusDTO status;
-    private UserDTO user;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date startDate, endDate;
 }

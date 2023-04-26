@@ -11,6 +11,7 @@ import org.springframework.validation.Validator;
 @Component
 @RequiredArgsConstructor
 public class ReviewValidator implements Validator {
+
     private final ApartmentRepository apartmentRepository;
 
     @Override

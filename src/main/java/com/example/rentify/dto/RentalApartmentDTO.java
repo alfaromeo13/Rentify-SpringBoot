@@ -2,11 +2,8 @@ package com.example.rentify.dto;
 
 import lombok.*;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class RentalApartmentDTO extends RentalDTO {
     private Integer apartmentId;
 }

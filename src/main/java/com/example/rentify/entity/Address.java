@@ -1,23 +1,16 @@
 package com.example.rentify.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
 @DynamicInsert
 @DynamicUpdate
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "addresses")
 public class Address {
     @Id
@@ -25,16 +18,15 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    //umjesto ovoga troje treba cuvati x,y i String naziv adrese
+    @Column
+    private Long x;
+
+    @Column
+    private Long y;
+
     @Column
     private String street;
 
-    @Column
-    private String number;
-
-    @Column(name = "postal_code")
-    private String code;
-    //
     @ToString.Exclude
     @JsonBackReference
     @JoinColumn(name = "neighborhood_id")

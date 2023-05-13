@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.regex.Pattern;
+
 @Component
 @RequiredArgsConstructor
 public class UserCreateValidator implements Validator {
@@ -36,21 +38,10 @@ public class UserCreateValidator implements Validator {
      * @param errors   reference to Errors
      */
     private void validateUsername(String username, Errors errors) {
-        if (StringUtils.isBlank(username)) {
-            errors.rejectValue(
-                    "username",
-                    "username.invalid",
-                    "Username is not valid!"
-            );
-        }
-
-        if (StringUtils.isNotBlank(username) && userRepository.existsByUsername(username)) {
-            errors.rejectValue(
-                    "username",
-                    "username.invalid",
-                    "Username is not valid!"
-            );
-        }
+        if (StringUtils.isBlank(username))
+            errors.rejectValue("username", "username.invalid", "Username is not valid!");
+        else if (StringUtils.isNotBlank(username) && userRepository.existsByUsername(username))
+            errors.rejectValue("username", "username.invalid", "Username already taken!");
     }
 
     /**
@@ -61,13 +52,8 @@ public class UserCreateValidator implements Validator {
      * @param errors          reference to Errors
      */
     private void validatePassword(String password, String passwordConfirm, Errors errors) {
-        if (StringUtils.isBlank(password)) {
-            errors.rejectValue(
-                    "password",
-                    "password.invalid",
-                    "Password is not valid!"
-            );
-        }
+        if (StringUtils.isBlank(password))
+            errors.rejectValue("password", "password.invalid", "Password is not valid!");
 
         if (StringUtils.isBlank(passwordConfirm)) {
             errors.rejectValue(
@@ -93,13 +79,8 @@ public class UserCreateValidator implements Validator {
      * @param errors    reference to Errors
      */
     private void validateFirstName(String firstName, Errors errors) {
-        if (StringUtils.isBlank(firstName)) {
-            errors.rejectValue(
-                    "firstName",
-                    "firstName.required",
-                    "First name is required!"
-            );
-        }
+        if (StringUtils.isBlank(firstName))
+            errors.rejectValue("firstName", "firstName.required", "First name is required!");
     }
 
     /**
@@ -109,13 +90,8 @@ public class UserCreateValidator implements Validator {
      * @param errors   reference to Errors
      */
     private void validateLastName(String lastName, Errors errors) {
-        if (StringUtils.isBlank(lastName)) {
-            errors.rejectValue(
-                    "lastName",
-                    "lastName.required",
-                    "Last name is required!"
-            );
-        }
+        if (StringUtils.isBlank(lastName))
+            errors.rejectValue("lastName", "lastName.required", "Last name is required!");
     }
 
     /**
@@ -125,12 +101,16 @@ public class UserCreateValidator implements Validator {
      * @param errors reference to Errors
      */
     private void validateEmail(String email, Errors errors) {
-        if (StringUtils.isBlank(email)) {
-            errors.rejectValue(
-                    "email",
-                    "email.required",
-                    "Email is required!"
-            );
-        }
+        if (StringUtils.isBlank(email))
+            errors.rejectValue("email", "email.required", "Email is required!");
+        else if (!patternMatches(email))
+            errors.rejectValue("email", "email.error", "Email is invalid!");
+        else if (userRepository.existsByEmail(email.toLowerCase()))
+            errors.rejectValue("email", "email.invalid", "Email already taken!");
+    }
+
+    private boolean patternMatches(String email) {
+        return Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$").matcher(email).matches();
     }
 }

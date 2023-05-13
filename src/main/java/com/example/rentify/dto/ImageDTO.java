@@ -4,12 +4,10 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@EqualsAndHashCode(of = {"id", "path"})
 public class ImageDTO implements Serializable {
     private Integer id;
-    //map the path or video haven't decided yet ... ?
+    private String path;
+    private Double size;
 }

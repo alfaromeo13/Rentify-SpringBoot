@@ -5,11 +5,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.util.Date;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class ConversationDTO implements Serializable {
     private Integer id;
     private UserDTO user1;

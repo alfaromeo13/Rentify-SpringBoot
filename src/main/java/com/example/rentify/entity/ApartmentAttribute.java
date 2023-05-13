@@ -7,14 +7,10 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
 @DynamicInsert
 @DynamicUpdate
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "apartments_attributes")
 public class ApartmentAttribute {
     @Id
@@ -29,7 +25,7 @@ public class ApartmentAttribute {
     private Apartment apartment;
 
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "attribute_name")
     private Attribute attribute;
 

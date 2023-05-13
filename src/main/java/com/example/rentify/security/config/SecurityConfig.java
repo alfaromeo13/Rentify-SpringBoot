@@ -66,11 +66,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/messages/**").hasAnyRole("REGISTERED", "ADMIN") //Users with these roles have access
-                .antMatchers("/api/user/all-users").hasRole("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/api/user/**").hasRole("ADMIN")//Only ADMIN can do delete on this API
+                .antMatchers("/api/messages/**").hasAnyRole("REGISTERED", "ADMIN")
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .antMatchers("/api/authenticate/**").permitAll()
-                .antMatchers("/api/**").authenticated() //with permitAll() any other api would be available!
                 .anyRequest().authenticated();//We also won't define rules for all apis
     }
 }

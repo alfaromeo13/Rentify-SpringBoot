@@ -8,6 +8,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ApartmentMapper {
+    ApartmentDTO toDTO(Apartment apartment);
+    Apartment toEntity(ApartmentDTO apartment);
     List<ApartmentDTO> toDTOList(List<Apartment> apartmentList);
-    Apartment toEntity(ApartmentDTO apartmentDTO);
 }

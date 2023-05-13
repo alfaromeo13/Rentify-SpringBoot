@@ -4,11 +4,9 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
+
+@Data
+@EqualsAndHashCode
 public class AttributeDTO implements Serializable {
     private String name;
 }

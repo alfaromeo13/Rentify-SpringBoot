@@ -4,11 +4,7 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class UserDTO implements Serializable {
     private Integer id;
     private String firstName;

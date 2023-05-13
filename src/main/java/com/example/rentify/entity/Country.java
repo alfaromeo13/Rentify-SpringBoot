@@ -9,14 +9,10 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
 @DynamicInsert
 @DynamicUpdate
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "countries")
 public class Country {
     @Id

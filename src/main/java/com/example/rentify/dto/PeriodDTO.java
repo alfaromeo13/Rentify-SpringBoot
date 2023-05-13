@@ -5,6 +5,6 @@ import lombok.*;
 import java.io.Serializable;
 
 @Data
-public class CityDTO implements Serializable {
+public class PeriodDTO implements Serializable {
     private String name;
 }

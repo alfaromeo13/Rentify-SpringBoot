@@ -13,19 +13,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserMapper userMapper;
+    private final JavaMailSender mailSender;
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -33,38 +36,31 @@ public class UserService {
 
     public UserDTO find() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username);
-        return userMapper.toDTO(user);
+        return userMapper.toDTO(userRepository.findByUsername(username));
     }
 
     public void update(UserDTO userDTO) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username);
-        User updatedUser = userMapper.toEntity(userDTO);
-        updatedUser.setId(user.getId());
-        updatedUser.setPassword(user.getPassword());
-        userRepository.save(userMapper.toEntity(userDTO));
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setEmail(userDTO.getEmail());
+        userRepository.save(user);
     }
 
-    public Boolean delete(Integer id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setIsActive(false);
-            userRepository.save(user);
-            return true;
-        } else return false;
-    }
-
-    public Boolean addFavourites(Integer apartmentId) {
+    public void delete() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username);
-        Optional<Apartment> apartment = apartmentRepository.findById(apartmentId);
-        if (apartment.isPresent()) {
-            user.addFavouriteApartment(apartment.get());
-            userRepository.save(user);
-            return true;
-        } else return false;
+        user.setIsActive(false);
+        userRepository.save(user);
+    }
+
+    public void addFavourites(Integer apartmentId) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username);
+        Apartment apartment = apartmentRepository.getById(apartmentId);
+        user.addFavouriteApartment(apartment);
+        userRepository.save(user);
     }
 
     public void deleteFavourites(Integer apartmentId) {
@@ -86,13 +82,41 @@ public class UserService {
     }
 
     public void register(UserCreateDTO userCreateDTO) {
-        //Posto smo napravili bean PasswordEncodera u klasi SecurityConfiguration,ovdje ga injectujemo i
-        //i pozivamo njegovu metodu encode() koja ce izgenerisati proslijedjeni password u BCrypt formatu
+        //we inject PasswordEncoder bean from SecurityConfig and call encode() to make password in BCrypt format
         String encodedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
         User user = userMapper.createUserToEntity(userCreateDTO);
         Role role = roleRepository.findRoleByName("ROLE_REGISTERED");
         user.addRole(role);
         user.setPassword(encodedPassword);
         userRepository.save(user);
+       // sendEmail(user);
+        //napravi da vrati token koji ce trajati 15 minuta da potvrdi
+    }
+
+    private void sendEmail(User user) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("jovanvukovic09@gmail.com");
+        message.setTo(user.getEmail());
+        message.setText("Dear " + user.getFirstName() + "<br>"
+                + "Please click the link below to verify your registration:<br>"
+                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
+                + "Thank you,<br>"
+                + "Rentify.");
+        //umsjesto url cemo staviti link na api koji ce potvrditi korisnikovu registraciju
+        message.setSubject("Please verify your registration");
+        mailSender.send(message);
+        log.info("Mail sent successfully!");
+
+        /*
+
+
+    String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
+
+    content = content.replace("[[URL]]", verifyURL);
+
+
+
+    mailSender.send(message);
+         */
     }
 }

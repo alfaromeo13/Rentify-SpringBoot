@@ -3,13 +3,16 @@ package com.example.rentify.validator;
 import com.example.rentify.dto.UserDTO;
 import com.example.rentify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.regex.Pattern;
+
 @Component
 @RequiredArgsConstructor
-public class UserValidator implements Validator {
+public class UserUpdateValidator implements Validator {
 
     private final UserRepository userRepository;
 
@@ -29,33 +32,36 @@ public class UserValidator implements Validator {
     }
 
     private void validateUsername(String username, Errors errors) {
-        if (username == null)
-            errors.rejectValue("username", "username.required", "username is required!");
-        else if (username.trim().equals("")) //if username is empty
-            errors.rejectValue("username", "username.empty", "username is empty!");
-        else if (userRepository.existsByUsername(username))
-            errors.rejectValue("username", "username.exists", "username already exists!");
+        if (username != null)
+            errors.rejectValue("username", "username.error", "Username should't be sent!");
     }
 
     private void validateEmail(String email, Errors errors) {
-        if (email == null)
+        if (StringUtils.isBlank(email)) //if email is empty
             errors.rejectValue("email", "email.required", "Email is required!");
-        else if (email.trim().equals("")) //if email is empty
-            errors.rejectValue("email", "email.empty", "Email is empty!");
+        else if (!patternMatches(email))
+            errors.rejectValue("email", "email.error", "Email is invalid!");
+        else if (userRepository.existsByEmail(email.toLowerCase()))
+            errors.rejectValue("email", "email.invalid", "Email already taken!");
+    }
+
+    private boolean patternMatches(String email) {
+        return Pattern.compile("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$").matcher(email).matches();
     }
 
     private void validateLastName(String lastName, Errors errors) {
         if (lastName == null)
-            errors.rejectValue("lastName", "lastName.required", "last name is required!");
+            errors.rejectValue("lastName", "lastName.required", "Last name is required!");
         else if (lastName.trim().equals("")) //if lastName is empty
-            errors.rejectValue("lastName", "lastName.empty", "last name is empty!");
+            errors.rejectValue("lastName", "lastName.empty", "Last name is empty!");
     }
 
     private void validateFirstName(String firstName, Errors errors) {
         if (firstName == null)
-            errors.rejectValue("firstName", "firstName.required", "first name is required!");
+            errors.rejectValue("firstName", "firstName.required", "First name is required!");
         else if (firstName.trim().equals("")) //if firstName is empty
-            errors.rejectValue("firstName", "firstName.empty", "first name is empty!");
+            errors.rejectValue("firstName", "firstName.empty", "First name is empty!");
     }
 
     private void validateId(Integer id, Errors errors) {

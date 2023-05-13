@@ -9,7 +9,6 @@ import com.example.rentify.validator.RentalSearchValidator;
 import com.example.rentify.validator.RentalValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/rental")
@@ -31,15 +29,13 @@ public class RentalController {
     private final RentalValidator rentalValidator;
     private final RentalSearchValidator rentalSearchValidator;
 
-    /*
-    {
+    /*{
         "id":4,
-        "startDate":"2023-04-20 16:31:00",
-        "endDate":"2023-04-23 23:29:00"
-    }
-     */
-    //GET -> api da kada izabere mjesec u kalendaru [od do period se salje] vracemo zauzete termine za taj period
-    // takodje cemo onemoguciti klik tih datuma na kalendaru
+        "startDate":"2023-04-20",
+        "endDate":"2023-04-23"
+    } */
+    //GET -> api da kada udjemo na stan i izabere mjesec u kalendaru [od do period se salje] vracemo zauzete termine
+    // za taj period takodje cemo diseblovati klik tih datuma na kalendaru
     @SneakyThrows
     @GetMapping("availability")
     public ResponseEntity<List<RentalSearchDTO>> getRentedForSpecifiedMonth(@RequestBody RentalSearchDTO rentalSearchDTO) {
@@ -51,14 +47,14 @@ public class RentalController {
     }
 
     //GET -> izlistaj sve apartmane koje je korisnik iznajmio do sada(a klikom na preview dugme pozovi apartment
-    //api koji nalazi taj stan preko rental id-a) ?????????????????
+    //api koji nalazi taj stan preko rental id-a)
     @GetMapping("for-user") //http://localhost:8080/api/rental/for-user?page=0&size=5
-    public ResponseEntity<List<RentalDTO>> usersRentingHistory(Pageable pageable) {
-        List<RentalDTO> rentals = rentalService.userRentedHistory(pageable);
+    public ResponseEntity<List<RentalDTO>> usersRentalHistory(Pageable pageable) {
+        List<RentalDTO> rentals = rentalService.userRentingHistory(pageable);
         return new ResponseEntity<>(rentals, HttpStatus.OK);
     }
 
-    //GET ->renting history za odredjeni stan (samo vlasnik moze ovo vidjet)
+    //GET ->renting history za odredjeni stan (samo vlasnik moze ovo da vidi)
     @GetMapping("apartment-id/{id}") //GET http://localhost:8080/api/rental/apartment-id/5?page=0&size=5
     @PreAuthorize("@apartmentAuth.hasPermission(#id)")
     public ResponseEntity<List<RentalDTO>> apartmentRentalHistory(@PathVariable Integer id, Pageable pageable) {
@@ -66,29 +62,41 @@ public class RentalController {
         return new ResponseEntity<>(rentals, HttpStatus.OK);
     }
 
-    /*{  DODAJ VALIDACIJU DATUMA JOS!!!!!
-    "startDate":"2023-04-22 13:30:00",
-    "endDate":"2023-04-22 17:30:00",
-    "rentalPrice":155,
-    "apartmentId":4
+    /*{
+    "startDate": "2023-05-10",
+    "endDate": "2023-05-30",
+    "apartmentId": 1
     }*/
+    @SneakyThrows//front salje da za izabrani stan i period dobije ukupnu cijenu iznajmljivanja
+    @PostMapping("calculate-price") //http://localhost:8080/api/rental/calculate-price
+    public ResponseEntity<Double> calculatePrice(@RequestBody RentalApartmentDTO rentalApartmentDTO) {
+        Errors errors = new BeanPropertyBindingResult(rentalApartmentDTO, "rentalApartmentDTO");
+        ValidationUtils.invokeValidator(rentalValidator, rentalApartmentDTO, errors);
+        if (errors.hasErrors()) throw new ValidationException("Validation error", errors);
+        return new ResponseEntity<>(rentalService.calculatePrice(rentalApartmentDTO), HttpStatus.OK);
+    }
 
-    @PostMapping//POST->api za dodavanje rezervacija za odredjeni stan [saljemo od do period].Kad se izda stan poslaji
+    /* kada budemo dodavali renting za stan na dan biracemo dane sa kalendara,slicno za stan na mejsecnom nivou
+       slacemo samo mjesece a za stan na godisnjem nivou slacemo samo godine
+    {
+    "startDate":"2023-04-22",
+    "endDate":"2024-05-22",
+    "apartmentId":3
+    }*/
+    @PostMapping//POST->api za dodavanje rezervacija za odredjeni stan [saljemo od do period].Kad se izda stan posalji
     @SneakyThrows// notifikaciju vlasniku http://localhost:8080/api/rental/ (kada klijent bude rezervisao stan)
     public ResponseEntity<Void> insert(@RequestBody RentalApartmentDTO rentalApartmentDTO) {
         Errors errors = new BeanPropertyBindingResult(rentalApartmentDTO, "rentalApartmentDTO");
         ValidationUtils.invokeValidator(rentalValidator, rentalApartmentDTO, errors);
         if (errors.hasErrors()) throw new ValidationException("Validation error", errors);
-        log.info("Adding new rental: {}", rentalApartmentDTO);
         rentalService.save(rentalApartmentDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    //DELETE ->api za cancel rentala (preko redisa obavijestiti putem notifikacije klijente o bilo kakvoj promjeni) ???
-    @DeleteMapping("cancel/{id}") //PUT http://localhost:8080/api/rental/2
-    @PreAuthorize("@rentalAuth.hasPermission(#id)") //samo gazda stana moze da ponisti rental
+    //DELETE ->api za cancel rentala (preko redisa obavijestiti putem notifikacije klijente o bilo kakvoj promjeni)
+    @DeleteMapping("cancel/{id}") //DELETE http://localhost:8080/api/rental/cancel/2
+    @PreAuthorize("@rentalAuth.hasPermission(#id)") //samo gazda stana stana moze da ponisti rental za svoj stan
     public ResponseEntity<Void> cancel(@PathVariable Integer id) {
-        log.info("Updating rental with id : {} ", id);
         rentalService.cancel(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

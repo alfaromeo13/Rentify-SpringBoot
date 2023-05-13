@@ -4,12 +4,8 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@EqualsAndHashCode(of = {"attribute", "attributeValue"})
 public class ApartmentAttributeDTO implements Serializable {
     private Integer id;
     private AttributeDTO attribute;

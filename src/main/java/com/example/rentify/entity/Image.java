@@ -7,14 +7,10 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
 @DynamicInsert
 @DynamicUpdate
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "images")
 public class Image {
     @Id
@@ -22,7 +18,11 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    //map the path or image haven't decided yet..?
+    @Column
+    private String path; //full path to the image
+
+    @Column(name = "size_mb")
+    private Double size;
 
     @ToString.Exclude
     @JsonBackReference

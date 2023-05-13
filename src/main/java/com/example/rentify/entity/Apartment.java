@@ -15,8 +15,8 @@ import java.util.*;
 @ToString
 @DynamicInsert
 @DynamicUpdate
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "apartments")
 public class Apartment {
     @Id
@@ -51,11 +51,6 @@ public class Apartment {
     @Column(name = "contact_number")
     private String number;
 
-    @Column(name = "is_available",
-            columnDefinition = "TINYINT(1) DEFAULT 1",
-            insertable = false)
-    private Boolean isAvailable;
-
     @Column(name = "is_active",
             columnDefinition = "TINYINT(1) DEFAULT 1",
             insertable = false)
@@ -63,19 +58,24 @@ public class Apartment {
 
     @ToString.Exclude
     @JoinColumn(name = "address_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Address address;
+
+    @JoinColumn(name = "period_name")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Period period;
 
     @ToString.Exclude
     @JsonManagedReference
-    @OneToMany(mappedBy = "apartment") //
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "apartment", cascade = CascadeType.ALL)
     private Set<ApartmentAttribute> apartmentAttributes = new HashSet<>();
 
     @ToString.Exclude
     @JsonBackReference
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;//
+    private User user;
 
     @ToString.Exclude
     @JsonManagedReference
@@ -89,6 +89,19 @@ public class Apartment {
 
     @ToString.Exclude
     @JsonManagedReference
-    @OneToMany(mappedBy = "apartment")
-    private Set<Image> images = new HashSet<>();
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "apartment", cascade = CascadeType.ALL)
+    private List<Image> images = new ArrayList<>();
+
+    //on setter level we define attribute reference for 'this' apartment
+    public void setApartmentAttributes(Set<ApartmentAttribute> apartmentAttributes) {
+        this.apartmentAttributes = apartmentAttributes;
+        this.apartmentAttributes.forEach(apartmentAttribute -> apartmentAttribute.setApartment(this));
+    }
+
+    //same goes for images
+    public void setImages(List<Image> images) {
+        this.images = images;
+        this.images.forEach(image -> image.setApartment(this));
+    }
 }

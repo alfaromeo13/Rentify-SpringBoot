@@ -5,11 +5,8 @@ import lombok.*;
 import java.io.Serializable;
 import java.util.List;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class UserWithRolesDTO extends UserDTO {
     private List<RoleDTO> roles;
 }

@@ -1,6 +1,5 @@
 package com.example.rentify.security.auth;
 
-import com.example.rentify.entity.Review;
 import com.example.rentify.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,11 +11,8 @@ public class ReviewAuth { // reviewAuth <- name of the Bean
 
     private final ReviewRepository reviewRepository;
 
-    public boolean hasPermission(Integer reviewId) {
-        //checking if we are the one who wrote the comment
+    public boolean hasPermission(Integer reviewId) { //checking if we wrote the comment
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        Review review = reviewRepository.findReviewWithUser(reviewId);
-        if (review == null || !review.getIsActive()) return false;
-        return review.getUser().getUsername().equals(username);
+        return reviewRepository.existsByIdAndIsActiveTrueAndUserUsername(reviewId, username);
     }
 }

@@ -5,7 +5,6 @@ import com.example.rentify.dto.ReviewDTO;
 import com.example.rentify.entity.Review;
 import com.example.rentify.entity.User;
 import com.example.rentify.mapper.ReviewMapper;
-import com.example.rentify.mapper.UserMapper;
 import com.example.rentify.repository.ApartmentRepository;
 import com.example.rentify.repository.ReviewRepository;
 import com.example.rentify.repository.UserRepository;
@@ -26,7 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @CacheEvict(value = "reviews", allEntries = true)
 public class ReviewService {
-    private final UserMapper userMapper;
     private final ReviewMapper reviewMapper;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
@@ -35,9 +33,9 @@ public class ReviewService {
     public void save(ReviewApartmentDTO reviewApartmentDTO) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username);
-        reviewApartmentDTO.setUser(userMapper.toDTO(user));
         Review review = reviewMapper.toEntity(reviewApartmentDTO);
         review.setApartment(apartmentRepository.getById(reviewApartmentDTO.getApartmentId()));
+        review.setUser(user);
         reviewRepository.save(review);
     }
 

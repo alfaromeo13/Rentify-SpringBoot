@@ -9,10 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
 @DynamicInsert
 @DynamicUpdate
 @NoArgsConstructor
@@ -21,5 +19,5 @@ import javax.persistence.Table;
 public class Status {
     @Id
     @Column
-    private String name;
+    private String name = "rented";
 }

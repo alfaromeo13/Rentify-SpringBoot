@@ -21,6 +21,7 @@ public class Filter {
         Join<City, Country> countryJoin = cityJoin.join("country", JoinType.LEFT);
         Join<Apartment, User> userJoin = root.join("user", JoinType.LEFT);
         Join<Apartment, Rental> rentalJoin = root.join("rentals", JoinType.LEFT);
+        Join<Apartment, Period> periodJoin = root.join("period", JoinType.LEFT);
         filterById(root, criteriaBuilder, predicateList);
         filterByPrice(root, criteriaBuilder, predicateList);
         filterByTitle(root, criteriaBuilder, predicateList);
@@ -31,7 +32,7 @@ public class Filter {
         filterByNumOfBedrooms(root, criteriaBuilder, predicateList);
         filterByCountryName(criteriaBuilder, predicateList, countryJoin);
         filterByUserId(criteriaBuilder, predicateList, userJoin);
-        filterByAvailabilityDate(root, criteriaBuilder, predicateList, rentalJoin);
+        filterByAvailabilityDate(criteriaBuilder, root, predicateList, rentalJoin);
         filterByAttribute(criteriaBuilder, predicateList, root
                 , "WiFi", apartmentSearch.getWiFi());
         filterByAttribute(criteriaBuilder, predicateList, root,
@@ -52,20 +53,41 @@ public class Filter {
                 "Appliances", apartmentSearch.getAppliances());
         filterByAttribute(criteriaBuilder, predicateList, root,
                 "Elevator", apartmentSearch.getElevator());
+        filterByPeriod(criteriaBuilder, predicateList, periodJoin);
+        Predicate isActive = criteriaBuilder.isTrue(root.get("isActive"));
+        predicateList.add(isActive);// we filter only active apartments!
     }
 
-    private void filterByAvailabilityDate(Root<Apartment> root, CriteriaBuilder criteriaBuilder,
-                                          List<Predicate> predicateList, Join<Apartment, Rental> rentalJoin) {
-        //logika treba da bude da iz rentala uzme sve datume koji su razliciti od ovih vidji radi li ovo sto si napravio
-        if (apartmentSearch.getAvailableFrom() != null) {
-            Predicate availableFromPredicate = criteriaBuilder.notEqual(
-                    rentalJoin.get("startDate"), apartmentSearch.getAvailableFrom());
-            predicateList.add(availableFromPredicate);
+    private void filterByPeriod(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,
+                                Join<Apartment, Period> periodJoin) {
+        if (apartmentSearch.getPeriod() != null) {
+            Predicate periodPredicate = criteriaBuilder.equal(
+                    periodJoin.get("name"), apartmentSearch.getPeriod());
+            predicateList.add(periodPredicate);
         }
-        if (apartmentSearch.getAvailableTo() != null) {
-            Predicate availableToPredicate = criteriaBuilder.notEqual(
-                    root.get("endDate"), apartmentSearch.getAvailableTo());
-            predicateList.add(availableToPredicate);
+    }
+
+    private void filterByAvailabilityDate(CriteriaBuilder criteriaBuilder, Root<Apartment> root,
+                                          List<Predicate> predicateList, Join<Apartment, Rental> rentalJoin) {
+        if (apartmentSearch.getAvailableFrom() != null && apartmentSearch.getAvailableTo() != null) {
+            Predicate completeOverlap = criteriaBuilder.and(
+                    criteriaBuilder.lessThan(rentalJoin.get("startDate"), apartmentSearch.getAvailableTo()),
+                    criteriaBuilder.greaterThan(rentalJoin.get("endDate"), apartmentSearch.getAvailableFrom()));
+            Predicate withinRange = criteriaBuilder.and(
+                    criteriaBuilder.greaterThanOrEqualTo(rentalJoin.get("startDate"), apartmentSearch.getAvailableFrom()),
+                    criteriaBuilder.lessThanOrEqualTo(rentalJoin.get("endDate"), apartmentSearch.getAvailableTo()));
+            Predicate partialOverlap = criteriaBuilder.and(
+                    criteriaBuilder.lessThanOrEqualTo(rentalJoin.get("startDate"), apartmentSearch.getAvailableFrom()),
+                    criteriaBuilder.greaterThanOrEqualTo(rentalJoin.get("endDate"), apartmentSearch.getAvailableTo()));
+            Predicate combined = criteriaBuilder.or(completeOverlap, withinRange, partialOverlap);
+            Predicate occupiedForPeriodPredicate = criteriaBuilder
+                    .and(criteriaBuilder.equal(rentalJoin.get("status"), new Status()), combined);
+            Predicate unoccupiedForPeriodPredicate = criteriaBuilder.or(
+                    criteriaBuilder.isNull(rentalJoin.get("id")),
+                    criteriaBuilder.not(occupiedForPeriodPredicate));
+            //ovaj predikat iznad proverava da li je atribut "id" u Rental objektu jednak null što znači da apartman
+            // nije izdat, ili ako je apartman izdat, proverava da li ne zadovoljava "occupiedForPeriodPredicate" uslov
+            predicateList.add(unoccupiedForPeriodPredicate);
         }
     }
 
@@ -74,7 +96,8 @@ public class Filter {
         if (attributeValue != null) {
             Join<Apartment, ApartmentAttribute> apartmentAttributesJoin = root
                     .join("apartmentAttributes", JoinType.LEFT);
-            Join<ApartmentAttribute, Attribute> attributeJoin = apartmentAttributesJoin.join("attribute", JoinType.LEFT);
+            Join<ApartmentAttribute, Attribute> attributeJoin =
+                    apartmentAttributesJoin.join("attribute", JoinType.LEFT);
             Predicate attributePredicate = criteriaBuilder.and(
                     criteriaBuilder.equal(attributeJoin.get("name"), attributeName)
                     , criteriaBuilder.equal(apartmentAttributesJoin.get("attributeValue"), attributeValue));
@@ -110,7 +133,7 @@ public class Filter {
 
     private void filterByNeighborhoodName(CriteriaBuilder criteriaBuilder,
                                           List<Predicate> predicateList, Join<Address, Neighborhood> neighborhoodJoin) {
-        if (apartmentSearch.getNeighborhoodName() != null) {//join example
+        if (apartmentSearch.getNeighborhoodName() != null) {
             Predicate neighborhoodNamePredicate = criteriaBuilder.equal(
                     neighborhoodJoin.get("name"), apartmentSearch.getNeighborhoodName());
             predicateList.add(neighborhoodNamePredicate);
@@ -119,7 +142,7 @@ public class Filter {
 
     private void filterByCityName(CriteriaBuilder criteriaBuilder,
                                   List<Predicate> predicateList, Join<Neighborhood, City> cityJoin) {
-        if (apartmentSearch.getCityName() != null) {//join example
+        if (apartmentSearch.getCityName() != null) {
             Predicate cityNamePredicate = criteriaBuilder.equal(
                     cityJoin.get("name"), apartmentSearch.getCityName());
             predicateList.add(cityNamePredicate);

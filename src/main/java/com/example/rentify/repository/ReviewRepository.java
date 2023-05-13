@@ -15,6 +15,5 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
             "review.isActive = true order by review.id desc")
     Page<Review> findReviewsByApartmentId(@Param("id") Integer id, Pageable pageable);
 
-    @Query(value = "select review from Review review join fetch review.user user where review.id =:id")
-    Review findReviewWithUser(@Param("id") Integer id);
+    boolean existsByIdAndIsActiveTrueAndUserUsername(Integer id,String username);
 }

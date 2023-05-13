@@ -10,14 +10,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
 @DynamicInsert
 @DynamicUpdate
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "users")
 public class User {
     @Id
@@ -39,14 +35,7 @@ public class User {
 
     @Column
     private String password;
-    //The insertable and updatable attributes are set to false
-    // to tell Hibernate to use the default values when inserting or updating rows.
-    //because Hibernate is inserting NULL values instead of using the default values
-    // when you insert a new row.To use the default values in Hibernate, you can
-    // specify the @Column annotation for each column in your Java entity class and
-    // set the insertable and updatable attributes to false. This tells Hibernate to
-    // not include the column in INSERT or UPDATE statements, which causes the database
-    // to use the default value for the column.
+
     @Column(name = "created_at",
             columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP",
             insertable = false, updatable = false)

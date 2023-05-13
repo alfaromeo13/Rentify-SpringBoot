@@ -8,14 +8,10 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import java.util.Date;
 
+@Data
 @Entity
-@Getter
-@Setter
-@ToString
 @DynamicInsert
 @DynamicUpdate
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "rentals")
 public class Rental {
     @Id
@@ -24,11 +20,11 @@ public class Rental {
     private Integer id;
 
     @Column(name = "start_date")
-    @Temporal(value = TemporalType.TIMESTAMP)
+    @Temporal(value = TemporalType.DATE)
     private Date startDate;
 
     @Column(name = "end_date")
-    @Temporal(value = TemporalType.TIMESTAMP)
+    @Temporal(value = TemporalType.DATE)
     private Date endDate;
 
     @Column(name = "rental_price")
@@ -37,7 +33,7 @@ public class Rental {
     @ToString.Exclude
     @JoinColumn(name = "status")
     @ManyToOne(fetch = FetchType.LAZY)
-    private Status status = new Status("rented");
+    private Status status = new Status();
 
     @ToString.Exclude
     @JsonBackReference

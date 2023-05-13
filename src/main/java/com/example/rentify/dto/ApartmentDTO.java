@@ -4,30 +4,25 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-@Getter
-@Setter
-@ToString
+@Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class ApartmentDTO implements Serializable {
     private Integer id;
     private String title;
+    private Double price;
     private String description;
     private Integer sqMeters;
-    private Double price;//mjesecna cijena
     private Integer numOfBedrooms;
     private Integer numOfBathrooms;
     private Date createdAt;
     private String number;
-    private Boolean isAvailable;
     private Boolean isActive;
 
     private UserDTO user; //owner
+    private PeriodDTO period;
     private AddressDTO address;
-    private List<ImageDTO> images;
-    private Set<ApartmentAttributeDTO> apartmentAttributes = new HashSet<>();
+    private Set<ImageDTO> images;
+    private Set<ApartmentAttributeDTO> apartmentAttributes;
 }

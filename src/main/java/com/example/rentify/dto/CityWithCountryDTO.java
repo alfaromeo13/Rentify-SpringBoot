@@ -4,11 +4,8 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-public class CityWithCountryDTO extends CityDTO implements Serializable {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class CityWithCountryDTO extends CityDTO {
     private CountryDTO country;
 }

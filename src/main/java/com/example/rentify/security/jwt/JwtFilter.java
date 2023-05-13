@@ -1,5 +1,6 @@
 package com.example.rentify.security.jwt;
 
+import com.example.rentify.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
+    private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
@@ -31,7 +33,8 @@ public class JwtFilter extends OncePerRequestFilter {
             String jwt = resolveToken(request);
             if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt, "access")) {
                 Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (userRepository.existsByUsernameAndIsActiveTrue(authentication.getName()))
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException | SignatureException | MalformedJwtException | UnsupportedJwtException

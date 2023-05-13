@@ -2,7 +2,7 @@ package com.example.rentify.security.controller;
 
 import com.example.rentify.exception.ValidationException;
 import com.example.rentify.security.dto.UserCreateDTO;
-import com.example.rentify.security.dto.UserLogInDTO;
+import com.example.rentify.security.dto.UserLoginDTO;
 import com.example.rentify.security.jwt.JwtTokenProvider;
 import com.example.rentify.security.validator.UserCreateValidator;
 import com.example.rentify.service.UserService;
@@ -38,7 +38,7 @@ public class AuthController {
      */
 
     @PostMapping("login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody UserLogInDTO userLoginDTO) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody UserLoginDTO userLoginDTO) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(userLoginDTO.getUsername(), userLoginDTO.getPassword());
         try {
@@ -60,16 +60,14 @@ public class AuthController {
         } else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
-    /*
-      {
+    /*{
           "username" : "IVICA",
           "password" : "MARICA",
           "passwordConfirm":"MARICA",
           "firstName": "Vanja",
-          "lastName":"Vukovic"
+          "lastName":"Vukovic",
           "email":"aSDASD@ASDASDASD"
-      }
-   */
+      }*/
 
     @SneakyThrows
     @PostMapping("register")

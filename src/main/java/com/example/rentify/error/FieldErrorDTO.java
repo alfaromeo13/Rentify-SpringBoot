@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class FieldErrorDTO {
-    private final String field;//koje polje je generisalo gresku
-    private final String translationKey;//error code tj kljuc za prevod
+    private final String field;//field which triggered exception
+    private final String translationKey;//error code
     private final String defaultMessage;
 }

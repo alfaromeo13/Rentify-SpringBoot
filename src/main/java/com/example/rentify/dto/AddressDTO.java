@@ -4,14 +4,10 @@ import lombok.*;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class AddressDTO implements Serializable {
-    private Integer id;
+    private Long x;
+    private Long y;
     private String street;
-    private String number;
-    private String code;
+    private NeighborhoodDTO neighborhood;
 }

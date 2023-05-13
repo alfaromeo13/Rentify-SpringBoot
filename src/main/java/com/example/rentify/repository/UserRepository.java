@@ -13,8 +13,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "select user from User user join fetch user.roles where user.id = :id")
     User findUserWithRoles(@Param("id") Integer id);
 
-    @Query(value = "select user from User user left join fetch user.roles " +
-            " where user.username = :username and user.isActive = true ")
+    @Query(value = "select user from User user join fetch user.roles " +
+            " where user.username = :username")
     User findByUsername(@Param("username") String username);
 
     @Query(value = "select apartment.id from User user " +
@@ -22,4 +22,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Page<Integer> favouriteApartmentsForUser(@Param("username") String username, Pageable pageable);
 
     boolean existsByUsername(String username);
+
+    boolean existsByUsernameAndIsActiveTrue(String username);
+
+    boolean existsByEmail(String email);
 }

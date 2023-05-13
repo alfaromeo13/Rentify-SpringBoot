@@ -14,25 +14,22 @@ import java.util.List;
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, Integer> {
     @Query(value = "select rental from Rental rental " +
-            "join rental.user user join rental.status status " +
-            "join rental.apartment apartment where apartment.id= :id order by rental.id desc")
+            "join rental.user user join rental.apartment apartment where apartment.id= :id order by rental.id desc")
     Page<Rental> findRentalsByApartmentId(@Param("id") Integer id, Pageable pageable);
 
-    @Query(value = "select rental,apartment.id from Rental rental " +
-            "join rental.user user join rental.status status " +
-            "join rental.apartment apartment where user.username= :name order by rental.id desc")
+    @Query(value = "select rental from Rental rental join rental.user user " +
+            "where user.username= :name order by rental.id desc")
     Page<Rental> findRentalsByUsername(@Param("name") String username, Pageable pageable);
+
+    List<Rental> findByStatusNameAndEndDate(String statusName, Date today);
+
+    boolean existsByIdAndApartmentUserUsername(Integer id, String username);
 
     @Query(value = "select rental from Rental rental " +
             "join rental.status status join rental.apartment apartment " +
             "where apartment.id = :id and status = 'rented' and (" +
-            "(rental.startDate <= :endDate and rental.endDate >= :startDate) or" +
+            "(rental.startDate < :endDate and rental.endDate > :startDate) or" +
             "(rental.startDate >= :startDate and rental.endDate <= :endDate) or" +
             "(rental.startDate <= :startDate and rental.endDate >= :endDate))")
-    List<Rental> findForSpecifPeriod
-            (@Param("id") Integer id, @Param("startDate") Date start, @Param("endDate") Date end);
-
-    @Query(value = "select user.username from Rental rental join rental.apartment apartment" +
-            " join apartment.user user where rental.id =:id")
-    String ownerUsername(@Param("id") Integer id);
+    List<Rental> findForPeriod(@Param("id") Integer id, @Param("startDate") Date start, @Param("endDate") Date end);
 }

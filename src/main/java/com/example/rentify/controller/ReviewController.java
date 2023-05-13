@@ -8,6 +8,7 @@ import com.example.rentify.validator.ReviewValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,8 @@ public class ReviewController {
     //da uzmemo komentare za 1 stan sortirane od najnovijeg do najstarijeg(samo sortiamo po id-evi u opadajucem redolslj)
     @GetMapping("apartment-id/{id}") //GET http://localhost:8080/api/review/apartment-id/5?page=0&size=5
     public ResponseEntity<List<ReviewDTO>> findForApartment(@PathVariable Integer id, Pageable pageable) {
-        List<ReviewDTO> reviews = reviewService.findByApartmentId(id, pageable);
+        List<ReviewDTO> reviews = reviewService
+                .findByApartmentId(id, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
@@ -68,7 +70,7 @@ public class ReviewController {
         {
         "grade":5,
         "comment":"komentar",
-        "apartmentId":4,
+        "apartmentId":4
         }
  */
 }

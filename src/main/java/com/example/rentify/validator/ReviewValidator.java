@@ -33,8 +33,7 @@ public class ReviewValidator implements Validator {
     }
 
     private void validateId(Integer id, Errors errors) {
-        if (id != null)
-            errors.rejectValue("id", "id.error", "Id should't be sent!");
+        if (id != null) errors.rejectValue("id", "id.error", "Id should't be sent!");
     }
 
     private void validateComment(String comment, Errors errors) {
@@ -59,13 +58,14 @@ public class ReviewValidator implements Validator {
 
     private void validateApartmentId(Integer apartmentId, Errors errors) {
         if (apartmentId == null)
-            errors.rejectValue("apartmentId", "apartment.id.required", "Apartment id is required!");
+            errors.rejectValue("apartmentId",
+                    "apartment.id.required",
+                    "Apartment id is required!");
         else if (!apartmentRepository.existsById(apartmentId))
             errors.rejectValue("apartmentId", "invalid.id", "Invalid apartment id!");
     }
 
     private void validateUser(UserDTO user, Errors errors) {
-        if (user != null)
-            errors.rejectValue("user", "user.error", "User should't be sent!");
+        if (user != null) errors.rejectValue("user", "user.error", "User should't be sent!");
     }
 }

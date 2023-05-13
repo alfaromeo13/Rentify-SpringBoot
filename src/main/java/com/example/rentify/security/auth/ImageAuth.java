@@ -1,17 +1,17 @@
 package com.example.rentify.security.auth;
 
-import com.example.rentify.repository.RentalRepository;
+import com.example.rentify.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class RentalAuth {
-    private final RentalRepository rentalRepository;
+public class ImageAuth {
+    private final ImageRepository imageRepository;
 
-    public boolean hasPermission(Integer rentalId) { //checking if we are the owner of apartment
+    public boolean hasPermission(Integer imageId) { //checking if we are the owner of that image
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return rentalRepository.existsByIdAndApartmentUserUsername(rentalId, username);
+        return imageRepository.existsByIdAndApartmentUserUsername(imageId, username);
     }
 }

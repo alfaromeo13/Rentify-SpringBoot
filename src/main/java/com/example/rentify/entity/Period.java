@@ -4,14 +4,18 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Data
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Table(name = "attributes")
-public class Attribute {
-    @Id @Column
+@Table(name = "periods")
+public class Period {
+    @Id
+    @Column
     private String name;
 }

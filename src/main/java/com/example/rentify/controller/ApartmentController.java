@@ -89,6 +89,9 @@ public class ApartmentController {
     "period": {
         "name": "month"
     },
+    "propertyType":{
+        "name": "Condo"
+    },
     "apartmentAttributes": [
         {
             "attribute": {
@@ -108,7 +111,7 @@ public class ApartmentController {
             },
             "attributeValue": "Underground"
         }
-    ]
+      ]
     }
      */
 }

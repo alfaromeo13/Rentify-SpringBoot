@@ -4,6 +4,7 @@ import com.example.rentify.dto.*;
 import com.example.rentify.exception.ValidationException;
 import com.example.rentify.repository.AttributeRepository;
 import com.example.rentify.repository.PeriodRepository;
+import com.example.rentify.repository.PropertyTypeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,7 @@ public class ApartmentValidator implements Validator {
 
     private final PeriodRepository periodRepository;
     private final AttributeRepository attributeRepository;
+    private final PropertyTypeRepository propertyTypeRepository;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -42,11 +44,19 @@ public class ApartmentValidator implements Validator {
         validateNumOfBedrooms(apartment.getNumOfBedrooms(), errors);
         validateNumOfBathrooms(apartment.getNumOfBedrooms(), errors);
         validatePeriod(apartment.getPeriod(), errors);
+        validateType(apartment.getPropertyType(), errors);
         validatePhoneNumber(apartment.getNumber(), errors);
         validateAddress(apartment.getAddress(), errors);
         validateImages(apartment.getImages(), errors);
         validateAttributes(apartment.getApartmentAttributes(), errors);
         if (errors.hasErrors()) throw new ValidationException("Validation error", errors);
+    }
+
+    private void validateType(PropertyTypeDTO propertyType, Errors errors) {
+        if (propertyType == null)
+            errors.rejectValue("propertyType", "type.required", "Property type is missing!");
+        else if (!propertyTypeRepository.existsByName(propertyType.getName()))
+            errors.rejectValue("propertyType", "type.error", "Invalid property type value!");
     }
 
     private void validateId(Integer id, Errors errors) {

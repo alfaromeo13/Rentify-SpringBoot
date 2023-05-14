@@ -18,6 +18,7 @@ public class Filter {
         Join<Apartment, Address> addressJoin = root.join("address", JoinType.LEFT);
         Join<Address, Neighborhood> neighborhoodJoin = addressJoin.join("neighborhood", JoinType.LEFT);
         Join<Neighborhood, City> cityJoin = neighborhoodJoin.join("city", JoinType.LEFT);
+        Join<Apartment, PropertyType> typeJoin = root.join("propertyType", JoinType.LEFT);
         Join<City, Country> countryJoin = cityJoin.join("country", JoinType.LEFT);
         Join<Apartment, User> userJoin = root.join("user", JoinType.LEFT);
         Join<Apartment, Rental> rentalJoin = root.join("rentals", JoinType.LEFT);
@@ -54,7 +55,16 @@ public class Filter {
         filterByAttribute(criteriaBuilder, predicateList, root,
                 "Elevator", apartmentSearch.getElevator());
         filterByPeriod(criteriaBuilder, predicateList, periodJoin);
+        filterByPropertyType(criteriaBuilder, predicateList, typeJoin);
         filterByActive(root, userJoin, criteriaBuilder, predicateList);
+    }
+
+    private void filterByPropertyType(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList, Join<Apartment, PropertyType> typeJoin) {
+        if (apartmentSearch.getType() != null) {
+            Predicate typePredicate = criteriaBuilder.equal(
+                    typeJoin.get("name"), apartmentSearch.getType());
+            predicateList.add(typePredicate);
+        }
     }
 
     private void filterByActive(Root<Apartment> root, Join<Apartment, User> userJoin,
@@ -62,7 +72,7 @@ public class Filter {
         Predicate activeApartment = criteriaBuilder.isTrue(root.get("isActive"));
         predicateList.add(activeApartment);// we filter only active apartments!
         Predicate activeUser = criteriaBuilder.isTrue(userJoin.get("isActive"));
-        predicateList.add(activeUser);// and we filter only active users!
+        predicateList.add(activeUser);// also we filter only active users!
     }
 
     private void filterByPeriod(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,

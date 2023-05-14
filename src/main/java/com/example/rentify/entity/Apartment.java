@@ -65,6 +65,10 @@ public class Apartment {
     @ManyToOne(fetch = FetchType.LAZY)
     private Period period;
 
+    @JoinColumn(name = "property_type")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private PropertyType propertyType;
+
     @ToString.Exclude
     @JsonManagedReference
     @Setter(AccessLevel.NONE)

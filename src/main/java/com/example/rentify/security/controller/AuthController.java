@@ -81,7 +81,7 @@ public class AuthController {
     }
 
     @GetMapping("/verify") //http://localhost:8080/api/authenticate/verify?mail=...
-    public ResponseEntity<String> verifyEmail(@RequestParam String mail) {
+    public ResponseEntity<String> verifyAccount(@RequestParam String mail) {
         if (userService.activateAccount(mail))
             return ResponseEntity.ok("Your registration has been confirmed and your account is now active.");
         else return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);

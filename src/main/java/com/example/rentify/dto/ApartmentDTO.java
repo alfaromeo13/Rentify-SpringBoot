@@ -24,5 +24,6 @@ public class ApartmentDTO implements Serializable {
     private PeriodDTO period;
     private AddressDTO address;
     private Set<ImageDTO> images;
+    private PropertyTypeDTO propertyType;
     private Set<ApartmentAttributeDTO> apartmentAttributes;
 }

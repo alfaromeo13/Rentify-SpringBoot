@@ -27,6 +27,7 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
             root.fetch("user", JoinType.LEFT);
             root.fetch("period", JoinType.LEFT);
             root.fetch("images", JoinType.LEFT);
+            root.fetch("propertyType",JoinType.LEFT);
             root.fetch("apartmentAttributes", JoinType.LEFT)
             .fetch("attribute", JoinType.LEFT);
             // we know that at the end we want to return DTO class instead of Entity class

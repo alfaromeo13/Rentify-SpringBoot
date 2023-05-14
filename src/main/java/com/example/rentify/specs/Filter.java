@@ -32,7 +32,7 @@ public class Filter {
         filterByNumOfBedrooms(root, criteriaBuilder, predicateList);
         filterByCountryName(criteriaBuilder, predicateList, countryJoin);
         filterByUserId(criteriaBuilder, predicateList, userJoin);
-        filterByAvailabilityDate(criteriaBuilder, root, predicateList, rentalJoin);
+        filterByAvailabilityDate(criteriaBuilder, predicateList, rentalJoin);
         filterByAttribute(criteriaBuilder, predicateList, root
                 , "WiFi", apartmentSearch.getWiFi());
         filterByAttribute(criteriaBuilder, predicateList, root,
@@ -54,8 +54,15 @@ public class Filter {
         filterByAttribute(criteriaBuilder, predicateList, root,
                 "Elevator", apartmentSearch.getElevator());
         filterByPeriod(criteriaBuilder, predicateList, periodJoin);
-        Predicate isActive = criteriaBuilder.isTrue(root.get("isActive"));
-        predicateList.add(isActive);// we filter only active apartments!
+        filterByActive(root, userJoin, criteriaBuilder, predicateList);
+    }
+
+    private void filterByActive(Root<Apartment> root, Join<Apartment, User> userJoin,
+                                CriteriaBuilder criteriaBuilder, List<Predicate> predicateList) {
+        Predicate activeApartment = criteriaBuilder.isTrue(root.get("isActive"));
+        predicateList.add(activeApartment);// we filter only active apartments!
+        Predicate activeUser = criteriaBuilder.isTrue(userJoin.get("isActive"));
+        predicateList.add(activeUser);// and we filter only active users!
     }
 
     private void filterByPeriod(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,
@@ -67,7 +74,7 @@ public class Filter {
         }
     }
 
-    private void filterByAvailabilityDate(CriteriaBuilder criteriaBuilder, Root<Apartment> root,
+    private void filterByAvailabilityDate(CriteriaBuilder criteriaBuilder,
                                           List<Predicate> predicateList, Join<Apartment, Rental> rentalJoin) {
         if (apartmentSearch.getAvailableFrom() != null && apartmentSearch.getAvailableTo() != null) {
             Predicate completeOverlap = criteriaBuilder.and(
@@ -85,8 +92,8 @@ public class Filter {
             Predicate unoccupiedForPeriodPredicate = criteriaBuilder.or(
                     criteriaBuilder.isNull(rentalJoin.get("id")),
                     criteriaBuilder.not(occupiedForPeriodPredicate));
-            //ovaj predikat iznad proverava da li je atribut "id" u Rental objektu jednak null što znači da apartman
-            // nije izdat, ili ako je apartman izdat, proverava da li ne zadovoljava "occupiedForPeriodPredicate" uslov
+            //if apartment with that id is not in 'rentals' table meaning it is not rented yet or it is rented
+            //and we check if it isn't rented for some specified period(not in "occupiedForPeriodPredicate")
             predicateList.add(unoccupiedForPeriodPredicate);
         }
     }

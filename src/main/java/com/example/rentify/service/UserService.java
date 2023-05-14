@@ -1,28 +1,31 @@
 package com.example.rentify.service;
 
 import com.example.rentify.dto.*;
-import com.example.rentify.entity.Apartment;
-import com.example.rentify.entity.Role;
-import com.example.rentify.entity.User;
+import com.example.rentify.entity.*;
 import com.example.rentify.mapper.UserMapper;
 import com.example.rentify.repository.ApartmentRepository;
 import com.example.rentify.repository.RoleRepository;
 import com.example.rentify.repository.UserRepository;
 import com.example.rentify.security.dto.UserCreateDTO;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.SneakyThrows;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.internet.MimeMessage;
+import java.io.File;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -37,6 +40,15 @@ public class UserService {
     public UserDTO find() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userMapper.toDTO(userRepository.findByUsername(username));
+    }
+
+    public boolean activateAccount(String mail) {
+        if (userRepository.existsByEmail(mail)) {
+            User user = userRepository.findByEmail(mail);
+            user.setIsActive(true);
+            userRepository.save(user);
+            return true;
+        } else return false;
     }
 
     public void update(UserDTO userDTO) {
@@ -81,6 +93,10 @@ public class UserService {
         return usersPage.hasContent() ? userMapper.toDTOList(usersPage.getContent()) : Collections.emptyList();
     }
 
+    public boolean isActive(String username) {
+        return userRepository.existsByUsernameAndIsActiveTrue(username);
+    }
+
     public void register(UserCreateDTO userCreateDTO) {
         //we inject PasswordEncoder bean from SecurityConfig and call encode() to make password in BCrypt format
         String encodedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
@@ -89,34 +105,40 @@ public class UserService {
         user.addRole(role);
         user.setPassword(encodedPassword);
         userRepository.save(user);
-       // sendEmail(user);
-        //napravi da vrati token koji ce trajati 15 minuta da potvrdi
+        sendEmail(user);
     }
 
+    //we schedule a task to run every hour
+    @Scheduled(cron = "0 0 * * * *") // cron expressions
+    public void checkSpam() {
+        List<User> users = userRepository.findByIsActiveFalse();
+        for (User user : users) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(user.getCreatedAt());
+            // add 15 minutes to the calendar
+            calendar.add(Calendar.MINUTE, 15);
+            //if 15min passed we delete that account
+            if (calendar.getTime().before(new Date()))
+                userRepository.delete(user);
+        }
+    }
+
+    @SneakyThrows
     private void sendEmail(User user) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("jovanvukovic09@gmail.com");
-        message.setTo(user.getEmail());
-        message.setText("Dear " + user.getFirstName() + "<br>"
-                + "Please click the link below to verify your registration:<br>"
-                + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
-                + "Thank you,<br>"
-                + "Rentify.");
-        //umsjesto url cemo staviti link na api koji ce potvrditi korisnikovu registraciju
-        message.setSubject("Please verify your registration");
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom("jovanvukovic09@gmail.com");
+        helper.setTo(user.getEmail());
+        helper.setSubject("Please verify your registration");
+        //url is api for confirming user account(anyone can access this api because of security config)
+        String url = "http://localhost:8080/api/authenticate/verify?mail=" + user.getEmail();
+        helper.setText("<img src='cid:identifier1234'><br>"
+                + "Dear " + user.getFirstName() + ",<br>"
+                + "To activate your account, please click on the link below<br>"
+                + "<h3><a href='" + url + "' target=\"_self\"> Activate now </a></h3><br>"
+                + "Thank you,<br> Rentify", true);
+        FileSystemResource res = new FileSystemResource(new File("img/rentify.png"));
+        helper.addInline("identifier1234", res);
         mailSender.send(message);
-        log.info("Mail sent successfully!");
-
-        /*
-
-
-    String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
-
-    content = content.replace("[[URL]]", verifyURL);
-
-
-
-    mailSender.send(message);
-         */
     }
 }

@@ -8,22 +8,29 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    @Query(value = "select user from User user join fetch user.roles where user.id = :id")
-    User findUserWithRoles(@Param("id") Integer id);
 
-    @Query(value = "select user from User user join fetch user.roles " +
-            " where user.username = :username")
-    User findByUsername(@Param("username") String username);
+    User findByEmail(String mail);
 
-    @Query(value = "select apartment.id from User user " +
-            "join user.favoriteApartments apartment where user.username = :username")
-    Page<Integer> favouriteApartmentsForUser(@Param("username") String username, Pageable pageable);
+    List<User> findByIsActiveFalse();
+
+    boolean existsByEmail(String email);
 
     boolean existsByUsername(String username);
 
     boolean existsByUsernameAndIsActiveTrue(String username);
 
-    boolean existsByEmail(String email);
+    @Query(value = "select user from User user join fetch user.roles " +
+            " where user.username = :username")
+    User findByUsername(@Param("username") String username);
+
+    @Query(value = "select user from User user join fetch user.roles where user.id = :id")
+    User findUserWithRoles(@Param("id") Integer id);
+
+    @Query(value = "select apartment.id from User user " +
+            "join user.favoriteApartments apartment where user.username = :username")
+    Page<Integer> favouriteApartmentsForUser(@Param("username") String username, Pageable pageable);
 }

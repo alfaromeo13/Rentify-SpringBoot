@@ -16,14 +16,14 @@ public class ReviewValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        //definisemo nad kojim objektom radimo validaciju.Ako pozovemo ovaj validator
-        return clazz.isAssignableFrom(ReviewApartmentDTO.class); //nad nekom drugom klasom dobicemo automatski gresku!
+        //we define on which object we do validation(if we call on other object there will be exception)
+        return clazz.isAssignableFrom(ReviewApartmentDTO.class);
     }
 
-    @Override //Ovdje vrsimo validaciju proslijedjenog objekta
+    @Override
     public void validate(Object target, Errors errors) {
-        //target-objekat koji primamo
-        //ako je errors prazan znamo da je validacija prosla uspjesno i po tome gledamo!!
+        //target - object which we validate
+        //if 'errors' is empty validation was successful
         ReviewApartmentDTO review = (ReviewApartmentDTO) target;
         validateApartmentId(review.getApartmentId(), errors);
         validateComment(review.getComment(), errors);
@@ -38,15 +38,12 @@ public class ReviewValidator implements Validator {
 
     private void validateComment(String comment, Errors errors) {
         if (comment == null) {
-            //field - naziv polja iz klase koji nije validan tj nad kojim se desila greska
-            //error code - skraceni prevod greske(posebno korisno kod apliakcija koje podrzavaju visejezicnost)
-            //prevodom se ne bavi bekend vec frontend klijentska aplikacija
+            //field - name of field from class which is not valid
+            //error code - short translation of an error(we will translate later on frontend)
             errors.rejectValue("comment", "comment.required", "Comment is required!");
         } else if (comment.trim().equals("")) { //if comment is empty
             errors.rejectValue("comment", "comment.empty", "Comment is empty!");
         }
-//        if(comment.length()>128)
-//            errors.rejectValue("name","name.length-exceeded","name length is not valid!");
     }
 
     private void validateGrade(Integer grade, Errors errors) {

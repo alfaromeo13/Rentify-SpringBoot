@@ -39,13 +39,14 @@ public class AuthController {
 
     @PostMapping("login")
     public ResponseEntity<Map<String, String>> login(@RequestBody UserLoginDTO userLoginDTO) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userLoginDTO.getUsername(), userLoginDTO.getPassword());
         try {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken
+                    (userLoginDTO.getUsername(), userLoginDTO.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
+            if (!userService.isActive(authentication.getName())) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return new ResponseEntity<>(jwtTokenProvider.createToken(authentication), HttpStatus.OK);
-            //we send generated token back to the user
+            //we send generated token back to user
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);//401!
         }
@@ -56,10 +57,10 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> refresh(@RequestHeader("refresh-token") String token) {
         if (token != null && jwtTokenProvider.validateToken(token, "refresh")) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
+            if (!userService.isActive(authentication.getName())) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             return new ResponseEntity<>(jwtTokenProvider.createToken(authentication), HttpStatus.OK);
         } else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
-
     /*{
           "username" : "IVICA",
           "password" : "MARICA",
@@ -77,5 +78,12 @@ public class AuthController {
         if (errors.hasErrors()) throw new ValidationException("Register user validation failed!", errors);
         userService.register(userCreateDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("/verify") //http://localhost:8080/api/authenticate/verify?mail=...
+    public ResponseEntity<String> verifyEmail(@RequestParam String mail) {
+        if (userService.activateAccount(mail))
+            return ResponseEntity.ok("Your registration has been confirmed and your account is now active.");
+        else return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
     }
 }

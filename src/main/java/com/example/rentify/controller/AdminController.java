@@ -21,11 +21,19 @@ public class AdminController {
 
     private final UserService userService;
 
-    //vrati sve korisnike
+    //kada klijent posalje stan moras ga odobriti (poslaji na mail ako je odobren ili ne)
+
+    //brisanje nekog stana ako korisnik doda nesto u medjuvremnu
+
+    //ugasi korisnikov nalog(lose namjere spamovanje i sl.)
+
+    //otvori nalog?
+
+    //brisanje losih komentara
+
+    //spisak svih korisnike
     @GetMapping("all-users") //GET http://localhost:8080/api/admin/all-users?page=0&size=5
     public ResponseEntity<List<UserDTO>> findAll(Pageable pageable) {
-        List<UserDTO> users = userService.findAll(pageable);
-        log.info("Users with page : {} ", users);
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return new ResponseEntity<>(userService.findAll(pageable), HttpStatus.OK);
     }
 }

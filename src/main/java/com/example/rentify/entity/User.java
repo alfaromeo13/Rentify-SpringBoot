@@ -43,11 +43,11 @@ public class User {
     private Date createdAt;
 
     @Column(name = "is_active",
-            columnDefinition = "TINYINT(1) DEFAULT 1",
+            columnDefinition = "TINYINT(1) DEFAULT 0",
             insertable = false)
     private Boolean isActive;
 
-    // we set in phpMyAdmin current_timestamp(0) and isActive=1 as default values
+    // we set in phpMyAdmin current_timestamp(0) and isActive=0 as default values
     // also we said that the field can be null,meaning if someone inserts this object in database
     // without these 2 fields,the default values will be set for them
 

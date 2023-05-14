@@ -1,7 +1,6 @@
 package com.example.rentify.controller;
 
 import com.example.rentify.dto.ApartmentDTO;
-import com.example.rentify.dto.ImageDTO;
 import com.example.rentify.dto.IncomingImagesDTO;
 import com.example.rentify.search.ApartmentSearch;
 import com.example.rentify.service.ApartmentService;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,8 +48,7 @@ public class ApartmentController {
         IncomingImagesDTO imagesDTO = new IncomingImagesDTO(null, images);
         ValidationUtils.invokeValidator(imgValidator, imagesDTO, new BeanPropertyBindingResult(imagesDTO, "imagesDTO"));
         ValidationUtils.invokeValidator(aptValidator, apartment, new BeanPropertyBindingResult(apartment, "apartment"));
-        Set<ImageDTO> savedImages = imageService.saveToFs(images);
-        apartment.setImages(savedImages);
+        apartment.setImages(imageService.saveToFs(images));
         apartmentService.save(apartment);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

@@ -86,4 +86,18 @@ public class AuthController {
             return ResponseEntity.ok("Your registration has been confirmed and your account is now active.");
         else return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
     }
+
+    @PostMapping("/request-reset-password") //http://localhost:8080/api/authenticate/request-reset-password?mail=...
+    public ResponseEntity<String> requestResetPassword(@RequestParam String mail) {
+        if (userService.sendResetMail(mail))
+            return new ResponseEntity<>("Reset mail sent", HttpStatus.OK);
+        else return new ResponseEntity<>("Account not found..", HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> changePassword(@RequestParam String mail, @RequestParam("inputField") String input) {
+        if (userService.changePassword(mail, input))
+            return ResponseEntity.ok("Password has been changed!");
+        else return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+    }
 }

@@ -21,9 +21,11 @@ public class AdminController {
 
     private final UserService userService;
 
-    //kada klijent posalje stan moras ga odobriti (poslaji na mail ako je odobren ili ne)
+    //spsiak svih stanova koji nisu odobrenito
 
-    //brisanje nekog stana ako korisnik doda nesto u medjuvremnu
+    //kada klijent posalje stan moras ga odobriti (posalji notifikaciju preko redisa)
+
+    //brisanje nekog stana ako korisnik doda nesto u medjuvremnu?
 
     //ugasi korisnikov nalog(lose namjere spamovanje i sl.)
 
@@ -31,7 +33,7 @@ public class AdminController {
 
     //brisanje losih komentara
 
-    //spisak svih korisnike
+    //spisak svih korisnika
     @GetMapping("all-users") //GET http://localhost:8080/api/admin/all-users?page=0&size=5
     public ResponseEntity<List<UserDTO>> findAll(Pageable pageable) {
         return new ResponseEntity<>(userService.findAll(pageable), HttpStatus.OK);

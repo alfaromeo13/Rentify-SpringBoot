@@ -51,6 +51,15 @@ public class UserService {
         } else return false;
     }
 
+    public boolean changePassword(String mail, String newPassword) {
+        if (userRepository.existsByEmail(mail)) {
+            User user = userRepository.findByEmail(mail);
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return true;
+        } else return false;
+    }
+
     public void update(UserDTO userDTO) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username);
@@ -105,7 +114,7 @@ public class UserService {
         user.addRole(role);
         user.setPassword(encodedPassword);
         userRepository.save(user);
-        sendEmail(user);
+        sendVerificationEmail(user);
     }
 
     //we schedule a task to run every hour
@@ -124,7 +133,7 @@ public class UserService {
     }
 
     @SneakyThrows
-    private void sendEmail(User user) {
+    private void sendVerificationEmail(User user) {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setFrom("jovanvukovic09@gmail.com");
@@ -137,6 +146,36 @@ public class UserService {
                 + "To activate your account, please click on the link below<br>"
                 + "<h3><a href='" + url + "' target=\"_self\"> Activate now </a></h3><br>"
                 + "Thank you,<br> Rentify", true);
+        FileSystemResource res = new FileSystemResource(new File("img/rentify.png"));
+        helper.addInline("identifier1234", res);
+        mailSender.send(message);
+    }
+
+    public boolean sendResetMail(String mail) {
+        if (userRepository.existsByEmail(mail)) {
+            sendResetPasswordMail(mail);
+            return true;
+        } else return false;
+    }
+
+    @SneakyThrows
+    private void sendResetPasswordMail(String mail) {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+        helper.setFrom("jovanvukovic09@gmail.com");
+        helper.setTo(mail);
+        helper.setSubject("Reset your password.");
+        String resetUrl = "http://localhost:8080/api/authenticate/reset-password?mail=" + mail;
+        helper.setText("<html>\n" +
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" +
+                "<link rel=\"stylesheet\" href=\"https://www.w3schools.com/w3css/4/w3.css\">\n" +
+                "<body>\n<img src='cid:identifier1234'><br>" +
+                "<form class=\"w3-container w3-card-4 w3-light-grey\" action='" + resetUrl + "' method=\"POST\">\n" +
+                "<h2 style=\"margin-left: 155px;\"><b>Enter new password:</b></h2><p>\n" +
+                "<input class=\"w3-input w3-border w3-round-large\" type=\"text\" id=\"inputField\" " +
+                "name=\"inputField\" style=\"margin-left: 144px;\">\n<br>\n<p>" +
+                "<button style=\"margin-left:226px;\" type=\"submit\">Submit</button>\n" +
+                "<p>\n</form>\n</body>\n</html>\n", true);
         FileSystemResource res = new FileSystemResource(new File("img/rentify.png"));
         helper.addInline("identifier1234", res);
         mailSender.send(message);

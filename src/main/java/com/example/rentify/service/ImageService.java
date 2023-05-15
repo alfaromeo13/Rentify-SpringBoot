@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -42,8 +43,9 @@ public class ImageService {
         String basePath = "/home/ja/Downloads/Images/";
         Set<ImageDTO> imageDTOs = new HashSet<>();
         for (MultipartFile image : images) {
-            // this way we won't override file with existing name on file system
-            String fullPath = basePath + System.currentTimeMillis() + image.getOriginalFilename();
+            /* To prevent file overwriting, we assign unique identifiers to file names using randomUUID(),
+             which ensures uniqueness even when called concurrently by multiple threads (using synchronization)*/
+            String fullPath = basePath + UUID.randomUUID().toString() + image.getOriginalFilename();
             Path path = Paths.get(fullPath);
             Files.write(path, image.getBytes());
             ImageDTO imageDTO = new ImageDTO();

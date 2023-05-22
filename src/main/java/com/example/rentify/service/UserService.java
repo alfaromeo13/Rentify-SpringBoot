@@ -76,6 +76,22 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void deleteById(Integer id) {
+        if (userRepository.existsById(id)) {
+            User user = userRepository.getById(id);
+            user.setIsActive(false);
+            userRepository.save(user);
+        }
+    }
+
+    public void activateById(Integer id) {
+        if (userRepository.existsById(id)) {
+            User user = userRepository.getById(id);
+            user.setIsActive(true);
+            userRepository.save(user);
+        }
+    }
+
     public void addFavourites(Integer apartmentId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username);
@@ -146,7 +162,7 @@ public class UserService {
                 + "To activate your account, please click on the link below<br>"
                 + "<h3><a href='" + url + "' target=\"_self\"> Activate now </a></h3><br>"
                 + "Thank you,<br> Rentify", true);
-        FileSystemResource res = new FileSystemResource(new File("img/rentify.png"));
+        FileSystemResource res = new FileSystemResource(new File("img/logo.png"));
         helper.addInline("identifier1234", res);
         mailSender.send(message);
     }
@@ -176,7 +192,7 @@ public class UserService {
                 "name=\"inputField\" style=\"margin-left: 144px;\">\n<br>\n<p>" +
                 "<button style=\"margin-left:226px;\" type=\"submit\">Submit</button>\n" +
                 "<p>\n</form>\n</body>\n</html>\n", true);
-        FileSystemResource res = new FileSystemResource(new File("img/rentify.png"));
+        FileSystemResource res = new FileSystemResource(new File("img/logo.png"));
         helper.addInline("identifier1234", res);
         mailSender.send(message);
     }

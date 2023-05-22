@@ -57,6 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @SneakyThrows
     protected void configure(HttpSecurity http) {
         http    //if user isn't authenticated we return our custom httpUnauthorizedException exception
+                .cors().and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(httpUnauthorizedException)
                 .and()

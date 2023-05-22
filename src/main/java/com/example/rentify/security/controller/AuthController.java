@@ -55,7 +55,7 @@ public class AuthController {
     @SneakyThrows
     @PostMapping("refresh-token")
     public ResponseEntity<Map<String, String>> refresh(@RequestHeader("refresh-token") String token) {
-        if (token != null && jwtTokenProvider.validateToken(token, "refresh")) {
+        if (!token.isEmpty() && jwtTokenProvider.validateToken(token, "refresh")) {
             Authentication authentication = jwtTokenProvider.getAuthentication(token);
             if (!userService.isActive(authentication.getName())) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             return new ResponseEntity<>(jwtTokenProvider.createToken(authentication), HttpStatus.OK);
@@ -89,15 +89,13 @@ public class AuthController {
 
     @PostMapping("/request-reset-password") //http://localhost:8080/api/authenticate/request-reset-password?mail=...
     public ResponseEntity<String> requestResetPassword(@RequestParam String mail) {
-        if (userService.sendResetMail(mail))
-            return new ResponseEntity<>("Reset mail sent", HttpStatus.OK);
+        if (userService.sendResetMail(mail)) return ResponseEntity.ok("Reset mail sent");
         else return new ResponseEntity<>("Account not found..", HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> changePassword(@RequestParam String mail, @RequestParam("inputField") String input) {
-        if (userService.changePassword(mail, input))
-            return ResponseEntity.ok("Password has been changed!");
+        if (userService.changePassword(mail, input)) return ResponseEntity.ok("Password has been changed!");
         else return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
     }
 }

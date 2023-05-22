@@ -6,10 +6,6 @@ spring:
   profiles:
     active: dev
 
-  # Liquibase configuration
-  liquibase:
-    change-log: classpath:liquibase/master.xml
-
   # maximum allowed size for images
   servlet:
     multipart:
@@ -31,5 +27,5 @@ spring:
 
 jwt:
   secret:  bjskdbvojbdvBVOUbdvjdbVodbvubdVUObdJBVueBosjVBweuVOIEWVBVBNOEWIVGUEGGGggsvbdvdjVWIOEVBOEIvsbvsjbdieuvhe
-  validityInMinutes: 43200 #vrati na 15min
+  validityInMinutes: 15 # 15min
   refreshValidityInMinutes: 43200 # 30days

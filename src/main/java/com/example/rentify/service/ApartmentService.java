@@ -57,6 +57,10 @@ public class ApartmentService {
         save(apartmentDTO);
     }
 
+    public boolean existsById(Integer id) {
+        return apartmentRepository.existsById(id);
+    }
+
     public void delete(Integer id) {
         Apartment apartment = apartmentRepository.getById(id);
         apartment.setIsActive(false);

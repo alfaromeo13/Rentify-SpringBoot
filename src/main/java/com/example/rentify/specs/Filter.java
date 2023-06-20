@@ -49,8 +49,6 @@ public class Filter {
         filterByAttribute(criteriaBuilder, predicateList, root,
                 "Parking", apartmentSearch.getParking());
         filterByAttribute(criteriaBuilder, predicateList, root,
-                "Distance to public transport", apartmentSearch.getPublicTransportDist());
-        filterByAttribute(criteriaBuilder, predicateList, root,
                 "Appliances", apartmentSearch.getAppliances());
         filterByAttribute(criteriaBuilder, predicateList, root,
                 "Elevator", apartmentSearch.getElevator());

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +37,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorDTO> handleUploadSizeException() {
+    public ResponseEntity<ErrorDTO> handleUploadSizeException(MaxUploadSizeExceededException e) {
         List<FieldErrorDTO> errors = new ArrayList<>();
-        errors.add(new FieldErrorDTO("images", "images.error", "Upload size exceeded!"));
+        errors.add(new FieldErrorDTO("images", "images.error", e.getMessage()));
         return new ResponseEntity<>(new ErrorDTO("Validation error", errors), HttpStatus.PAYLOAD_TOO_LARGE);
+    }
+
+    @ExceptionHandler({JsonMappingException.class, InvalidFormatException.class})
+    public ResponseEntity<Void> handleInvalidFormatException() {
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }

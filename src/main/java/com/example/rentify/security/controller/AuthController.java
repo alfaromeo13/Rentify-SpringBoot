@@ -80,11 +80,9 @@ public class AuthController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("/verify") //http://localhost:8080/api/authenticate/verify?mail=...
-    public ResponseEntity<String> verifyAccount(@RequestParam String mail) {
-        if (userService.activateAccount(mail))
-            return ResponseEntity.ok("Your registration has been confirmed and your account is now active.");
-        else return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+    @PostMapping("/verify") //http://localhost:8080/api/authenticate/verify?mail=...&code=...
+    public ResponseEntity<Void> verifyAccount(@RequestParam String mail,@RequestParam String code) {
+            return new ResponseEntity<>(userService.activateAccount(mail,code) ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/request-reset-password") //http://localhost:8080/api/authenticate/request-reset-password?mail=...

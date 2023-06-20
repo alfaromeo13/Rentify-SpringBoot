@@ -2,9 +2,9 @@ package com.example.rentify.validator;
 
 import com.example.rentify.dto.*;
 import com.example.rentify.exception.ValidationException;
-import com.example.rentify.repository.AttributeRepository;
-import com.example.rentify.repository.PeriodRepository;
-import com.example.rentify.repository.PropertyTypeRepository;
+import com.example.rentify.service.AttributeService;
+import com.example.rentify.service.PeriodService;
+import com.example.rentify.service.PropertyTypeService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -18,9 +18,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ApartmentValidator implements Validator {
 
-    private final PeriodRepository periodRepository;
-    private final AttributeRepository attributeRepository;
-    private final PropertyTypeRepository propertyTypeRepository;
+    private final PeriodService periodService;
+    private final AttributeService attributeService;
+    private final PropertyTypeService propertyTypeService;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -55,7 +55,7 @@ public class ApartmentValidator implements Validator {
     private void validateType(PropertyTypeDTO propertyType, Errors errors) {
         if (propertyType == null)
             errors.rejectValue("propertyType", "type.required", "Property type is missing!");
-        else if (!propertyTypeRepository.existsByName(propertyType.getName()))
+        else if (!propertyTypeService.existsByName(propertyType.getName()))
             errors.rejectValue("propertyType", "type.error", "Invalid property type value!");
     }
 
@@ -70,7 +70,7 @@ public class ApartmentValidator implements Validator {
 
     private void validateAttributes(Set<ApartmentAttributeDTO> apartmentAttributes, Errors errors) {
         for (ApartmentAttributeDTO apartmentAttribute : apartmentAttributes) {
-            if (!attributeRepository.existsByName(apartmentAttribute.getAttribute().getName()))
+            if (!attributeService.existsByName(apartmentAttribute.getAttribute().getName()))
                 errors.rejectValue(
                         "attribute.name",
                         "name.error",
@@ -144,7 +144,7 @@ public class ApartmentValidator implements Validator {
     private void validatePeriod(PeriodDTO period, Errors errors) {
         if (period == null)
             errors.rejectValue("period", "period.required", "Period is missing!");
-        else if (!periodRepository.existsByName(period.getName()))
+        else if (!periodService.existsByName(period.getName()))
             errors.rejectValue("period", "period.error", "Invalid period value!");
     }
 }

@@ -70,6 +70,13 @@ public class UserCreateValidator implements Validator {
                     "Password is not same as confirmed password"
             );
         }
+
+        if(StringUtils.isNotBlank(password) && password.length() < 8){
+            errors.rejectValue(
+                    "password",
+                    "password.error",
+                    "Password must be at least 8 characters long");
+        }
     }
 
     /**

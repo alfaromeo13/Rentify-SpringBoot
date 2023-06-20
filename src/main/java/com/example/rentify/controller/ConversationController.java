@@ -17,6 +17,8 @@ import java.util.List;
 @RequestMapping("/api/conversation")
 public class ConversationController {
 
+    //SAMO ZA PRIKAZ KONVERZACIJA
+
     private final ConversationService conversationService;
 
     //get conversations for user by his id(when we login to app)

@@ -18,6 +18,10 @@ public class AttributeService {
     private final AttributeMapper attributeMapper;
     private final AttributeRepository attributeRepository;
 
+    public boolean existsByName(String name) {
+        return attributeRepository.existsByName(name);
+    }
+
     @Cacheable("attributes")
     public List<AttributeDTO> findAll() {
         return attributeMapper.toDTOList(attributeRepository.findAll());

@@ -3,8 +3,7 @@ package com.example.rentify.validator;
 import com.example.rentify.dto.RentalApartmentDTO;
 import com.example.rentify.dto.StatusDTO;
 import com.example.rentify.dto.UserDTO;
-import com.example.rentify.repository.ApartmentRepository;
-import com.example.rentify.repository.RentalRepository;
+import com.example.rentify.service.ApartmentService;
 import com.example.rentify.service.RentalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,8 +20,7 @@ import java.util.Date;
 public class RentalValidator implements Validator {
 
     private final RentalService rentalService;
-    private final RentalRepository rentalRepository;
-    private final ApartmentRepository apartmentRepository;
+    private final ApartmentService apartmentService;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -70,7 +68,7 @@ public class RentalValidator implements Validator {
             errors.rejectValue("startDate", "startDate.error", "Start date not valid!");
         else if (notValid(endDate.toString()))
             errors.rejectValue("endDate", "endDate.error", "End date not valid!");
-        else if (!rentalRepository.findForPeriod(id, startDate, endDate).isEmpty())
+        else if (!rentalService.findForPeriod(id, startDate, endDate).isEmpty())
             errors.rejectValue("startDate",
                     "interval.error", "Apartment is already rented for that period!");
         else if (rentalService.calculatePrice(rental) == 0)
@@ -97,7 +95,7 @@ public class RentalValidator implements Validator {
         if (apartmentId == null)
             errors.rejectValue(
                     "apartmentId", "apartment.id.required", "Apartment id is required!");
-        else if (!apartmentRepository.existsById(apartmentId))
+        else if (!apartmentService.existsById(apartmentId))
             errors.rejectValue("apartmentId", "invalid.id", "Invalid apartment id!");
     }
 

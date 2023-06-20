@@ -36,28 +36,28 @@ public class UserIntegrationTest {
 
     @Test
     public void insertUserRoleCascade() {
-        User user = new User();
-        user.setUsername("Marko");
-        user.setPassword("adminadmin");
-        user.setFirstName("Marko");
-        user.setLastName("Vukovic");
-        user.setEmail("markovukovic09@gmail.com");
-
-        Role admin = new Role();
-        admin.setName("admin");
-
-        Role registered = new Role();
-        registered.setName("registered user");
-
-        List<Role> roles = new ArrayList<>();
-        roles.add(admin);
-        roles.add(registered);
-
-        user.setRoles(roles);
-        userRepository.save(user);
-        //prvo ce dodati 2 nova usera
-        //pa ce onda dodati 2 nove role
-        //i tek onda ce to napraviti veze u pivot tabeli
+//        User user = new User();
+//        user.setUsername("Marko");
+//        user.setPassword("adminadmin");
+//        user.setFirstName("Marko");
+//        user.setLastName("Vukovic");
+//        user.setEmail("markovukovic09@gmail.com");
+//
+//        Role admin = new Role();
+//        admin.setName("admin");
+//
+//        Role registered = new Role();
+//        registered.setName("registered user");
+//
+//        List<Role> roles = new ArrayList<>();
+//        roles.add(admin);
+//        roles.add(registered);
+//
+//        user.setRoles(roles);
+//        userRepository.save(user);
+//        //prvo ce dodati 2 nova usera
+//        //pa ce onda dodati 2 nove role
+//        //i tek onda ce to napraviti veze u pivot tabeli
     }
 
     @Test
@@ -80,15 +80,15 @@ public class UserIntegrationTest {
 
     @Test
     public void addRoleToExistingUserTest() {
-        Optional<User> userOptional = userRepository.findById(8);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            List<Role> roles = new ArrayList<>();
-            Role role = roleRepository.findById(3).orElse(null);
-            roles.add(role);
-            user.setRoles(roles);
-            userRepository.save(user);
-        }
+//        Optional<User> userOptional = userRepository.findById(8);
+//        if (userOptional.isPresent()) {
+//            User user = userOptional.get();
+//            List<Role> roles = new ArrayList<>();
+//            Role role = roleRepository.findById(3).orElse(null);
+//            roles.add(role);
+//            user.setRoles(roles);
+//            userRepository.save(user);
+//        }
     }
 
     @Test

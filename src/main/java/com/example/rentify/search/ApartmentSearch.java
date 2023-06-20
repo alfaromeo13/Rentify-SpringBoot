@@ -31,11 +31,9 @@ public class ApartmentSearch {
     private String parking;
     private String petsAllowed;
     private String balcony;
-    private String pool;
     private String airConditioning;
     private String furnished;
     private String wiFi;
     private String elevator;
-    private String publicTransportDist; // filter apartments by their proximity to public transportation
     private String appliances; // common household appliances that are commonly found in kitchens
 }

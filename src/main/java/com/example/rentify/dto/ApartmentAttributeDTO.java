@@ -1,5 +1,6 @@
 package com.example.rentify.dto;
 
+import com.example.rentify.enums.AttributeValueEnum;
 import lombok.*;
 
 import java.io.Serializable;
@@ -9,5 +10,5 @@ import java.io.Serializable;
 public class ApartmentAttributeDTO implements Serializable {
     private Integer id;
     private AttributeDTO attribute;
-    private String attributeValue;
+    private AttributeValueEnum attributeValue; //values can be only defines ones
 }

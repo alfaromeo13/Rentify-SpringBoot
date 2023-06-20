@@ -37,7 +37,7 @@ public class RentalController {
     //GET -> api da kada udjemo na stan i izabere mjesec u kalendaru [od do period se salje] vracemo zauzete termine
     // za taj period takodje cemo diseblovati klik tih datuma na kalendaru
     @SneakyThrows
-    @GetMapping("availability")
+    @PostMapping("availability")
     public ResponseEntity<List<RentalSearchDTO>> getRentedForSpecifiedMonth(@RequestBody RentalSearchDTO rentalSearchDTO) {
         Errors errors = new BeanPropertyBindingResult(rentalSearchDTO, "rentalSearchDTO");
         ValidationUtils.invokeValidator(rentalSearchValidator, rentalSearchDTO, errors);

@@ -15,6 +15,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -81,6 +82,10 @@ public class RentalService {
         rental.setApartment(apartmentRepository.getById(rentalApartmentDTO.getApartmentId()));
         rental.setUser(user);
         rentalRepository.save(rental);
+    }
+
+    public List<Rental> findForPeriod(Integer id, Date start, Date end) {
+        return rentalRepository.findForPeriod(id, start, end);
     }
 
     private long days(Date firstDate, Date secondDate) {

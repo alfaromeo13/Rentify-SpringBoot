@@ -2,7 +2,7 @@ package com.example.rentify.validator;
 
 import com.example.rentify.dto.ReviewApartmentDTO;
 import com.example.rentify.dto.UserDTO;
-import com.example.rentify.repository.ApartmentRepository;
+import com.example.rentify.service.ApartmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -12,7 +12,7 @@ import org.springframework.validation.Validator;
 @RequiredArgsConstructor
 public class ReviewValidator implements Validator {
 
-    private final ApartmentRepository apartmentRepository;
+    private final ApartmentService apartmentService;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -58,7 +58,7 @@ public class ReviewValidator implements Validator {
             errors.rejectValue("apartmentId",
                     "apartment.id.required",
                     "Apartment id is required!");
-        else if (!apartmentRepository.existsById(apartmentId))
+        else if (!apartmentService.existsById(apartmentId))
             errors.rejectValue("apartmentId", "invalid.id", "Invalid apartment id!");
     }
 

@@ -1,7 +1,7 @@
 package com.example.rentify.validator;
 
 import com.example.rentify.dto.UserDTO;
-import com.example.rentify.repository.UserRepository;
+import com.example.rentify.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class UserUpdateValidator implements Validator {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -41,7 +41,7 @@ public class UserUpdateValidator implements Validator {
             errors.rejectValue("email", "email.required", "Email is required!");
         else if (!patternMatches(email))
             errors.rejectValue("email", "email.error", "Email is invalid!");
-        else if (userRepository.existsByEmail(email.toLowerCase()))
+        else if (userService.existsByEmail(email.toLowerCase()))
             errors.rejectValue("email", "email.invalid", "Email already taken!");
     }
 

@@ -18,7 +18,8 @@ import java.util.List;
 public class CountryController {
 
     private final CountryService countryService;
-//ove 2 metode cemo iskoristiti za sekciju filtriranja u samom sajtu
+    //ove 2 metode cemo iskoristiti za sekciju filtriranja u samom sajtu
+
     @GetMapping("by-country-code") //GET http://localhost:8080/api/country/by-country-code?page=0&size=5&code=ME
     public ResponseEntity<List<CountryDTO>> findByCode(@RequestParam("code") String code, Pageable pageable) {
         List<CountryDTO> countries = countryService.findByShortCode(code, pageable);

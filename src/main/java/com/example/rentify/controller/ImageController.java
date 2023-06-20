@@ -1,8 +1,12 @@
 package com.example.rentify.controller;
 
+import com.example.rentify.dto.ImagePreview;
 import com.example.rentify.dto.IncomingImagesDTO;
 import com.example.rentify.service.ImageService;
 import com.example.rentify.validator.ImageUpdateValidator;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +15,8 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,5 +41,11 @@ public class ImageController {
         ValidationUtils.invokeValidator(imgValidator, imagesDTO, new BeanPropertyBindingResult(imagesDTO, "imagesDTO"));
         imageService.add(imagesDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @GetMapping("preview/{id}")
+    public ResponseEntity<ImagePreview> preview(@PathVariable Integer id) throws IOException {
+        ImagePreview imagePreview = imageService.getEncodedById(id);
+        return ResponseEntity.ok(imagePreview);
     }
 }

@@ -6,9 +6,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Data
 @Entity
@@ -42,6 +40,9 @@ public class User {
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date createdAt;
 
+    @Column
+    private String code;
+
     @Column(name = "is_active",
             columnDefinition = "TINYINT(1) DEFAULT 0",
             insertable = false)
@@ -56,14 +57,14 @@ public class User {
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(
             name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private List<Role> roles = new ArrayList<>();
+    private Set<Role> roles = new HashSet<>();
 
     @ManyToMany
     @ToString.Exclude
     @JoinTable(name = "favorites",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "apartment_id", referencedColumnName = "id"))
-    private List<Apartment> favoriteApartments = new ArrayList<>();//unidirectional relationship
+    private Set<Apartment> favoriteApartments = new HashSet<>();//unidirectional relationship
 
     @ToString.Exclude
     @JsonManagedReference
@@ -100,9 +101,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Rental> rentals = new ArrayList<>();
 
-    public void addRole(Role role) { //adds role if it isn't already present
-        if (roles.stream().noneMatch(r -> r.getName().equals(role.getName())))
-            roles.add(role);
+    public void addRole(Role role) {
+        roles.add(role);
     }
 
     public void removeRoleById(int id) { //remove role if it exists
@@ -112,8 +112,7 @@ public class User {
     }
 
     public void addFavouriteApartment(Apartment apartment) {
-        if (favoriteApartments.stream().noneMatch(a -> a.getId().equals(apartment.getId())))
-            favoriteApartments.add(apartment);
+        favoriteApartments.add(apartment);
     }
 
     public void removeFavouriteApartmentById(int id) {

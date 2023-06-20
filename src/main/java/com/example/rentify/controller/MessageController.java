@@ -19,17 +19,16 @@ import java.util.List;
 @RequestMapping("/api/messages")
 public class MessageController {
 
-    private final ChannelTopic topic;
+    //SAMO ZA PRIKAZ PORUKA
+
     private final MessageService messageService;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @PostMapping("send") // POST http://localhost:8080/api/messages/send
     public ResponseEntity<String> publish(@RequestBody MessageDTO message) {
-        if (message.getId() != null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        if (message.getId() != null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         log.info("Adding new message : {} ", message);
-        messageService.store(message);
-        //channel on which we send message,and second argument is msg. itself
-        redisTemplate.convertAndSend(topic.getTopic(), message.toString());
+   //     messageService.store(message);
         return new ResponseEntity<>("Message sent!", HttpStatus.CREATED);
     }
 
@@ -40,9 +39,5 @@ public class MessageController {
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 
-//    @MessageMapping("/chat.sendMessage")//
-//    @SendTo("/topic/javainuse") //send message to this topic
-//    public ChatMessage publishMessage(ChatMessage a) {
-//        return a;
-//    }
+
 }

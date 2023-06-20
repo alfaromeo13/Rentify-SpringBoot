@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -55,6 +56,7 @@ public class UserController {
 
     //POST http://localhost:8080/api/user/favourite-apartment/3
     @PostMapping("favourite-apartment/{id}")
+    @PreAuthorize("@apartmentAuth.existsById(#id)")
     public ResponseEntity<Void> addFavourite(@PathVariable Integer id) {
         userService.addFavourites(id);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -62,7 +64,8 @@ public class UserController {
 
     //DELETE http://localhost:8080/api/user/favourite-apartment/3
     @DeleteMapping("favourite-apartment/{id}")
-    public ResponseEntity<Void> deleteFavourite(@PathVariable Integer id) {
+    @PreAuthorize("@apartmentAuth.existsById(#id)")
+    public ResponseEntity<Void> removeFavourite(@PathVariable Integer id) {
         userService.deleteFavourites(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

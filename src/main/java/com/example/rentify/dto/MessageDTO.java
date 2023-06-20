@@ -3,12 +3,10 @@ package com.example.rentify.dto;
 import lombok.*;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 public class MessageDTO implements Serializable {
-    private Integer id;
+    private Date timestamp;
     private String message;
-    private Integer senderId;
-    private Integer receiverId;
-    private Integer conversationId;// important!
 }

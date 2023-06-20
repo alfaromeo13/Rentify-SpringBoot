@@ -9,21 +9,19 @@ import com.example.rentify.repository.UserRepository;
 import com.example.rentify.security.dto.UserCreateDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import java.io.File;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -42,9 +40,10 @@ public class UserService {
         return userMapper.toDTO(userRepository.findByUsername(username));
     }
 
-    public boolean activateAccount(String mail) {
-        if (userRepository.existsByEmail(mail)) {
+    public boolean activateAccount(String mail,String code) {
+        if (userRepository.existsByEmailAndCode(mail,code)) {
             User user = userRepository.findByEmail(mail);
+            user.setCode("");//we delete code
             user.setIsActive(true);
             userRepository.save(user);
             return true;
@@ -122,6 +121,10 @@ public class UserService {
         return userRepository.existsByUsernameAndIsActiveTrue(username);
     }
 
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email.toLowerCase());
+    }
+
     public void register(UserCreateDTO userCreateDTO) {
         //we inject PasswordEncoder bean from SecurityConfig and call encode() to make password in BCrypt format
         String encodedPassword = passwordEncoder.encode(userCreateDTO.getPassword());
@@ -129,23 +132,9 @@ public class UserService {
         Role role = roleRepository.findRoleByName("ROLE_REGISTERED");
         user.addRole(role);
         user.setPassword(encodedPassword);
+        user.setCode(RandomString.make(8));
         userRepository.save(user);
         sendVerificationEmail(user);
-    }
-
-    //we schedule a task to run every hour
-    @Scheduled(cron = "0 0 * * * *") // cron expressions
-    public void checkSpam() {
-        List<User> users = userRepository.findByIsActiveFalse();
-        for (User user : users) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(user.getCreatedAt());
-            // add 15 minutes to the calendar
-            calendar.add(Calendar.MINUTE, 15);
-            //if 15min passed we delete that account
-            if (calendar.getTime().before(new Date()))
-                userRepository.delete(user);
-        }
     }
 
     @SneakyThrows
@@ -155,13 +144,13 @@ public class UserService {
         helper.setFrom("jovanvukovic09@gmail.com");
         helper.setTo(user.getEmail());
         helper.setSubject("Please verify your registration");
-        //url is api for confirming user account(anyone can access this api because of security config)
-        String url = "http://localhost:8080/api/authenticate/verify?mail=" + user.getEmail();
+        String url = "http://localhost:4200/confirm?mail="+user.getEmail();
         helper.setText("<img src='cid:identifier1234'><br>"
                 + "Dear " + user.getFirstName() + ",<br>"
+                +" here is your secret code: <b><u>"+ user.getCode()+"</u></b><br>"
                 + "To activate your account, please click on the link below<br>"
                 + "<h3><a href='" + url + "' target=\"_self\"> Activate now </a></h3><br>"
-                + "Thank you,<br> Rentify", true);
+                + "Thank you,<br> Rentify.", true);
         FileSystemResource res = new FileSystemResource(new File("img/logo.png"));
         helper.addInline("identifier1234", res);
         mailSender.send(message);

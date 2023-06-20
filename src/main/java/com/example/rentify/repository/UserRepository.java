@@ -21,6 +21,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     boolean existsByUsername(String username);
 
+    List<User> findByUsernameNot(String username);
+
+    boolean existsByEmailAndCode(String email,String code);
+
     boolean existsByUsernameAndIsActiveTrue(String username);
 
     @Query(value = "select user from User user join fetch user.roles " +

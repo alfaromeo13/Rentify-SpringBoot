@@ -14,9 +14,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/redis-chat") //front otvara komunikaciju na redis chat preko ovoga
-                .setAllowedOrigins("*")
-                .withSockJS();
+        registry
+            .addEndpoint("/websocket/subscribe") //front otvara komunikaciju na redis chat preko ovoga
+            .setAllowedOrigins("http://localhost:4200")
+            .withSockJS();
     }
 
     @Override

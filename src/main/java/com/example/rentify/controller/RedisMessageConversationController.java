@@ -29,11 +29,10 @@ public class RedisMessageConversationController {
         redisConversation.setUsername1(user1);
         redisConversation.setUsername2(user2);
         ObjectMapper objectMapper = new ObjectMapper();
+
         MessageDTO message = objectMapper.readValue(payload, MessageDTO.class);
         redisConversation.setMessage(message);
         redisConversationRepository.save(redisConversation);
         template.convertAndSend("",message);
     }
-
-
 }

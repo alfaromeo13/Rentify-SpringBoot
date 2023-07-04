@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisHash;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -20,7 +21,8 @@ import java.util.List;
 public class RedisConversation implements Serializable {
     //definisemo strukturu konverzacije koju cuvamo
     // unutar redisa. Redis je key value struktura
-    @Id private String id;
+    @Id
+    private String id;
     private String username1;
     private String username2;
     private MessageDTO message;

@@ -23,21 +23,18 @@ public class CityController {
 
     private final CityService cityService;
 
-    //pozivamo na prvoj stanici sajta
     @GetMapping //GET http://localhost:8080/api/city?page=0&size=4&name=B
-    public ResponseEntity<List<CityWithCountryDTO>> findByName(Pageable pageable, @RequestParam("name") String name) {
+    public ResponseEntity<List<CityWithCountryDTO>> findByName(Pageable pageable, @RequestParam String name) {
         List<CityWithCountryDTO> cities = cityService.findByName(name, pageable);
         log.info("Cities : {} ", cities);
         return new ResponseEntity<>(cities, HttpStatus.OK);
     }
 
-    //kada u filtar sekciji izaberemo drzavu po izabranoj drzavi izlistaj gradove koje unesemo
-    //GET http://localhost:8080/api/city/by-country-city-name?page=0&size=5&countryName=Montenegro&cityName=P
-    @GetMapping("by-country-city-name")
+    //GET http://localhost:8080/api/city/by-country-code?page=0&size=5&countryCode=Montenegro&cityName=P
+    @GetMapping("by-country-code")
     public ResponseEntity<List<CityDTO>> findForCountryAndCityName(
-            @RequestParam("countryName") String countryName,
-            @RequestParam("cityName") String cityName, Pageable pageable) {
-        List<CityDTO> cities = cityService.findByCountryCityName(countryName, cityName, pageable);
+            @RequestParam String countryCode, @RequestParam String cityName, Pageable pageable) {
+        List<CityDTO> cities = cityService.findByCountryCityName(countryCode, cityName, pageable);
         log.info("Cities : {} ", cities);
         return new ResponseEntity<>(cities, HttpStatus.OK);
     }

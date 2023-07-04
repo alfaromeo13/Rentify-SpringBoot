@@ -10,9 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CountryRepository extends JpaRepository<Country, Integer> {
-    @Query(value = "select country from Country country where country.name like concat(:name, '%')")
+    @Query(value = "select country from Country country where country.name like concat(:name, '%') " +
+            "or country.shortCode like concat(:name,'%')")
     Page<Country> findByNameStartingWith(@Param("name") String name, Pageable pageable);
-
-    @Query(value = "select country from Country country where country.shortCode like concat(:code, '%')")
-    Page<Country> findByShortCode(@Param("code") String shortCode, Pageable pageable);
 }

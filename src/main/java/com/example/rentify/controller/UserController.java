@@ -70,7 +70,6 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //nadjemo id-eve omiljenih i onda pozovemo api search apartmana sa tim id-evima
     //GET http://localhost:8080/api/user/favourite-apartment?page=0&size=5
     @GetMapping("favourite-apartment")
     public ResponseEntity<List<Integer>> getFavouriteIds(Pageable pageable) {

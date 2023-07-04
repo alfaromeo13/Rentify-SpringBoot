@@ -4,9 +4,6 @@ import com.example.rentify.dto.ImagePreview;
 import com.example.rentify.dto.IncomingImagesDTO;
 import com.example.rentify.service.ImageService;
 import com.example.rentify.validator.ImageUpdateValidator;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +40,7 @@ public class ImageController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping("preview/{id}")
+    @GetMapping("preview/{id}") //testing preview api
     public ResponseEntity<ImagePreview> preview(@PathVariable Integer id) throws IOException {
         ImagePreview imagePreview = imageService.getEncodedById(id);
         return ResponseEntity.ok(imagePreview);

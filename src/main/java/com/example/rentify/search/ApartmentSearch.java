@@ -3,14 +3,12 @@ package com.example.rentify.search;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class ApartmentSearch {
-    private Integer id;
-    private String type;
-    private String title;
-    private String period;
     private Double minPrice;
     private Double maxPrice;
     private Integer minNumOfBedrooms;
@@ -20,11 +18,15 @@ public class ApartmentSearch {
     private Integer minSquareMeters;
     private Integer maxSquareMeters;
     private String countryName;
+    private String countryCode;
     private String cityName;
     private String neighborhoodName;
     private Integer userId;//When user logs in he wants a list of apartments he owns
+    private List<Integer> id=new ArrayList<>();
+    private List<String> type=new ArrayList<>();
+    private List<String> period=new ArrayList<>();
 
-    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date availableFrom, availableTo;// filters available apartments for that period
 
     //attributes:
@@ -36,4 +38,6 @@ public class ApartmentSearch {
     private String wiFi;
     private String elevator;
     private String appliances; // common household appliances that are commonly found in kitchens
+
+    private String sort; // Sorting option selected by the user
 }

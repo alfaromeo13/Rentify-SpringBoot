@@ -70,8 +70,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/messages/**").hasAnyRole("REGISTERED", "ADMIN")
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/authenticate/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/api/image/preview/**").permitAll()
-                .anyRequest().authenticated();//We also won't define rules for all apis
+                .antMatchers("/api/user/**").authenticated()
+//                .antMatchers("/api/authenticate/**").permitAll()
+//                .antMatchers(HttpMethod.GET,"/api/image/preview/**").permitAll()
+               // .anyRequest().authenticated();//We also won't define rules for all apis
+                .anyRequest().permitAll(); //any other api is publicaly available
+        //nabroj iznad samo zbaranjene apije tj za koje mroamo da smo verifikovani!!!
     }
 }

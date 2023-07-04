@@ -23,16 +23,9 @@ public class CountryService {
     private final CountryRepository countryRepository;
 
     @Cacheable(value = "country", key = "{#name, #pageable.toString()}")
-    public List<CountryDTO> findByNameStartingWith(String name, Pageable pageable) {
+    public List<CountryDTO> findByNameOrCodeStartingWith(String name, Pageable pageable) {
         log.info("Cache miss..Getting data from database.");
         Page<Country> countries = countryRepository.findByNameStartingWith(name, pageable);
-        return countries.hasContent() ? countryMapper.toDTOList(countries.getContent()) : Collections.emptyList();
-    }
-
-    @Cacheable(value = "country", key = "{#shortCode,#pageable.toString()}")
-    public List<CountryDTO> findByShortCode(String shortCode, Pageable pageable) {
-        log.info("Cache miss..Getting data from database.");
-        Page<Country> countries = countryRepository.findByShortCode(shortCode, pageable);
         return countries.hasContent() ? countryMapper.toDTOList(countries.getContent()) : Collections.emptyList();
     }
 }

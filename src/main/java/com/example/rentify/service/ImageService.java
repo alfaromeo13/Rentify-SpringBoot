@@ -19,10 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -72,6 +69,22 @@ public class ImageService {
 
     public ImageProjection numAndSum(Integer apartmentId) {
         return imageRepository.numAndSum(apartmentId);
+    }
+
+    public Set<ImageDTO> encodeImages(List<Image> images) {
+        Set<ImageDTO> encodeImages=new HashSet<>();
+        images.forEach(image->{
+            try {
+                ImageDTO imageDTO=new ImageDTO();
+                Path path = Paths.get(image.getPath());
+                byte[] imageBytes = Files.readAllBytes(path);
+                imageDTO.setPath(new String(Base64.getEncoder().encode(imageBytes)));
+                encodeImages.add(imageDTO);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        return encodeImages;
     }
 
     public ImagePreview getEncodedById(Integer id) throws IOException {

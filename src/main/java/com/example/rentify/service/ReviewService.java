@@ -51,6 +51,10 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
+    public Double numberOfStars(Integer id){
+        return reviewRepository.findNumberOfStars(id);
+    }
+
     //with # we read param value and we cache it into RAM
     @Cacheable(value = "reviews", key = "{#id,#pageable.toString()}")
     public List<ReviewDTO> findByApartmentId(Integer id, Pageable pageable) {

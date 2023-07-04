@@ -32,14 +32,16 @@ public class ApartmentController {
     private final ApartmentService apartmentService;
     private final ImageInsertValidator imgValidator;
 
-    //ovaj search odmah pozivas autromatski na drugu stranicu posle citija i kada uradimo apply nad filterima
-    //GET http://localhost:8080/api/apartment/pageable-search?page=0&size=2&cityName=New York&minPrice=1000&maxPrice=5000
+    //http://localhost:8080/api/apartment/pageable-search?page=0&size=2&cityName=New York&minPrice=1000&maxPrice=5000
     //http://localhost:8080/api/apartment/pageable-search?page=0&size=2&availableFrom=20-04-2023&availableTo=23-04-2023
+    //http://localhost:8080/api/apartment/pageable-search?type=apartment,condo&period=day,month
     @GetMapping("pageable-search")
     public ResponseEntity<List<ApartmentDTO>> search(ApartmentSearch params, Pageable pageable) {
         List<ApartmentDTO> apartments = apartmentService.search(pageable, params);
         return new ResponseEntity<>(apartments, HttpStatus.OK);
     }
+
+    //nisi pozvao ove ispod
 
     @PostMapping
     @SneakyThrows //POST http://localhost:8080/api/apartment/
@@ -103,13 +105,13 @@ public class ApartmentController {
             "attribute": {
                 "name": "Air Conditioning"
             },
-            "attributeValue": "Central"
+            "attributeValue": "Yes"
         },
         {
             "attribute": {
                 "name": "Parking"
             },
-            "attributeValue": "Underground"
+            "attributeValue": "No"
         }
       ]
     }

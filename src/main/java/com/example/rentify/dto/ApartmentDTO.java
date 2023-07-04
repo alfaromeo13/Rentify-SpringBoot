@@ -17,13 +17,16 @@ public class ApartmentDTO implements Serializable {
     private Integer numOfBedrooms;
     private Integer numOfBathrooms;
     private Date createdAt;
+    private boolean liked;
     private String number;
     private Boolean isActive;
+    private Integer numberOfStars;
 
     private UserDTO user; //owner
     private PeriodDTO period;
     private AddressDTO address;
     private Set<ImageDTO> images;
     private PropertyTypeDTO propertyType;
+    private Integer grade;
     private Set<ApartmentAttributeDTO> apartmentAttributes;
 }

@@ -9,6 +9,7 @@ import com.example.rentify.repository.UserRepository;
 import com.example.rentify.security.dto.UserCreateDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -38,6 +40,10 @@ public class UserService {
     public UserDTO find() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userMapper.toDTO(userRepository.findByUsername(username));
+    }
+
+    public User findByUsername(String username){
+        return userRepository.findByUsername(username);
     }
 
     public boolean activateAccount(String mail,String code) {
@@ -57,6 +63,13 @@ public class UserService {
             userRepository.save(user);
             return true;
         } else return false;
+    }
+
+    public boolean isApartmentLiked(Integer id){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(username.equals("anonymousUser")) return false;
+        Integer result =userRepository.favouriteApartmentsForUser(username, id);
+        return result != null && result > 0;
     }
 
     public void update(UserDTO userDTO) {

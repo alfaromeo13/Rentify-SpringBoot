@@ -19,7 +19,7 @@ public interface CityRepository extends JpaRepository<City, Integer> {
     List<City> findByNameStartingWith(@Param("cityIds") List<Integer> cityIds);
 
     @Query(value = "select city from City city join city.country country " +
-            "where country.name like concat(:countryName , '%') and city.name like concat(:cityName , '%')")
-    Page<City> findAllCitiesFromCountryNameJPQL(@Param("countryName") String countryName,
+            "where country.shortCode like concat(:code , '%') and city.name like concat(:cityName , '%')")
+    Page<City> findAllCitiesFromCountryCodeJPQL(@Param("code") String countryCode,
                                                 @Param("cityName") String cityName, Pageable pageable);
 }

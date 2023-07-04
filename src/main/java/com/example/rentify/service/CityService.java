@@ -36,7 +36,7 @@ public class CityService {
     @Cacheable(value = "cities", key = "{#countryName , #cityName, #pageable.toString()}")
     public List<CityDTO> findByCountryCityName(String countryName, String cityName, Pageable pageable) {
         log.info("Cache miss..Getting data from database.");
-        Page<City> cities = cityRepository.findAllCitiesFromCountryNameJPQL(countryName, cityName, pageable);
+        Page<City> cities = cityRepository.findAllCitiesFromCountryCodeJPQL(countryName, cityName, pageable);
         return cities.hasContent() ? cityMapper.toDTOList(cities.getContent()) : Collections.emptyList();
     }
 }

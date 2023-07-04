@@ -1,5 +1,6 @@
 package com.example.rentify.repository;
 
+import com.example.rentify.entity.Apartment;
 import com.example.rentify.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,4 +38,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "select apartment.id from User user " +
             "join user.favoriteApartments apartment where user.username = :username")
     Page<Integer> favouriteApartmentsForUser(@Param("username") String username, Pageable pageable);
+
+    @Query(value = "select apartment.id from User user " +
+            "join user.favoriteApartments apartment where apartment.id = :id and user.username = :username")
+    Integer favouriteApartmentsForUser(@Param("username") String username, @Param("id") Integer id);
 }

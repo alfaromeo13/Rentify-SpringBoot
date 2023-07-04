@@ -92,6 +92,15 @@ public class ApartmentValidator implements Validator {
     private void validatePrice(Double price, Errors errors) {
         if (price == null) errors.rejectValue("price", "price.required", "Price is missing!");
         else if (price <= 0) errors.rejectValue("price", "price.error", "Price not valid!");
+        else {
+            String priceString = String.valueOf(price);
+            int decimalPlaces = priceString.length() - priceString.indexOf('.') - 1;
+            if (decimalPlaces > 1)
+                errors.rejectValue(
+                        "price",
+                        "price.error",
+                        "Price should have only one digit after the decimal point!");
+        }
     }
 
     private void validateSqMeters(Integer sqMeters, Errors errors) {
@@ -135,6 +144,11 @@ public class ApartmentValidator implements Validator {
     private void validateDescription(String description, Errors errors) {
         if (description == null)
             errors.rejectValue("description", "description.required", "Description missing!");
+        else if(description.length()<122)
+            errors.rejectValue(
+                    "description",
+                    "description.error",
+                    "Description should be at least 122 characters long!");
     }
 
     private void validateUser(UserDTO user, Errors errors) {

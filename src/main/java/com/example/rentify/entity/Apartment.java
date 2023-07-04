@@ -69,6 +69,9 @@ public class Apartment {
     @ManyToOne(fetch = FetchType.LAZY)
     private PropertyType propertyType;
 
+    @Column
+    private Integer grade;
+
     @ToString.Exclude
     @JsonManagedReference
     @Setter(AccessLevel.NONE)

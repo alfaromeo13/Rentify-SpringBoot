@@ -23,23 +23,22 @@ public class Filter {
         Join<Apartment, User> userJoin = root.join("user", JoinType.LEFT);
         Join<Apartment, Rental> rentalJoin = root.join("rentals", JoinType.LEFT);
         Join<Apartment, Period> periodJoin = root.join("period", JoinType.LEFT);
-        filterById(root, criteriaBuilder, predicateList);
+        filterById(root, predicateList);
+        filterByPropertyType(predicateList, typeJoin);
         filterByPrice(root, criteriaBuilder, predicateList);
-        filterByTitle(root, criteriaBuilder, predicateList);
         filterByNumOfBathrooms(root, criteriaBuilder, predicateList);
         filterByCityName(criteriaBuilder, predicateList, cityJoin);
         filterBySquareMeters(root, criteriaBuilder, predicateList);
         filterByNeighborhoodName(criteriaBuilder, predicateList, neighborhoodJoin);
         filterByNumOfBedrooms(root, criteriaBuilder, predicateList);
         filterByCountryName(criteriaBuilder, predicateList, countryJoin);
+        filterByCountryCode(criteriaBuilder, predicateList, countryJoin);
         filterByUserId(criteriaBuilder, predicateList, userJoin);
         filterByAvailabilityDate(criteriaBuilder, predicateList, rentalJoin);
         filterByAttribute(criteriaBuilder, predicateList, root
                 , "WiFi", apartmentSearch.getWiFi());
         filterByAttribute(criteriaBuilder, predicateList, root,
                 "Air Conditioning", apartmentSearch.getAirConditioning());
-        filterByAttribute(criteriaBuilder, predicateList, root,
-                "Pool", apartmentSearch.getPool());
         filterByAttribute(criteriaBuilder, predicateList, root,
                 "Furnished", apartmentSearch.getFurnished());
         filterByAttribute(criteriaBuilder, predicateList, root,
@@ -52,15 +51,22 @@ public class Filter {
                 "Appliances", apartmentSearch.getAppliances());
         filterByAttribute(criteriaBuilder, predicateList, root,
                 "Elevator", apartmentSearch.getElevator());
-        filterByPeriod(criteriaBuilder, predicateList, periodJoin);
-        filterByPropertyType(criteriaBuilder, predicateList, typeJoin);
+        filterByPeriod(predicateList, periodJoin);
         filterByActive(root, userJoin, criteriaBuilder, predicateList);
     }
 
-    private void filterByPropertyType(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList, Join<Apartment, PropertyType> typeJoin) {
-        if (apartmentSearch.getType() != null) {
-            Predicate typePredicate = criteriaBuilder.equal(
-                    typeJoin.get("name"), apartmentSearch.getType());
+    private void filterByCountryCode(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList, Join<City, Country> countryJoin) {
+        if (apartmentSearch.getCountryCode() != null) {
+            Predicate countryCodePredicate = criteriaBuilder.like(
+                    countryJoin.get("shortCode"), apartmentSearch.getCountryCode() + "%");
+            predicateList.add(countryCodePredicate);
+        }
+    }
+
+    private void filterByPropertyType(List<Predicate> predicateList, Join<Apartment, PropertyType> typeJoin) {
+        if (!apartmentSearch.getType().isEmpty()) {
+            List<String> types = apartmentSearch.getType();
+            Predicate typePredicate = typeJoin.get("name").in(types);
             predicateList.add(typePredicate);
         }
     }
@@ -73,11 +79,11 @@ public class Filter {
         predicateList.add(activeUser);// also we filter only active users!
     }
 
-    private void filterByPeriod(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,
+    private void filterByPeriod(List<Predicate> predicateList,
                                 Join<Apartment, Period> periodJoin) {
-        if (apartmentSearch.getPeriod() != null) {
-            Predicate periodPredicate = criteriaBuilder.equal(
-                    periodJoin.get("name"), apartmentSearch.getPeriod());
+        if (!apartmentSearch.getPeriod().isEmpty()) {
+            List<String> periods = apartmentSearch.getPeriod();
+            Predicate periodPredicate = periodJoin.get("name").in(periods);
             predicateList.add(periodPredicate);
         }
     }
@@ -108,7 +114,7 @@ public class Filter {
 
     private void filterByAttribute(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,
                                    Root<Apartment> root, String attributeName, String attributeValue) {
-        if (attributeValue != null) {
+        if (attributeValue != null && !attributeValue.trim().isEmpty()) {
             Join<Apartment, ApartmentAttribute> apartmentAttributesJoin = root
                     .join("apartmentAttributes", JoinType.LEFT);
             Join<ApartmentAttribute, Attribute> attributeJoin =
@@ -130,16 +136,17 @@ public class Filter {
         }
     }
 
-    private void filterById(Root<Apartment> root, CriteriaBuilder criteriaBuilder, List<Predicate> predicateList) {
-        if (apartmentSearch.getId() != null) {
-            Predicate idPredicate = criteriaBuilder.equal(root.get("id"), apartmentSearch.getId());
+    private void filterById(Root<Apartment> root, List<Predicate> predicateList) {
+        if (!apartmentSearch.getId().isEmpty()) {
+            List<Integer> ids = apartmentSearch.getId();
+            Predicate idPredicate = root.get("id").in(ids);
             predicateList.add(idPredicate);
         }
     }
 
     private void filterByCountryName(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,
                                      Join<City, Country> countryJoin) {
-        if (apartmentSearch.getCountryName() != null) {
+        if (apartmentSearch.getCountryName() != null && !apartmentSearch.getCountryName().trim().isEmpty()) {
             Predicate countryNamePredicate = criteriaBuilder.like(
                     countryJoin.get("name"), apartmentSearch.getCountryName() + "%");
             predicateList.add(countryNamePredicate);
@@ -148,28 +155,19 @@ public class Filter {
 
     private void filterByNeighborhoodName(CriteriaBuilder criteriaBuilder,
                                           List<Predicate> predicateList, Join<Address, Neighborhood> neighborhoodJoin) {
-        if (apartmentSearch.getNeighborhoodName() != null) {
-            Predicate neighborhoodNamePredicate = criteriaBuilder.equal(
-                    neighborhoodJoin.get("name"), apartmentSearch.getNeighborhoodName());
+        if (apartmentSearch.getNeighborhoodName() != null && !apartmentSearch.getNeighborhoodName().trim().isEmpty()) {
+            Predicate neighborhoodNamePredicate = criteriaBuilder.like(
+                    neighborhoodJoin.get("name"), apartmentSearch.getNeighborhoodName()+ "%");
             predicateList.add(neighborhoodNamePredicate);
         }
     }
 
     private void filterByCityName(CriteriaBuilder criteriaBuilder,
                                   List<Predicate> predicateList, Join<Neighborhood, City> cityJoin) {
-        if (apartmentSearch.getCityName() != null) {
-            Predicate cityNamePredicate = criteriaBuilder.equal(
-                    cityJoin.get("name"), apartmentSearch.getCityName());
+        if (apartmentSearch.getCityName() != null && !apartmentSearch.getCityName().trim().isEmpty()) {
+            Predicate cityNamePredicate = criteriaBuilder.like(
+                    cityJoin.get("name"), apartmentSearch.getCityName() + "%");
             predicateList.add(cityNamePredicate);
-        }
-    }
-
-    private void filterByTitle(Root<Apartment> root, CriteriaBuilder criteriaBuilder, List<Predicate> predicateList) {
-        if (apartmentSearch.getTitle() != null) {
-            Predicate titlePredicate = criteriaBuilder.like(
-                    root.get("title"), "%" + apartmentSearch.getTitle() + "%");
-            predicateList.add(titlePredicate);
-            //... where apartments.title like '%title%'
         }
     }
 

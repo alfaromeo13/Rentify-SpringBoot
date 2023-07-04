@@ -18,19 +18,10 @@ import java.util.List;
 public class CountryController {
 
     private final CountryService countryService;
-    //ove 2 metode cemo iskoristiti za sekciju filtriranja u samom sajtu
 
-    @GetMapping("by-country-code") //GET http://localhost:8080/api/country/by-country-code?page=0&size=5&code=ME
-    public ResponseEntity<List<CountryDTO>> findByCode(@RequestParam("code") String code, Pageable pageable) {
-        List<CountryDTO> countries = countryService.findByShortCode(code, pageable);
-        log.info("Countries : {} ", countries);
-        return new ResponseEntity<>(countries, HttpStatus.OK);
-    }
-
-    @GetMapping("by-country-name") //GET http://localhost:8080/api/country/by-country-name?page=0&size=5&name=Mon
-    public ResponseEntity<List<CountryDTO>> findByNameStartingWith(
-            @RequestParam("name") String name, Pageable pageable) {
-        List<CountryDTO> countries = countryService.findByNameStartingWith(name, pageable);
+    @GetMapping("by-country") //GET http://localhost:8080/api/country/by-country?page=0&size=5&name=Mon
+    public ResponseEntity<List<CountryDTO>> findByNameStartingWith(@RequestParam String name, Pageable pageable) {
+        List<CountryDTO> countries = countryService.findByNameOrCodeStartingWith(name, pageable);
         log.info("Countries : {} ", countries);
         return new ResponseEntity<>(countries, HttpStatus.OK);
     }

@@ -21,7 +21,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/conversation")
+@RequestMapping("/api/conversations")
 public class ConversationController {
 
     private final ConversationService conversationService;

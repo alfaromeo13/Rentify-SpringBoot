@@ -9,4 +9,5 @@ import java.util.Date;
 public class MessageDTO implements Serializable {
     private Date timestamp;
     private String message;
+    private String sender;
 }

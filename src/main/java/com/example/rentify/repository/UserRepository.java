@@ -42,4 +42,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "select apartment.id from User user " +
             "join user.favoriteApartments apartment where apartment.id = :id and user.username = :username")
     Integer favouriteApartmentsForUser(@Param("username") String username, @Param("id") Integer id);
+
+    @Query(value = "select user.username from User user where user.id = :id")
+    String findUsernameById(@Param("id") Integer senderId);
 }

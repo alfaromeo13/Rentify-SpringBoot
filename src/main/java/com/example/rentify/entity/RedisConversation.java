@@ -17,13 +17,22 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash("RedisMessage")
+@RedisHash("Conversation")
 public class RedisConversation implements Serializable {
     //definisemo strukturu konverzacije koju cuvamo
     // unutar redisa. Redis je key value struktura
     @Id
     private String id;
-    private String username1;
-    private String username2;
-    private MessageDTO message;
+    private String usernameFrom; // johndoe, heril, jovan
+    private String usernameTo; // heril, johndoe
+    private List<MessageDTO> messages = new ArrayList<>();
+
+    public RedisConversation(String usernameFrom, String usernameTo) {
+        this.usernameFrom = usernameFrom;
+        this.usernameTo = usernameTo;
+    }
+
+    public void appendMessage(MessageDTO messageDTO) {
+        this.messages.add(messageDTO);
+    }
 }

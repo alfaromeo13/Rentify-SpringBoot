@@ -1,55 +1,61 @@
 package com.example.rentify.service;
 
-import com.example.rentify.dto.ConversationDTO;
-import com.example.rentify.entity.Conversation;
-import com.example.rentify.mapper.ConversationMapper;
-import com.example.rentify.repository.ConversationRepository;
+import com.example.rentify.dto.MessageDTO;
+import com.example.rentify.entity.RedisConversation;
+import com.example.rentify.ws.repository.RedisConversationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ConversationService {
 
-    private final ConversationMapper conversationMapper;
-    private final ConversationRepository conversationRepository;
+    private final RedisConversationRepository redisConversationRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final HashOperations<String, Long, RedisConversation> hashOperations;
 
-    @Cacheable(value = "conversations", key = "#id + ':' + #pageable.toString()")
-    public List<ConversationDTO> findByUserId(Integer id, Pageable pageable) {
-        Page<Conversation> conversations = conversationRepository.findAllConversationsByUserId(id, pageable);
-        return conversations.hasContent() ?
-                conversationMapper.toDTOList(conversations.getContent()) :
-                Collections.emptyList();
+    public ConversationService(RedisTemplate<String, Object> redisTemplate,
+                               RedisConversationRepository redisConversationRepository) {
+        this.redisConversationRepository = redisConversationRepository;
+        this.redisTemplate = redisTemplate;
+        this.hashOperations = redisTemplate.opsForHash();
     }
 
-    @Cacheable(value = "conversations-by-username", key = "#username + ':' + #pageable.toString()")
-    public List<ConversationDTO> findByUsername(String username, Pageable pageable) {
-        Page<Conversation> conversations = conversationRepository.findByUsername(username, pageable);
-        return conversations.hasContent() ?
-                conversationMapper.toDTOList(conversations.getContent()) :
-                Collections.emptyList();
+
+    public String create(String usernameFrom, String usernameTo) {
+        RedisConversation redisConversation = new RedisConversation(usernameFrom, usernameTo);
+        redisConversationRepository.save(redisConversation);
+
+        return redisConversation.getId();
     }
 
-    @Caching(evict = {@CacheEvict(cacheNames = "conversations", allEntries = true),
-            @CacheEvict(cacheNames = "conversations-by-username", allEntries = true)})
-    public Boolean delete(Integer id) {
-        Optional<Conversation> conversationOptional = conversationRepository.findById(id);
-        if (conversationOptional.isPresent()) {
-            Conversation conversation = conversationOptional.get();
-            conversation.setIsActive(false);
-            conversationRepository.save(conversation);
-            return true;
-        } else return false;
+    public List<RedisConversation> getAllByUsername(String username) {
+        List<RedisConversation> allConversations = StreamSupport.stream(
+                redisConversationRepository.findAll().spliterator(), false
+        ).collect(Collectors.toList());
+
+        return allConversations.stream()
+                .filter(conversation
+                        -> conversation.getUsernameFrom().equals(username) || conversation.getUsernameTo().equals(username))
+                .collect(Collectors.toList());
+    }
+
+    public List<MessageDTO> getMessagesByConversationId(String conversationId) {
+        RedisConversation conversation = redisConversationRepository
+                .findById(conversationId)
+                .orElseThrow(()
+                        -> new EntityNotFoundException("Conversation with id " + conversationId + " not exists!"));
+
+        return conversation.getMessages();
     }
 }

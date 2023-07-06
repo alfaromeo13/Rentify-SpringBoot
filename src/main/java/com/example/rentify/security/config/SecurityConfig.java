@@ -68,10 +68,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/messages/**").hasAnyRole("REGISTERED", "ADMIN")
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .antMatchers("/api/user/**").authenticated()
-                .antMatchers("/websocket/**").permitAll()
+                .antMatchers("/api/messages/**").authenticated()
 //                .antMatchers("/api/authenticate/**").permitAll()
 //                .antMatchers(HttpMethod.GET,"/api/image/preview/**").permitAll()
                // .anyRequest().authenticated();//We also won't define rules for all apis

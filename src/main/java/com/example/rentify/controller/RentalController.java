@@ -5,7 +5,6 @@ import com.example.rentify.dto.RentalDTO;
 import com.example.rentify.dto.RentalSearchDTO;
 import com.example.rentify.exception.ValidationException;
 import com.example.rentify.service.RentalService;
-import com.example.rentify.validator.RentalSearchValidator;
 import com.example.rentify.validator.RentalValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,22 +26,11 @@ public class RentalController {
 
     private final RentalService rentalService;
     private final RentalValidator rentalValidator;
-    private final RentalSearchValidator rentalSearchValidator;
 
-    /*{
-        "id":4,
-        "startDate":"2023-04-20",
-        "endDate":"2023-04-23"
-    } */
-    //GET -> api da kada udjemo na stan i izabere mjesec u kalendaru [od do period se salje] vracemo zauzete termine
-    // za taj period takodje cemo diseblovati klik tih datuma na kalendaru
     @SneakyThrows
-    @PostMapping("availability")
-    public ResponseEntity<List<RentalSearchDTO>> getRentedForSpecifiedMonth(@RequestBody RentalSearchDTO rentalSearchDTO) {
-        Errors errors = new BeanPropertyBindingResult(rentalSearchDTO, "rentalSearchDTO");
-        ValidationUtils.invokeValidator(rentalSearchValidator, rentalSearchDTO, errors);
-        if (errors.hasErrors()) throw new ValidationException("Validation error", errors);
-        List<RentalSearchDTO> rentals = rentalService.findRentalsForSpecifPeriod(rentalSearchDTO);
+    @GetMapping("availability/{id}")
+    public ResponseEntity<List<RentalSearchDTO>> getRentedForSpecifiedMonth(@PathVariable Integer id) {
+        List<RentalSearchDTO> rentals = rentalService.findRentalsForSpecifPeriod(id);
         return new ResponseEntity<>(rentals, HttpStatus.OK);
     }
 
@@ -62,12 +50,7 @@ public class RentalController {
         return new ResponseEntity<>(rentals, HttpStatus.OK);
     }
 
-    /*{
-    "startDate": "2023-05-10",
-    "endDate": "2023-05-30",
-    "apartmentId": 1
-    }*/
-    @SneakyThrows//front salje da za izabrani stan i period dobije ukupnu cijenu iznajmljivanja
+    @SneakyThrows
     @PostMapping("calculate-price") //http://localhost:8080/api/rental/calculate-price
     public ResponseEntity<Double> calculatePrice(@RequestBody RentalApartmentDTO rentalApartmentDTO) {
         Errors errors = new BeanPropertyBindingResult(rentalApartmentDTO, "rentalApartmentDTO");
@@ -76,14 +59,7 @@ public class RentalController {
         return new ResponseEntity<>(rentalService.calculatePrice(rentalApartmentDTO), HttpStatus.OK);
     }
 
-    /* kada budemo dodavali renting za stan na dan biracemo dane sa kalendara,slicno za stan na mejsecnom nivou
-       slacemo samo mjesece a za stan na godisnjem nivou slacemo samo godine
-    {
-    "startDate":"2023-04-22",
-    "endDate":"2024-05-22",
-    "apartmentId":3
-    }*/
-    @PostMapping//POST->api za dodavanje rezervacija za odredjeni stan [saljemo od do period].Kad se izda stan posalji
+    @PostMapping
     @SneakyThrows// notifikaciju vlasniku http://localhost:8080/api/rental/ (kada klijent bude rezervisao stan)
     public ResponseEntity<Void> insert(@RequestBody RentalApartmentDTO rentalApartmentDTO) {
         Errors errors = new BeanPropertyBindingResult(rentalApartmentDTO, "rentalApartmentDTO");

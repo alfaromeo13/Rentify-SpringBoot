@@ -19,10 +19,10 @@ public class Address {
     private Integer id;
 
     @Column
-    private Long x;
+    private Double x;
 
     @Column
-    private Long y;
+    private Double y;
 
     @Column
     private String street;

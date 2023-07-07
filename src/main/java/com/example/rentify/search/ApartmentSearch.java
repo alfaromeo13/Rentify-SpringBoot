@@ -38,6 +38,4 @@ public class ApartmentSearch {
     private String wiFi;
     private String elevator;
     private String appliances; // common household appliances that are commonly found in kitchens
-
-    private String sort; // Sorting option selected by the user
 }

@@ -56,10 +56,6 @@ public class RentalValidator implements Validator {
             errors.rejectValue("startDate", "startDate.required", "Missing starting date!");
         else if (endDate == null)
             errors.rejectValue("endDate", "endDate.required", "Missing ending date!");
-        else if (startDate.before(new Date()))
-            errors.rejectValue("startDate", "startDate.error", "Start date can't be in past!");
-        else if (endDate.before(new Date()))
-            errors.rejectValue("endDate", "endDate.error", "End date can't be in past!");
         else if (startDate.after(endDate))
             errors.rejectValue("startDate", "startDate.error", "Start after end!");
         else if (startDate.equals(endDate))

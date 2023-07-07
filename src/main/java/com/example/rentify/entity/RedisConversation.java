@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash("Conversation")
+@RedisHash(value = "Conversation", timeToLive = 604800) // => it will expire after 7 days
 public class RedisConversation implements Serializable {
     //definisemo strukturu konverzacije koju cuvamo
     // unutar redisa. Redis je key value struktura

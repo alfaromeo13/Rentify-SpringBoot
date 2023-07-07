@@ -36,6 +36,6 @@ public class RedisMessageConversationController {
         conversation.appendMessage(messageDTO);
 
         redisConversationRepository.save(conversation);
-        messagingTemplate.convertAndSend(TopicConstants.CONVERSATION_TOPIC, messageDTO);
+        messagingTemplate.convertAndSend(TopicConstants.CONVERSATION_TOPIC + conversationId, messageDTO);
     }
 }

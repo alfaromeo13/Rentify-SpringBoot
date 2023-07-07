@@ -28,8 +28,13 @@ public interface RentalRepository extends JpaRepository<Rental, Integer> {
     @Query(value = "select rental from Rental rental " +
             "join rental.status status join rental.apartment apartment " +
             "where apartment.id = :id and status = 'rented' and (" +
-            "(rental.startDate < :endDate and rental.endDate > :startDate) or" +
-            "(rental.startDate >= :startDate and rental.endDate <= :endDate) or" +
-            "(rental.startDate <= :startDate and rental.endDate >= :endDate))")
+            "(rental.startDate <= current_date and rental.endDate > current_date) or" +
+            "(rental.startDate >= current_date))")
+    List<Rental> getRented(@Param("id") Integer id);
+
+    @Query(value = "select rental from Rental rental " +
+            "join rental.status status join rental.apartment apartment " +
+            "where apartment.id = :id and status = 'rented' and (" +
+            "(rental.startDate < :endDate and rental.endDate > :startDate))")
     List<Rental> findForPeriod(@Param("id") Integer id, @Param("startDate") Date start, @Param("endDate") Date end);
 }

@@ -15,7 +15,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -38,9 +37,8 @@ public class RentalService {
     private final RentalSearchMapper rentalSearchMapper;
     private final ApartmentRepository apartmentRepository;
 
-    @Cacheable(value = "rentals", key = "{#search.getId(),#search.getStartDate(),#search.getEndDate()}")
-    public List<RentalSearchDTO> findRentalsForSpecifPeriod(RentalSearchDTO search) {
-        List<Rental> rentals = rentalRepository.findForPeriod(search.getId(), search.getStartDate(), search.getEndDate());
+    public List<RentalSearchDTO> findRentalsForSpecifPeriod(Integer id) {
+        List<Rental> rentals = rentalRepository.getRented(id);
         return rentalSearchMapper.toDTOList(rentals);
     }
 
@@ -88,10 +86,12 @@ public class RentalService {
         return rentalRepository.findForPeriod(id, start, end);
     }
 
+    //number of days between 2 dates
     private long days(Date firstDate, Date secondDate) {
         return ChronoUnit.DAYS.between(firstDate.toInstant(), secondDate.toInstant());
     }
 
+    //number of months between 2 dates
     private long months(Date firstDate, Date secondDate) {
         YearMonth m1 = YearMonth.from(firstDate.toInstant().atZone(ZoneOffset.UTC));
         YearMonth m2 = YearMonth.from(secondDate.toInstant().atZone(ZoneOffset.UTC));

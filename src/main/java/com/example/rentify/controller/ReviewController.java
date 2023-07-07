@@ -29,7 +29,6 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final ReviewValidator reviewValidator;
 
-    //da uzmemo komentare za 1 stan sortirane od najnovijeg do najstarijeg(samo sortiamo po id-evi u opadajucem redolslj)
     @GetMapping("apartment-id/{id}") //GET http://localhost:8080/api/review/apartment-id/5?page=0&size=5
     public ResponseEntity<List<ReviewDTO>> findForApartment(@PathVariable Integer id, Pageable pageable) {
         List<ReviewDTO> reviews = reviewService.findByApartmentId(id, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
@@ -38,7 +37,7 @@ public class ReviewController {
     }
 
     @PostMapping
-    @SneakyThrows //POST http://localhost:8080/api/review/ kada budemo dodavali komentar na stan
+    @SneakyThrows //POST http://localhost:8080/api/review/
     public ResponseEntity<Void> create(@RequestBody ReviewApartmentDTO reviewApartmentDTO) {
         Errors errors = new BeanPropertyBindingResult(reviewApartmentDTO, "reviewApartmentDTO");//ovaj drugi parametar je buklvalno naziv objekta kojeg predajemo
         ValidationUtils.invokeValidator(reviewValidator, reviewApartmentDTO, errors);//pozivamo odredjeni validator
@@ -48,29 +47,11 @@ public class ReviewController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @SneakyThrows //ako budemo zeljeli da editujemo komentar
-    @PutMapping("{id}") //PUT http://localhost:8080/api/review/55
-    @PreAuthorize("@reviewAuth.hasPermission(#id)")
-    public ResponseEntity<Void> update(@PathVariable Integer id, @RequestBody ReviewApartmentDTO reviewApartmentDTO) {
-        Errors errors = new BeanPropertyBindingResult(reviewApartmentDTO, "reviewApartmentDTO");
-        ValidationUtils.invokeValidator(reviewValidator, reviewApartmentDTO, errors);
-        if (errors.hasErrors()) throw new ValidationException("Validation error", errors);
-        reviewService.update(id, reviewApartmentDTO);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @DeleteMapping("{id}") //DELETE http://localhost:8080/api/review/55 za brisanje komentara
+    @DeleteMapping("{id}") //DELETE http://localhost:8080/api/review/55
     @PreAuthorize("@reviewAuth.hasPermission(#id)")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         reviewService.delete(id);
         log.info("Deleted review id : {} ", id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    /* for POST or PUT
-        {
-        "grade":5,
-        "comment":"komentar",
-        "apartmentId":4
-        }
- */
 }

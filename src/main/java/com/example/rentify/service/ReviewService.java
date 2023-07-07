@@ -39,12 +39,6 @@ public class ReviewService {
         reviewRepository.save(review);
     }
 
-    public void update(Integer id, ReviewApartmentDTO reviewApartmentDTO) {
-        reviewApartmentDTO.setId(id);
-        reviewApartmentDTO.setIsActive(true);
-        save(reviewApartmentDTO);
-    }
-
     public void delete(Integer id) {
         Review review = reviewRepository.getById(id);
         review.setIsActive(false);

@@ -30,14 +30,7 @@ public class AuthController {
     private final UserCreateValidator userCreateValidator;
     private final AuthenticationManager authenticationManager;//security configuration bean
 
-    /* POST http://localhost:8080/api/authenticate/login
-        {
-            "username" : "johndoe",
-            "password" : "hiperbola12345!"
-        }
-     */
-
-    @PostMapping("login")
+    @PostMapping("login") // POST http://localhost:8080/api/authenticate/login
     public ResponseEntity<Map<String, String>> login(@RequestBody UserLoginDTO userLoginDTO) {
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken
@@ -61,14 +54,6 @@ public class AuthController {
             return new ResponseEntity<>(jwtTokenProvider.createToken(authentication), HttpStatus.OK);
         } else return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
-    /*{
-          "username" : "IVICA",
-          "password" : "MARICA",
-          "passwordConfirm":"MARICA",
-          "firstName": "Vanja",
-          "lastName":"Vukovic",
-          "email":"aSDASD@ASDASDASD"
-      }*/
 
     @SneakyThrows
     @PostMapping("register")

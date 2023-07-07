@@ -12,7 +12,6 @@ import com.example.rentify.specs.Filter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,29 +38,11 @@ public class ApartmentService {
 
     public List<ApartmentDTO> search(Pageable pageable, ApartmentSearch params) {
         filter.setApartmentSearch(params);
-        Sort sort = null;
-        if (params.getSort() != null) {
-            if (params.getSort().equals("price,asc")) {
-                sort = Sort.by("price").ascending();
-            } else if (params.getSort().equals("price,desc")) {
-                sort = Sort.by("price").descending();
-            } else if (params.getSort().equals("grade,asc")) {
-                sort = Sort.by("grade").ascending();
-            } else if (params.getSort().equals("grade,desc")) {
-                sort = Sort.by("grade").descending();
-            }
-        }
-
-        // Create the Pageable object with sorting, or without sorting if sort is null
-        Pageable pageableWithSort = (sort != null) ? PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort)
-                : PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-
-        Page<Apartment> apartmentsPage = apartmentRepository.findAll(idSpecification, pageableWithSort);
-
+        Page<Apartment> apartmentsPage = apartmentRepository.findAll(idSpecification, pageable);
         if (apartmentsPage.hasContent()) {
             List<Integer> ids = apartmentsPage.getContent().stream().map(Apartment::getId).collect(Collectors.toList());
             apartmentSearchSpecification.setIds(ids);//these are apartment ids
-            List<Apartment> apartments = apartmentRepository.findAll(apartmentSearchSpecification);
+            List<Apartment> apartments = apartmentRepository.findAll(apartmentSearchSpecification, pageable.getSort());
             List<ApartmentDTO> newApartments=new ArrayList<>();
             apartments.forEach(apartment -> { //we calculate number of stars forEach apartment
                 Double numberOfStars = reviewService.numberOfStars(apartment.getId());

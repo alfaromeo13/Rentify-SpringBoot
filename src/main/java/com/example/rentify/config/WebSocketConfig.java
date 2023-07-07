@@ -14,14 +14,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/redis-chat") //front otvara komunikaciju na redis chat preko ovoga
-                .setAllowedOrigins("*")
-                .withSockJS();
+        registry
+            .addEndpoint("/websocket/subscribe") //front otvara komunikaciju na redis chat preko ovoga (CONNECT)
+            .setAllowedOrigins("http://localhost:4200") // TODO: eksternalizovati... (YML)
+            .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");//na topic prima
+        config.enableSimpleBroker("/topic"); //na topic prima
         config.setApplicationDestinationPrefixes("/app"); //poruke saljem preko ove rute tj front salje preko nje
         //dakle ja je saljem na app a drugi je prima na topic
 

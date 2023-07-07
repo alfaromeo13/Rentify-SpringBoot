@@ -1,0 +1,30 @@
+version: '3.4'
+
+services:
+  rentify-db:
+    image: mysql:8.0.22
+    container_name: rentify_db
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      TZ: "Europe/Belgrade"
+    volumes:
+      - ./db-data:/var/lib/mysql
+      - ./db-config:/etc/mysql/conf.d
+    networks:
+      - rentify_net
+
+  rentify-redis:
+    image: redis:latest
+    container_name: rentify_redis
+    ports:
+      - "6379:6379"
+    environment:
+      TZ: "Europe/Belgrade"
+    networks:
+      - rentify_net
+
+networks:
+  rentify_net:
+

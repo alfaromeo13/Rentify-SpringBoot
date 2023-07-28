@@ -101,6 +101,16 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Rental> rentals = new ArrayList<>();
 
+    @ToString.Exclude
+    @JsonManagedReference
+    @OneToMany(mappedBy = "sender")
+    private List<Notification> notificationSender = new ArrayList<>();
+
+    @ToString.Exclude
+    @JsonManagedReference
+    @OneToMany(mappedBy = "receiver")
+    private List<Notification> notificationReceiver = new ArrayList<>();
+
     public void addRole(Role role) {
         roles.add(role);
     }

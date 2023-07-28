@@ -34,6 +34,11 @@ public class RentalController {
         return new ResponseEntity<>(rentals, HttpStatus.OK);
     }
 
+    @GetMapping("/monthly-incomes")
+    public ResponseEntity<double[]> getMonthlyEarnings() {
+        return new ResponseEntity<>(rentalService.calculateMonthlyEarnings(), HttpStatus.OK);
+    }
+
     //GET -> izlistaj sve apartmane koje je korisnik iznajmio do sada(a klikom na preview dugme pozovi apartment
     //api koji nalazi taj stan preko rental id-a)
     @GetMapping("for-user") //http://localhost:8080/api/rental/for-user?page=0&size=5
@@ -60,7 +65,7 @@ public class RentalController {
     }
 
     @PostMapping
-    @SneakyThrows// notifikaciju vlasniku http://localhost:8080/api/rental/ (kada klijent bude rezervisao stan)
+    @SneakyThrows //http://localhost:8080/api/rental/
     public ResponseEntity<Void> insert(@RequestBody RentalApartmentDTO rentalApartmentDTO) {
         Errors errors = new BeanPropertyBindingResult(rentalApartmentDTO, "rentalApartmentDTO");
         ValidationUtils.invokeValidator(rentalValidator, rentalApartmentDTO, errors);
@@ -69,7 +74,7 @@ public class RentalController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    //DELETE ->api za cancel rentala (preko redisa obavijestiti putem notifikacije klijente o bilo kakvoj promjeni)
+    //DELETE ->api za cancel rentala
     @DeleteMapping("cancel/{id}") //DELETE http://localhost:8080/api/rental/cancel/2
     @PreAuthorize("@rentalAuth.hasPermission(#id)") //samo gazda stana stana moze da ponisti rental za svoj stan
     public ResponseEntity<Void> cancel(@PathVariable Integer id) {

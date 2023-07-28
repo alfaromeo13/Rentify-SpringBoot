@@ -26,9 +26,8 @@ public class ConversationService {
     public String create(String usernameFrom, String usernameTo) {
         RedisConversation redisConversation = new RedisConversation(usernameFrom, usernameTo);
         redisConversationRepository.save(redisConversation);
-
-        messagingTemplate.convertAndSend(TopicConstants.NOTIFICATION_TOPIC, redisConversation);
-
+        //we send notification to end user
+        messagingTemplate.convertAndSend(TopicConstants.NEW_CONVERSATION_TOPIC, redisConversation);
         return redisConversation.getId();
     }
 
@@ -48,7 +47,8 @@ public class ConversationService {
                 .findById(conversationId)
                 .orElseThrow(()
                         -> new EntityNotFoundException("Conversation with id " + conversationId + " not exists!"));
-
+        conversation.setIsOpened(true);
+        redisConversationRepository.save(conversation);
         return conversation.getMessages();
     }
 }

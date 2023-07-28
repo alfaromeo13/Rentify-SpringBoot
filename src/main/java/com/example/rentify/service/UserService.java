@@ -37,13 +37,12 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final ApartmentRepository apartmentRepository;
 
-    public UserDTO find() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userMapper.toDTO(userRepository.findByUsername(username));
-    }
-
     public User findByUsername(String username){
         return userRepository.findByUsername(username);
+    }
+
+    public Integer numOfUsers(){
+        return userRepository.numOfUsers();
     }
 
     public boolean activateAccount(String mail,String code) {
@@ -72,20 +71,15 @@ public class UserService {
         return result != null && result > 0;
     }
 
-    public void update(UserDTO userDTO) {
+    public boolean delete(String password) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username);
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setEmail(userDTO.getEmail());
-        userRepository.save(user);
-    }
-
-    public void delete() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username);
-        user.setIsActive(false);
-        userRepository.save(user);
+        User user = userRepository.findByUsername(username);;
+        if(passwordEncoder.matches(password, user.getPassword())) {
+            user.setIsActive(false);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
 
     public void deleteById(Integer id) {
@@ -125,17 +119,18 @@ public class UserService {
         return apartmentsPage.hasContent() ? apartmentsPage.getContent() : Collections.emptyList();
     }
 
-    public List<UserDTO> findAll(Pageable pageable) {
+    public List<UserDTO> find(Pageable pageable) {
         Page<User> usersPage = userRepository.findAll(pageable);
+        return usersPage.hasContent() ? userMapper.toDTOList(usersPage.getContent()) : Collections.emptyList();
+    }
+
+    public List<UserDTO> findAllByUsername(String username,Pageable pageable) {
+        Page<User> usersPage = userRepository.findByUsernameLike(username,pageable);
         return usersPage.hasContent() ? userMapper.toDTOList(usersPage.getContent()) : Collections.emptyList();
     }
 
     public boolean isActive(String username) {
         return userRepository.existsByUsernameAndIsActiveTrue(username);
-    }
-
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email.toLowerCase());
     }
 
     public void register(UserCreateDTO userCreateDTO) {

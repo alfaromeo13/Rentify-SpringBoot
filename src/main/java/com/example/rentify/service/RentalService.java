@@ -1,5 +1,6 @@
 package com.example.rentify.service;
 
+import com.example.rentify.dto.NotificationDTO;
 import com.example.rentify.dto.RentalApartmentDTO;
 import com.example.rentify.dto.RentalDTO;
 import com.example.rentify.dto.RentalSearchDTO;
@@ -19,22 +20,22 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class RentalService {
-
     private final RentalMapper rentalMapper;
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
     private final RentalSearchMapper rentalSearchMapper;
+    private final NotificationService notificationService;
     private final ApartmentRepository apartmentRepository;
 
     public List<RentalSearchDTO> findRentalsForSpecifPeriod(Integer id) {
@@ -57,6 +58,7 @@ public class RentalService {
 
     //we schedule a task to run every hour
     @Scheduled(cron = "0 0 * * * *") // cron expressions
+    @CacheEvict(value = "rentals", allEntries = true)
     public void checkEnded() {
         log.info("cron job triggered...");
         List<Rental> rentals = rentalRepository.findByStatusNameAndEndDate("rented", new Date());
@@ -64,11 +66,25 @@ public class RentalService {
         rentalRepository.saveAll(rentals);
     }
 
+    public String transformDateToString(Date inputDate) {
+        SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return outputDateFormat.format(inputDate);
+    }
+
     @CacheEvict(value = "rentals", allEntries = true)
     public void cancel(Integer id) {
         Rental rental = rentalRepository.getById(id);
         rental.setStatus(new Status("cancelled"));
         rentalRepository.save(rental);
+        NotificationDTO notification=new NotificationDTO();
+        notification.setMessage("Sorry... your booking from: "+transformDateToString(rental.getStartDate())
+                +" to: "+transformDateToString(rental.getEndDate())
+                +" for "+rental.getApartment().getPropertyType().getName().toLowerCase()+" in "
+                +rental.getApartment().getAddress().getStreet()+" "
+                +rental.getApartment().getAddress().getNeighborhood().getName()+" ,"
+                +rental.getApartment().getAddress().getNeighborhood().getCity().getName()+" has been cancelled");
+        notification.setReceiverUsername(rental.getApartment().getUser().getUsername());
+        notificationService.save(notification);
     }
 
     @CacheEvict(value = "rentals", allEntries = true)
@@ -80,6 +96,15 @@ public class RentalService {
         rental.setApartment(apartmentRepository.getById(rentalApartmentDTO.getApartmentId()));
         rental.setUser(user);
         rentalRepository.save(rental);
+        NotificationDTO notification=new NotificationDTO();
+        notification.setMessage(" booked your "+
+                rental.getApartment().getPropertyType().getName().toLowerCase()+" in"
+                +" "+rental.getApartment().getAddress().getStreet()+" "
+                +rental.getApartment().getAddress().getNeighborhood().getName()+" , "
+                +rental.getApartment().getAddress().getNeighborhood().getCity().getName()+" "
+        +"from: "+transformDateToString(rental.getStartDate())+" to: "+transformDateToString(rental.getEndDate()));
+        notification.setReceiverUsername(rental.getApartment().getUser().getUsername());
+        notificationService.save(notification);
     }
 
     public List<Rental> findForPeriod(Integer id, Date start, Date end) {
@@ -105,7 +130,30 @@ public class RentalService {
         Double price = apartment.getPrice();
         Date startDate = rental.getStartDate();
         Date endDate = rental.getEndDate();
-        price *= period.equals("day") ? days(startDate, endDate) : months(startDate, endDate);
+        price *= period.equals("day") ? days(startDate, endDate) + 1: months(startDate, endDate);
         return Math.round(price * 100.0) / 100.0;
+    }
+
+    public double[] calculateMonthlyEarnings() {
+        double[] monthlyEarnings = new double[12];
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Rental> allRentals = rentalRepository.findAllRentalsForUsersApartments(username);
+        for (Rental rental : allRentals) {
+            Date startDate = rental.getStartDate();
+            Date endDate = rental.getEndDate();
+            Double rentalPrice = rental.getRentalPrice();
+
+            Calendar startCalendar = Calendar.getInstance();
+            startCalendar.setTime(startDate);
+            Calendar endCalendar = Calendar.getInstance();
+            endCalendar.setTime(endDate);
+
+            while (startCalendar.before(endCalendar)) {
+                int month = startCalendar.get(Calendar.MONTH);
+                monthlyEarnings[month] += rentalPrice;
+                startCalendar.add(Calendar.MONTH, 1);
+            }
+        }
+        return monthlyEarnings;
     }
 }

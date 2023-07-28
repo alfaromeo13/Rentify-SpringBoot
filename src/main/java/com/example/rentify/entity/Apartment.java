@@ -56,6 +56,11 @@ public class Apartment {
             insertable = false)
     private Boolean isActive;
 
+    @Column(name = "is_approved",
+            columnDefinition = "TINYINT(1) DEFAULT 0",
+            insertable = false)
+    private Boolean isApproved;
+
     @ToString.Exclude
     @JoinColumn(name = "address_id")
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -69,7 +74,9 @@ public class Apartment {
     @ManyToOne(fetch = FetchType.LAZY)
     private PropertyType propertyType;
 
-    @Column
+    @Column(
+            columnDefinition = "INT(11) DEFAULT 1",
+            insertable = false)
     private Integer grade;
 
     @ToString.Exclude

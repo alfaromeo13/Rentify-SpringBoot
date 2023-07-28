@@ -8,7 +8,6 @@ import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -71,13 +70,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .antMatchers("/api/user/**").authenticated()
                 .antMatchers(HttpMethod.POST,"/api/rental/").authenticated()
+                .antMatchers(HttpMethod.GET,"/api/monthly-incomes").authenticated()
                 .antMatchers(HttpMethod.POST,"/api/review/**").authenticated()
                 .antMatchers(HttpMethod.DELETE,"/api/review/**").authenticated()
-                .antMatchers("/api/messages/**").authenticated()
-//                .antMatchers("/api/authenticate/**").permitAll()
-//                .antMatchers(HttpMethod.GET,"/api/image/preview/**").permitAll()
-               // .anyRequest().authenticated();//We also won't define rules for all apis
-                .anyRequest().permitAll(); //any other api is publicaly available
-        //nabroj iznad samo zbaranjene apije tj za koje mroamo da smo verifikovani!!!
+                .antMatchers(HttpMethod.POST,"/api/apartment/").authenticated()
+                .antMatchers(HttpMethod.PUT,"/api/apartment/**").authenticated()
+                .antMatchers(HttpMethod.DELETE,"/api/apartment/**").authenticated()
+                .antMatchers("/api/conversations/**").authenticated()
+                .anyRequest().permitAll(); //any other api is publicly available
+        //.antMatchers("/api/authenticate/**").permitAll()
+        //.anyRequest().authenticated();  We also won't define rules for all apis
     }
 }

@@ -1,23 +1,27 @@
 package com.example.rentify.service;
 
 import com.example.rentify.dto.ApartmentDTO;
+import com.example.rentify.dto.NotificationDTO;
 import com.example.rentify.entity.Apartment;
 import com.example.rentify.mapper.ApartmentMapper;
 import com.example.rentify.mapper.ImageMapper;
+import com.example.rentify.projections.AdminApartmentProjection;
 import com.example.rentify.repository.*;
 import com.example.rentify.search.ApartmentSearch;
 import com.example.rentify.specs.ApartmentIdSpecification;
 import com.example.rentify.specs.ApartmentSearchSpecification;
 import com.example.rentify.specs.Filter;
+import com.example.rentify.ws.TopicConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -31,7 +35,9 @@ public class ApartmentService {
     private final ImageMapper imageMapper;
     private final ReviewService reviewService;
     private final UserService userService;
+    private final NotificationService notificationService;
     private final ApartmentMapper apartmentMapper;
+    private final SimpMessagingTemplate messagingTemplate;
     private final ApartmentRepository apartmentRepository;
     private final ApartmentIdSpecification idSpecification;
     private final ApartmentSearchSpecification apartmentSearchSpecification;
@@ -61,7 +67,30 @@ public class ApartmentService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Apartment apartment = apartmentMapper.toEntity(apartmentDTO);
         apartment.setUser(userService.findByUsername(username));
-        apartmentRepository.save(apartment);
+        Apartment savedApartment = apartmentRepository.save(apartment);
+        ApartmentDTO savedDTO = apartmentMapper.toDTO(savedApartment);
+        savedDTO.setCreatedAt(new Date());
+        messagingTemplate.convertAndSend(TopicConstants.CREATED_APARTMENT_TOPIC, savedDTO);
+    }
+
+    public void activateById(Integer id) {
+        if (apartmentRepository.existsById(id)) {
+            Apartment apartment = apartmentRepository.getById(id);
+            apartment.setIsActive(true);
+            apartmentRepository.save(apartment);
+        }
+    }
+
+    public void approveById(Integer id) {
+        if (apartmentRepository.existsById(id)) {
+            Apartment apartment = apartmentRepository.getById(id);
+            apartment.setIsApproved(true);
+            apartmentRepository.save(apartment);
+            NotificationDTO notification=new NotificationDTO();
+            notification.setReceiverUsername(apartment.getUser().getUsername());
+            notification.setMessage("Your renting property is approved and is now visible for all! :) ");
+            notificationService.save(notification);
+       }
     }
 
     public void update(Integer id, ApartmentDTO apartmentDTO) {
@@ -69,6 +98,10 @@ public class ApartmentService {
         apartmentDTO.setIsActive(true);
         apartmentDTO.setImages(imageMapper.toDTOList(apartmentRepository.getById(id).getImages()));
         save(apartmentDTO);
+    }
+
+    public AdminApartmentProjection getProjection(){
+        return apartmentRepository.getProjection();
     }
 
     public boolean existsById(Integer id) {
@@ -79,5 +112,14 @@ public class ApartmentService {
         Apartment apartment = apartmentRepository.getById(id);
         apartment.setIsActive(false);
         apartmentRepository.save(apartment);
+    }
+
+    public void notApprove(Integer id) {
+        Apartment apartment = apartmentRepository.getById(id);
+        NotificationDTO notification=new NotificationDTO();
+        notification.setReceiverUsername(apartment.getUser().getUsername());
+        notification.setMessage("Sorry...Your property for renting has been declined :/ ");
+        notificationService.save(notification);
+        apartmentRepository.delete(apartment);
     }
 }

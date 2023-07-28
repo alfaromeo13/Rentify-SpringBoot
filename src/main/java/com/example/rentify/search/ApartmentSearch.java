@@ -11,6 +11,8 @@ import java.util.List;
 public class ApartmentSearch {
     private Double minPrice;
     private Double maxPrice;
+    private Boolean isActive;
+    private Boolean isApproved;
     private Integer minNumOfBedrooms;
     private Integer maxNumOfBedrooms;
     private Integer minNumOfBathrooms;
@@ -21,7 +23,7 @@ public class ApartmentSearch {
     private String countryCode;
     private String cityName;
     private String neighborhoodName;
-    private Integer userId;//When user logs in he wants a list of apartments he owns
+    private String username;//Search properties by owner's username
     private List<Integer> id=new ArrayList<>();
     private List<String> type=new ArrayList<>();
     private List<String> period=new ArrayList<>();

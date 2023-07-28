@@ -1,6 +1,9 @@
 package com.example.rentify.error;
 
 import com.example.rentify.exception.ValidationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
@@ -15,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -37,14 +41,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorDTO> handleUploadSizeException(MaxUploadSizeExceededException e) {
+    public ResponseEntity<ErrorDTO> handleUploadSizeException() {
         List<FieldErrorDTO> errors = new ArrayList<>();
-        errors.add(new FieldErrorDTO("images", "images.error", e.getMessage()));
+        errors.add(new FieldErrorDTO("images", "images.error",
+                "Maximum upload size exceeded. Maximum is 100MB"));
         return new ResponseEntity<>(new ErrorDTO("Validation error", errors), HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
-    @ExceptionHandler({JsonMappingException.class, InvalidFormatException.class})
-    public ResponseEntity<Void> handleInvalidFormatException() {
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({JsonMappingException.class, InvalidFormatException.class, JsonParseException.class})
+    public ResponseEntity<ErrorDTO> handleInvalidFormatException() {
+        List<FieldErrorDTO> customFieldErrors = new ArrayList<>();
+        customFieldErrors.add(new FieldErrorDTO("apartments", "apartment.error", "Invalid input format"));
+        ErrorDTO errorDTO = new ErrorDTO("Validation error", customFieldErrors);
+        return new ResponseEntity<>(errorDTO, HttpStatus.BAD_REQUEST);
     }
 }

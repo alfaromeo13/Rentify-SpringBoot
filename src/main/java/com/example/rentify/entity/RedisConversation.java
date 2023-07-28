@@ -18,18 +18,20 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @RedisHash(value = "Conversation", timeToLive = 604800) // => it will expire after 7 days
-public class RedisConversation implements Serializable {
-    //definisemo strukturu konverzacije koju cuvamo
-    // unutar redisa. Redis je key value struktura
+public class RedisConversation implements Serializable { //Redis je key value struktura
+    //definisemo strukturu konverzacije koju cuvamo unutar redisa
     @Id
     private String id;
     private String usernameFrom; // johndoe, heril, jovan
     private String usernameTo; // heril, johndoe
+    private Date createdAt;
+    private Boolean isOpened;
     private List<MessageDTO> messages = new ArrayList<>();
 
     public RedisConversation(String usernameFrom, String usernameTo) {
         this.usernameFrom = usernameFrom;
         this.usernameTo = usernameTo;
+        this.createdAt = new Date();
     }
 
     public void appendMessage(MessageDTO messageDTO) {

@@ -41,11 +41,9 @@ public class ApartmentController {
         return new ResponseEntity<>(apartments, HttpStatus.OK);
     }
 
-    //nisi pozvao ove ispod
-
     @PostMapping
     @SneakyThrows //POST http://localhost:8080/api/apartment/
-    public ResponseEntity<Void> multipartHandler(@RequestParam MultipartFile[] images, String payload) {
+    public ResponseEntity<Void> multipartHandler(@RequestParam MultipartFile[] images, @RequestParam String payload) {
         ApartmentDTO apartment = new ObjectMapper().readValue(payload, ApartmentDTO.class);
         IncomingImagesDTO imagesDTO = new IncomingImagesDTO(null, images);
         ValidationUtils.invokeValidator(imgValidator, imagesDTO, new BeanPropertyBindingResult(imagesDTO, "imagesDTO"));
@@ -54,6 +52,8 @@ public class ApartmentController {
         apartmentService.save(apartment);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    //nisi pozvao ove ispod
 
     @PutMapping("{id}")
     @PreAuthorize("@apartmentAuth.hasPermission(#id)") //PUT http://localhost:8080/api/apartment/2

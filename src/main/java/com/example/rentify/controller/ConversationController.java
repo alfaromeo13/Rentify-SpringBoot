@@ -1,10 +1,10 @@
 package com.example.rentify.controller;
 
+import com.example.rentify.dto.CreateConversationDTO;
 import com.example.rentify.dto.MessageDTO;
 import com.example.rentify.entity.RedisConversation;
 import com.example.rentify.service.ConversationService;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,6 @@ import java.util.Map;
 public class ConversationController {
 
     private final ConversationService conversationService;
-
 
     @PostMapping
     public ResponseEntity<Map<String, String>> create(@RequestBody CreateConversationDTO conversation) {
@@ -49,11 +48,5 @@ public class ConversationController {
     public ResponseEntity<List<MessageDTO>> getMessagesByConversationId(@PathVariable String id) {
         List<MessageDTO> messages = conversationService.getMessagesByConversationId(id);
         return new ResponseEntity<>(messages, HttpStatus.OK);
-    }
-
-    @Value
-    static class CreateConversationDTO {
-        String usernameFrom;
-        String usernameTo;
     }
 }

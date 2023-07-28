@@ -12,6 +12,7 @@ import java.util.Date;
 @Entity
 @DynamicInsert
 @DynamicUpdate
+@ToString
 @Table(name = "rentals")
 public class Rental {
     @Id

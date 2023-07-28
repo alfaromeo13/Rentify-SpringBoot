@@ -1,5 +1,6 @@
 package com.example.rentify.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.io.Serializable;
@@ -16,10 +17,12 @@ public class ApartmentDTO implements Serializable {
     private Integer sqMeters;
     private Integer numOfBedrooms;
     private Integer numOfBathrooms;
+    @JsonFormat(pattern = "dd/MM/yyyy") //ovo parsira bajte i vrace u jsonu kao odgovor datum u ovom formatu
     private Date createdAt;
-    private boolean liked;
+    private Boolean liked;
     private String number;
     private Boolean isActive;
+    private Boolean isApproved;
     private Integer numberOfStars;
 
     private UserDTO user; //owner

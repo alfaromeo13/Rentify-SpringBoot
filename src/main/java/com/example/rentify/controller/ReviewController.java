@@ -31,7 +31,7 @@ public class ReviewController {
 
     @GetMapping("apartment-id/{id}") //GET http://localhost:8080/api/review/apartment-id/5?page=0&size=5
     public ResponseEntity<List<ReviewDTO>> findForApartment(@PathVariable Integer id, Pageable pageable) {
-        List<ReviewDTO> reviews = reviewService.findByApartmentId(id, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
+        List<ReviewDTO> reviews = reviewService.findByApartmentId(id, PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),pageable.getSort()));
         //ovakvo predavanje pageabla radimo da nam neko ne posalje ogroman page i dovuce npr 10 na 6 rekorda iz baze i sl
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }

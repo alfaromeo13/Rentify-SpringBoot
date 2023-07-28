@@ -29,4 +29,8 @@ public class NeighborhoodService {
                 .findByCityAndNeighborhood(cityName, neighborhoodName, pageable);
         return hoods.hasContent() ? neighborhoodMapper.toDTOList(hoods.getContent()) : Collections.emptyList();
     }
+
+    public boolean exists(Integer id){
+        return neighborhoodRepository.existsById(id);
+    }
 }

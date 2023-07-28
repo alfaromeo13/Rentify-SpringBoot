@@ -24,19 +24,5 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic"); //na topic prima
         config.setApplicationDestinationPrefixes("/app"); //poruke saljem preko ove rute tj front salje preko nje
-        //dakle ja je saljem na app a drugi je prima na topic
-
-        // subscribe (slusam na nove poruke): /topic/conversation-with/{username}
-        // send messages: /app/receive/{from-username}/{to-username}
-
-        // 1. Supskripcija na topic (Jovan user): /topic/conversation-with/heril
-        // 2. Supskripcija na topic (Heril user): /topic/conversation-with/jovan
-        // 3. Jovan: "Zdravo!" saljem na  (/app/receive/jovan/heril)
-        // 4. Upis u redis
-        // 5. Slanje preko soketa frontu na odredjeni topic: /topic/conversation-with/jovan
-        // 5*. Ako korisnik ne slusa na topic (vrlo moguce) prebaci na drugi topic
-        // 6. Heril: "Cao!" (ovdje sam vec subscribe-ovan zato sto pokusavam da posaljem poruku): /app/receive/heril/jovan
-        // 7. Upis u redis
-        // 8. Slanje preko soketa frontu na odredjeni topic: /topic/conversation-with/heril
     }
 }

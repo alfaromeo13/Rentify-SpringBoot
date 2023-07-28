@@ -13,4 +13,6 @@ public interface NeighborhoodRepository extends JpaRepository<Neighborhood, Inte
             " join neighborhood.city city where city.name like concat(:cityName,'%')" +
             " and neighborhood.name like concat(:neighborhoodName,'%')")
     Page<Neighborhood> findByCityAndNeighborhood(String cityName, String neighborhoodName, Pageable pageable);
+
+    boolean existsById(Integer id);
 }

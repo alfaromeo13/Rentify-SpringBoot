@@ -3,10 +3,16 @@ package com.example.rentify.specs;
 import com.example.rentify.entity.*;
 import com.example.rentify.search.ApartmentSearch;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Setter
 @Component
@@ -33,7 +39,7 @@ public class Filter {
         filterByNumOfBedrooms(root, criteriaBuilder, predicateList);
         filterByCountryName(criteriaBuilder, predicateList, countryJoin);
         filterByCountryCode(criteriaBuilder, predicateList, countryJoin);
-        filterByUserId(criteriaBuilder, predicateList, userJoin);
+        filterByUsername(criteriaBuilder, predicateList, userJoin);
         filterByAvailabilityDate(criteriaBuilder, predicateList, rentalJoin);
         filterByAttribute(criteriaBuilder, predicateList, root
                 , "WiFi", apartmentSearch.getWiFi());
@@ -53,6 +59,7 @@ public class Filter {
                 "Elevator", apartmentSearch.getElevator());
         filterByPeriod(predicateList, periodJoin);
         filterByActive(root, userJoin, criteriaBuilder, predicateList);
+        filterByNotApproved(root,criteriaBuilder,predicateList);
     }
 
     private void filterByCountryCode(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList, Join<City, Country> countryJoin) {
@@ -73,10 +80,37 @@ public class Filter {
 
     private void filterByActive(Root<Apartment> root, Join<Apartment, User> userJoin,
                                 CriteriaBuilder criteriaBuilder, List<Predicate> predicateList) {
-        Predicate activeApartment = criteriaBuilder.isTrue(root.get("isActive"));
-        predicateList.add(activeApartment);// we filter only active apartments!
-        Predicate activeUser = criteriaBuilder.isTrue(userJoin.get("isActive"));
-        predicateList.add(activeUser);// also we filter only active users!
+        if(apartmentSearch.getIsActive() != null) {
+            Predicate approvedApartments = criteriaBuilder.isTrue(root.get("isApproved"));
+            predicateList.add(approvedApartments);// we filter only approved apartments!
+            //if user is admin we return everything without filtering
+            if (!apartmentSearch.getIsActive() && userHasAdminRole()) return;
+
+            Predicate activeApartment = criteriaBuilder.isTrue(root.get("isActive"));
+            predicateList.add(activeApartment);// we filter only active apartments!
+            Predicate activeUser = criteriaBuilder.isTrue(userJoin.get("isActive"));
+            predicateList.add(activeUser);// also we filter only active users!
+        }
+    }
+
+    private void filterByNotApproved(Root<Apartment> root, CriteriaBuilder criteriaBuilder,
+                                     List<Predicate> predicateList) {
+        if(apartmentSearch.getIsApproved() != null && apartmentSearch.getIsActive() == null) {
+            if (!apartmentSearch.getIsApproved() && userHasAdminRole()) {
+                Predicate approvedApartments = criteriaBuilder.isFalse(root.get("isApproved"));
+                predicateList.add(approvedApartments);// we filter only  not approved apartments!
+            }
+        }
+    }
+
+    private boolean userHasAdminRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); //thread local
+        // Loop through user's authorities to check for "admin" role
+        for (GrantedAuthority authority : authentication.getAuthorities()) {
+            if (authority.getAuthority().equals("ROLE_ADMIN"))
+                return true;
+        }
+        return false;
     }
 
     private void filterByPeriod(List<Predicate> predicateList,
@@ -91,18 +125,11 @@ public class Filter {
     private void filterByAvailabilityDate(CriteriaBuilder criteriaBuilder,
                                           List<Predicate> predicateList, Join<Apartment, Rental> rentalJoin) {
         if (apartmentSearch.getAvailableFrom() != null && apartmentSearch.getAvailableTo() != null) {
-            Predicate completeOverlap = criteriaBuilder.and(
+            Predicate period = criteriaBuilder.and(
                     criteriaBuilder.lessThan(rentalJoin.get("startDate"), apartmentSearch.getAvailableTo()),
                     criteriaBuilder.greaterThan(rentalJoin.get("endDate"), apartmentSearch.getAvailableFrom()));
-            Predicate withinRange = criteriaBuilder.and(
-                    criteriaBuilder.greaterThanOrEqualTo(rentalJoin.get("startDate"), apartmentSearch.getAvailableFrom()),
-                    criteriaBuilder.lessThanOrEqualTo(rentalJoin.get("endDate"), apartmentSearch.getAvailableTo()));
-            Predicate partialOverlap = criteriaBuilder.and(
-                    criteriaBuilder.lessThanOrEqualTo(rentalJoin.get("startDate"), apartmentSearch.getAvailableFrom()),
-                    criteriaBuilder.greaterThanOrEqualTo(rentalJoin.get("endDate"), apartmentSearch.getAvailableTo()));
-            Predicate combined = criteriaBuilder.or(completeOverlap, withinRange, partialOverlap);
             Predicate occupiedForPeriodPredicate = criteriaBuilder
-                    .and(criteriaBuilder.equal(rentalJoin.get("status"), new Status()), combined);
+                    .and(criteriaBuilder.equal(rentalJoin.get("status"), new Status()), period);
             Predicate unoccupiedForPeriodPredicate = criteriaBuilder.or(
                     criteriaBuilder.isNull(rentalJoin.get("id")),
                     criteriaBuilder.not(occupiedForPeriodPredicate));
@@ -126,13 +153,13 @@ public class Filter {
         }
     }
 
-    private void filterByUserId(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,
+    private void filterByUsername(CriteriaBuilder criteriaBuilder, List<Predicate> predicateList,
                                 Join<Apartment, User> userJoin) {
         //get all apartments for specific user(when user logs and want to check his apartments)
-        if (apartmentSearch.getUserId() != null) {
-            Predicate userIdPredicate = criteriaBuilder.equal(
-                    userJoin.get("id"), apartmentSearch.getUserId());
-            predicateList.add(userIdPredicate);
+        if (apartmentSearch.getUsername() != null) {
+            Predicate usernamePredicate = criteriaBuilder.like(
+                    userJoin.get("username"), apartmentSearch.getUsername()+ "%");
+            predicateList.add(usernamePredicate);
         }
     }
 

@@ -29,6 +29,7 @@ public class ImageInsertValidator implements Validator {
     }
 
     public void validateImages(Errors errors, IncomingImagesDTO images) {
+        validateNumberOfImages(images,errors);
         for (MultipartFile file : images.getImages()) isPicture(file, errors);
     }
 
@@ -36,6 +37,11 @@ public class ImageInsertValidator implements Validator {
         return Optional
                 .ofNullable(filename).filter(f -> f.contains("."))
                 .map(f -> f.substring(filename.lastIndexOf(".") + 1));
+    }
+
+    public void validateNumberOfImages(IncomingImagesDTO images,Errors errors){
+        if(images.getImages().length > 10)
+            errors.rejectValue("images", "images.error", "Limit is 10 images only");
     }
 
     @SneakyThrows

@@ -8,6 +8,7 @@ import com.example.rentify.service.RentalService;
 import com.example.rentify.validator.RentalValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/rental")
@@ -34,29 +37,30 @@ public class RentalController {
         return new ResponseEntity<>(rentals, HttpStatus.OK);
     }
 
-    @GetMapping("/monthly-incomes")
+    @GetMapping("filter") //...filter?username=...&propertyTitle=...
+    public ResponseEntity<List<RentalApartmentDTO>> getFiltered(
+            Pageable pageable,
+            @RequestParam(required = false) Date to,
+            @RequestParam(required = false) Date from,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String propertyTitle){
+        log.info("FROM:{}  TO:{} GUEST USERNAME:{} PROPERTY TITLE:{}",from,to,username,propertyTitle);
+        return new ResponseEntity<>(rentalService.filter(to,from,username,propertyTitle,pageable), HttpStatus.OK);
+    }
+
+    @GetMapping("monthly-incomes")
     public ResponseEntity<double[]> getMonthlyEarnings() {
         return new ResponseEntity<>(rentalService.calculateMonthlyEarnings(), HttpStatus.OK);
     }
 
-    //GET -> izlistaj sve apartmane koje je korisnik iznajmio do sada(a klikom na preview dugme pozovi apartment
-    //api koji nalazi taj stan preko rental id-a)
-    @GetMapping("for-user") //http://localhost:8080/api/rental/for-user?page=0&size=5
-    public ResponseEntity<List<RentalDTO>> usersRentalHistory(Pageable pageable) {
-        List<RentalDTO> rentals = rentalService.userRentingHistory(pageable);
+    @GetMapping("for-user")
+    public ResponseEntity<List<RentalApartmentDTO>> usersRentalHistory(Pageable pageable) {
+        List<RentalApartmentDTO> rentals = rentalService.userRentingHistory(pageable);
         return new ResponseEntity<>(rentals, HttpStatus.OK);
     }
-
-    //GET ->renting history za odredjeni stan (samo vlasnik moze ovo da vidi)
-    @GetMapping("apartment-id/{id}") //GET http://localhost:8080/api/rental/apartment-id/5?page=0&size=5
-    @PreAuthorize("@apartmentAuth.hasPermission(#id)")
-    public ResponseEntity<List<RentalDTO>> apartmentRentalHistory(@PathVariable Integer id, Pageable pageable) {
-        List<RentalDTO> rentals = rentalService.findByApartmentId(id, pageable);
-        return new ResponseEntity<>(rentals, HttpStatus.OK);
-    }
-
+    
     @SneakyThrows
-    @PostMapping("calculate-price") //http://localhost:8080/api/rental/calculate-price
+    @PostMapping("calculate-price")
     public ResponseEntity<Double> calculatePrice(@RequestBody RentalApartmentDTO rentalApartmentDTO) {
         Errors errors = new BeanPropertyBindingResult(rentalApartmentDTO, "rentalApartmentDTO");
         ValidationUtils.invokeValidator(rentalValidator, rentalApartmentDTO, errors);
@@ -65,7 +69,7 @@ public class RentalController {
     }
 
     @PostMapping
-    @SneakyThrows //http://localhost:8080/api/rental/
+    @SneakyThrows
     public ResponseEntity<Void> insert(@RequestBody RentalApartmentDTO rentalApartmentDTO) {
         Errors errors = new BeanPropertyBindingResult(rentalApartmentDTO, "rentalApartmentDTO");
         ValidationUtils.invokeValidator(rentalValidator, rentalApartmentDTO, errors);
@@ -74,9 +78,8 @@ public class RentalController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    //DELETE ->api za cancel rentala
-    @DeleteMapping("cancel/{id}") //DELETE http://localhost:8080/api/rental/cancel/2
-    @PreAuthorize("@rentalAuth.hasPermission(#id)") //samo gazda stana stana moze da ponisti rental za svoj stan
+    @DeleteMapping("cancel/{id}")
+    @PreAuthorize("@rentalAuth.hasPermission(#id)") //landlord api
     public ResponseEntity<Void> cancel(@PathVariable Integer id) {
         rentalService.cancel(id);
         return new ResponseEntity<>(HttpStatus.OK);

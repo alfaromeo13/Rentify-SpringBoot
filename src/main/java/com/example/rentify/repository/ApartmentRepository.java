@@ -2,16 +2,14 @@ package com.example.rentify.repository;
 
 import com.example.rentify.entity.Apartment;
 import com.example.rentify.projections.AdminApartmentProjection;
-import com.example.rentify.projections.ImageProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ApartmentRepository extends JpaRepository<Apartment, Integer>, JpaSpecificationExecutor<Apartment> {
-    boolean existsByIdAndUserUsername(Integer id, String username);
+    boolean existsByIdAndIsApprovedTrueAndUserUsername(Integer id, String username);
 
     @Query("SELECT " +
             "SUM(CASE WHEN type.name = 'Apartment' THEN 1 ELSE 0 END) AS apartments, " +

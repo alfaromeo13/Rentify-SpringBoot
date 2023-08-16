@@ -10,6 +10,7 @@ import java.util.Date;
 public class RentalSearchDTO implements Serializable {
     private Integer id;
 
+    //ovo nam vrace u ovom formatu odgovor
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date startDate, endDate;
 }

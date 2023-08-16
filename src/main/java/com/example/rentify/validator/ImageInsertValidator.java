@@ -25,7 +25,7 @@ public class ImageInsertValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         IncomingImagesDTO images = (IncomingImagesDTO) target;
-        validateImages(errors, images);
+        if(images.getImages() != null) validateImages(errors, images);
     }
 
     public void validateImages(Errors errors, IncomingImagesDTO images) {

@@ -67,18 +67,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .antMatchers("/api/user/**").authenticated()
-                .antMatchers(HttpMethod.POST,"/api/rental/").authenticated()
-                .antMatchers(HttpMethod.GET,"/api/monthly-incomes").authenticated()
-                .antMatchers(HttpMethod.POST,"/api/review/**").authenticated()
-                .antMatchers(HttpMethod.DELETE,"/api/review/**").authenticated()
-                .antMatchers(HttpMethod.POST,"/api/apartment/").authenticated()
-                .antMatchers(HttpMethod.PUT,"/api/apartment/**").authenticated()
-                .antMatchers(HttpMethod.DELETE,"/api/apartment/**").authenticated()
+                .antMatchers("/api/image/**").authenticated()
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/notification/**").authenticated()
                 .antMatchers("/api/conversations/**").authenticated()
+                .antMatchers("/api/rental/").authenticated()
+                .antMatchers("/api/review/").authenticated()
+                .antMatchers("/api/apartment/").authenticated()
                 .anyRequest().permitAll(); //any other api is publicly available
-        //.antMatchers("/api/authenticate/**").permitAll()
+        //before:: .antMatchers("/api/authenticate/**").permitAll()
         //.anyRequest().authenticated();  We also won't define rules for all apis
     }
 }

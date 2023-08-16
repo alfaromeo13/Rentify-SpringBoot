@@ -58,8 +58,6 @@ public class RentalValidator implements Validator {
             errors.rejectValue("endDate", "endDate.required", "Missing ending date!");
         else if (startDate.after(endDate))
             errors.rejectValue("startDate", "startDate.error", "Start after end!");
-        else if (startDate.equals(endDate))
-            errors.rejectValue("startDate", "startDate.error", "Start date same as end date!");
         else if (notValid(startDate.toString()))
             errors.rejectValue("startDate", "startDate.error", "Start date not valid!");
         else if (notValid(endDate.toString()))
@@ -91,7 +89,7 @@ public class RentalValidator implements Validator {
         if (apartmentId == null)
             errors.rejectValue(
                     "apartmentId", "apartment.id.required", "Apartment id is required!");
-        else if (!apartmentService.existsById(apartmentId))
+        else if (apartmentService.existsById(apartmentId))
             errors.rejectValue("apartmentId", "invalid.id", "Invalid apartment id!");
     }
 

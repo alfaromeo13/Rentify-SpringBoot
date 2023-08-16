@@ -79,7 +79,7 @@ class RedisConversationRepositoryTest {
         conversation.setMessages(List.of(messageDTO));
         redisConversationRepository.save(conversation);
 
-        List<RedisConversation> conversations = conversationService.getAllByUsername("johndoe");
+        List<RedisConversation> conversations = conversationService.getAllByUsername();
         assertThat(conversations).isNotNull().isNotEmpty();
         assertThat(conversations.iterator().next().getMessages()).isNotEmpty();
     }

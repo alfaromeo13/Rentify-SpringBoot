@@ -4,6 +4,7 @@ import com.example.rentify.dto.*;
 import com.example.rentify.entity.*;
 import com.example.rentify.mapper.UserMapper;
 import com.example.rentify.repository.ApartmentRepository;
+import com.example.rentify.repository.RedisResetPasswordRepository;
 import com.example.rentify.repository.RoleRepository;
 import com.example.rentify.repository.UserRepository;
 import com.example.rentify.security.dto.UserCreateDTO;
@@ -36,6 +37,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ApartmentRepository apartmentRepository;
+    private final RedisResetPasswordRepository redisResetPasswordRepository;
 
     public User findByUsername(String username){
         return userRepository.findByUsername(username);
@@ -55,10 +57,12 @@ public class UserService {
         } else return false;
     }
 
-    public boolean changePassword(String mail, String newPassword) {
-        if (userRepository.existsByEmail(mail)) {
+    public boolean changePassword(String mail, String code ,String newPassword) {
+        ResetPasswordRedis resetCode = redisResetPasswordRepository.findById(mail).orElse(null);
+        if (userRepository.existsByEmail(mail) && resetCode != null && resetCode.getGeneratedCode().equals(code)) {
             User user = userRepository.findByEmail(mail);
             user.setPassword(passwordEncoder.encode(newPassword));
+            redisResetPasswordRepository.deleteById(mail);
             userRepository.save(user);
             return true;
         } else return false;
@@ -173,22 +177,21 @@ public class UserService {
 
     @SneakyThrows
     private void sendResetPasswordMail(String mail) {
+        User user = userRepository.findByEmail(mail);
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setFrom("jovanvukovic09@gmail.com");
         helper.setTo(mail);
-        helper.setSubject("Reset your password.");
-        String resetUrl = "http://localhost:8080/api/authenticate/reset-password?mail=" + mail;
-        helper.setText("<html>\n" +
-                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n" +
-                "<link rel=\"stylesheet\" href=\"https://www.w3schools.com/w3css/4/w3.css\">\n" +
-                "<body>\n<img src='cid:identifier1234'><br>" +
-                "<form class=\"w3-container w3-card-4 w3-light-grey\" action='" + resetUrl + "' method=\"POST\">\n" +
-                "<h2 style=\"margin-left: 155px;\"><b>Enter new password:</b></h2><p>\n" +
-                "<input class=\"w3-input w3-border w3-round-large\" type=\"text\" id=\"inputField\" " +
-                "name=\"inputField\" style=\"margin-left: 144px;\">\n<br>\n<p>" +
-                "<button style=\"margin-left:226px;\" type=\"submit\">Submit</button>\n" +
-                "<p>\n</form>\n</body>\n</html>\n", true);
+        helper.setSubject("Code for password reset");
+        String generatedCode =RandomString.make(8);
+        ResetPasswordRedis code = new ResetPasswordRedis();
+        code.setId(mail);
+        code.setGeneratedCode(generatedCode);
+        redisResetPasswordRepository.save(code);
+        helper.setText("<img src='cid:identifier1234'><br>"
+                + "Dear "+ user.getFirstName() +" ,<br>"
+                +" here is your reset code: <b><u>"+ generatedCode +"</u></b><br>"
+                +"<br> Rentify.", true);
         FileSystemResource res = new FileSystemResource(new File("img/logo.png"));
         helper.addInline("identifier1234", res);
         mailSender.send(message);

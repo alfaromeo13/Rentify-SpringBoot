@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class RentalAuth {
+
     private final RentalRepository rentalRepository;
 
     public boolean hasPermission(Integer rentalId) { //checking if we are the owner of apartment

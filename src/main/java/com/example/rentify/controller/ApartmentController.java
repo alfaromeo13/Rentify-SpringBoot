@@ -10,18 +10,19 @@ import com.example.rentify.validator.ImageInsertValidator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/apartment")
@@ -53,21 +54,25 @@ public class ApartmentController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    //nisi pozvao ove ispod
-
+    @SneakyThrows
     @PutMapping("{id}")
     @PreAuthorize("@apartmentAuth.hasPermission(#id)") //PUT http://localhost:8080/api/apartment/2
-    public ResponseEntity<Void> update(@PathVariable Integer id, @RequestBody ApartmentDTO apartmentDTO) {
-        Errors errors = new BeanPropertyBindingResult(apartmentDTO, "apartmentDTO");
-        ValidationUtils.invokeValidator(aptValidator, apartmentDTO, errors);
-        apartmentService.update(id, apartmentDTO);
+    public ResponseEntity<Void> update(
+            @PathVariable Integer id, @RequestParam String payload,
+            @RequestParam(required = false) MultipartFile[] newImages,
+            @RequestParam(required = false) List<Integer> deletedImages) {
+        IncomingImagesDTO imagesDTO = new IncomingImagesDTO(id, newImages);
+        ApartmentDTO apartment = new ObjectMapper().readValue(payload, ApartmentDTO.class);
+        ValidationUtils.invokeValidator(imgValidator, imagesDTO, new BeanPropertyBindingResult(imagesDTO, "imagesDTO"));
+        ValidationUtils.invokeValidator(aptValidator, apartment, new BeanPropertyBindingResult(apartment, "apartment"));
+        apartmentService.update(id, apartment, imagesDTO, deletedImages);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("{id}") //DELETE http://localhost:8080/api/apartment/2
+    @PutMapping("reverse-state/{id}") //PUT http://localhost:8080/api/apartment/2
     @PreAuthorize("@apartmentAuth.hasPermission(#id)")
-    public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        apartmentService.delete(id);
+    public ResponseEntity<Void> enableOrDisable(@PathVariable Integer id) {
+        apartmentService.reverseState(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -115,5 +120,5 @@ public class ApartmentController {
         }
       ]
     }
-     */
+*/
 }

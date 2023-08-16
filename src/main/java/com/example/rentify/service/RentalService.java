@@ -2,7 +2,6 @@ package com.example.rentify.service;
 
 import com.example.rentify.dto.NotificationDTO;
 import com.example.rentify.dto.RentalApartmentDTO;
-import com.example.rentify.dto.RentalDTO;
 import com.example.rentify.dto.RentalSearchDTO;
 import com.example.rentify.entity.*;
 import com.example.rentify.mapper.RentalMapper;
@@ -13,19 +12,18 @@ import com.example.rentify.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.YearMonth;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -43,17 +41,13 @@ public class RentalService {
         return rentalSearchMapper.toDTOList(rentals);
     }
 
-    @Cacheable(value = "rental-history", key = "{#pageable.toString()}")
-    public List<RentalDTO> userRentingHistory(Pageable pageable) {
+    public List<RentalApartmentDTO> userRentingHistory(Pageable pageable) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Page<Rental> rentals = rentalRepository.findRentalsByUsername(username, pageable);
-        return rentalMapper.toDTOList(rentals.getContent());
-    }
-
-    @Cacheable(value = "rentals", key = "{#id,#pageable.toString()}")
-    public List<RentalDTO> findByApartmentId(Integer id, Pageable pageable) {
-        Page<Rental> rentalPage = rentalRepository.findRentalsByApartmentId(id, pageable);
-        return rentalPage.hasContent() ? rentalMapper.toDTOList(rentalPage.getContent()) : Collections.emptyList();
+        return rentals.getContent()
+                .stream()
+                .map(rentalMapper::toRentalDTO)
+                .collect(Collectors.toList());
     }
 
     //we schedule a task to run every hour
@@ -83,7 +77,7 @@ public class RentalService {
                 +rental.getApartment().getAddress().getStreet()+" "
                 +rental.getApartment().getAddress().getNeighborhood().getName()+" ,"
                 +rental.getApartment().getAddress().getNeighborhood().getCity().getName()+" has been cancelled");
-        notification.setReceiverUsername(rental.getApartment().getUser().getUsername());
+        notification.setReceiverUsername(rental.getUser().getUsername());
         notificationService.save(notification);
     }
 
@@ -139,6 +133,8 @@ public class RentalService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         List<Rental> allRentals = rentalRepository.findAllRentalsForUsersApartments(username);
         for (Rental rental : allRentals) {
+            if(rental.getStatus().getName().equalsIgnoreCase("cancelled"))
+                continue;
             Date startDate = rental.getStartDate();
             Date endDate = rental.getEndDate();
             Double rentalPrice = rental.getRentalPrice();
@@ -155,5 +151,14 @@ public class RentalService {
             }
         }
         return monthlyEarnings;
+    }
+
+    public List<RentalApartmentDTO> filter(Date to, Date from, String username, String propertyTitle,Pageable pageable) {
+        String owner = SecurityContextHolder.getContext().getAuthentication().getName();
+        Page<Rental> rentals = rentalRepository.findFilteredRentals(to,from,username,propertyTitle,owner,pageable);
+        return rentals.getContent()
+                .stream()
+                .map(rentalMapper::toRentalDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -4,6 +4,7 @@ import com.example.rentify.exception.ValidationException;
 import com.example.rentify.security.dto.UserCreateDTO;
 import com.example.rentify.security.dto.UserLoginDTO;
 import com.example.rentify.security.jwt.JwtTokenProvider;
+import com.example.rentify.security.validator.LoginValidator;
 import com.example.rentify.security.validator.UserCreateValidator;
 import com.example.rentify.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -29,21 +31,26 @@ import java.util.Map;
 public class AuthController {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final LoginValidator loginValidator;
     private final UserCreateValidator userCreateValidator;
     private final AuthenticationManager authenticationManager;//security configuration bean
 
+    @SneakyThrows
     @PostMapping("login") // POST http://localhost:8080/api/authenticate/login
     public ResponseEntity<Map<String, String>> login(@RequestBody UserLoginDTO userLoginDTO) {
+        Errors errors = new BeanPropertyBindingResult(userLoginDTO, "userLoginDTO");
         try {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken
-                    (userLoginDTO.getUsername(), userLoginDTO.getPassword());
+            ValidationUtils.invokeValidator(loginValidator, userLoginDTO, errors);
+            UsernamePasswordAuthenticationToken authenticationToken = new
+                    UsernamePasswordAuthenticationToken(userLoginDTO.getUsername(), userLoginDTO.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             if (!userService.isActive(authentication.getName())) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            //we set generated token in piece of ram and send tit back to the user
             return new ResponseEntity<>(jwtTokenProvider.createToken(authentication), HttpStatus.OK);
-            //we send generated token back to user
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);//401!
+        } catch (AuthenticationException e) {
+            errors.rejectValue("password", "password.error", "Password or username incorrect");
+            throw new ValidationException("Authentication failed: " + e.getMessage(), errors);
         }
     }
 
@@ -79,8 +86,9 @@ public class AuthController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<String> changePassword(@RequestParam String mail, @RequestParam("inputField") String input) {
-        if (userService.changePassword(mail, input)) return ResponseEntity.ok("Password has been changed!");
+    public ResponseEntity<String> changePassword(
+            @RequestParam String mail, @RequestParam String code, @RequestParam String password) {
+        if (userService.changePassword(mail, code, password)) return ResponseEntity.ok("Password changed successfully!");
         else return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
     }
 }

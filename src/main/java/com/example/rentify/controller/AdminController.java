@@ -54,15 +54,9 @@ public class AdminController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("apartment/{id}") //activate apartment
-    public ResponseEntity<Void> activateApartment(@PathVariable Integer id) {
-        apartmentService.activateById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @DeleteMapping("apartment/{id}") //deactivate apartment
-    public ResponseEntity<Void> deleteApartment(@PathVariable Integer id) {
-        apartmentService.delete(id);
+    @PutMapping("apartment/{id}") //activate or deactivate apartment
+    public ResponseEntity<Void> activateOrDisableApartment(@PathVariable Integer id) {
+        apartmentService.reverseState(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

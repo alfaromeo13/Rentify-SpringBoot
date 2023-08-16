@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class NotificationAuth { // notificationAuth <- name of the Bean
+
     private final NotificationRepository notificationRepository;
 
     public boolean hasPermission(Integer notificationId) { //checking if we received notification

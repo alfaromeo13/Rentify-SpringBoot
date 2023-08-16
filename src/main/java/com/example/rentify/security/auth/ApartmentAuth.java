@@ -17,6 +17,6 @@ public class ApartmentAuth {
 
     public boolean hasPermission(Integer apartmentId) { //checking if we are the owner of apartment
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return apartmentRepository.existsByIdAndUserUsername(apartmentId, username);
+        return apartmentRepository.existsByIdAndIsApprovedTrueAndUserUsername(apartmentId, username);
     }
 }

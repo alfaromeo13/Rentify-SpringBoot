@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableCaching
 @EnableScheduling
 @SpringBootApplication
-@EnableRedisRepositories(basePackages = {"com.example.rentify.ws.repository"})
+@EnableRedisRepositories(basePackages = {"com.example.rentify.ws.repository","com.example.rentify.repository"})
 public class RentifyApplication {
     public static void main(String[] args) {
         SpringApplication.run(RentifyApplication.class, args);

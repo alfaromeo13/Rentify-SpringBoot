@@ -95,11 +95,12 @@ public class Filter {
 
     private void filterByNotApproved(Root<Apartment> root, CriteriaBuilder criteriaBuilder,
                                      List<Predicate> predicateList) {
-        if(apartmentSearch.getIsApproved() != null && apartmentSearch.getIsActive() == null) {
-            if (!apartmentSearch.getIsApproved() && userHasAdminRole()) {
-                Predicate approvedApartments = criteriaBuilder.isFalse(root.get("isApproved"));
-                predicateList.add(approvedApartments);// we filter only  not approved apartments!
-            }
+        if(!userHasAdminRole()){
+            Predicate approvedApartments = criteriaBuilder.isTrue(root.get("isApproved"));
+            predicateList.add(approvedApartments);// we filter only approved apartments for regular users!
+        }else if(apartmentSearch.getIsApproved() != null && apartmentSearch.getIsActive() == null && !apartmentSearch.getIsApproved()) {
+            Predicate approvedApartments = criteriaBuilder.isFalse(root.get("isApproved"));
+            predicateList.add(approvedApartments);// we filter only not approved apartments!
         }
     }
 

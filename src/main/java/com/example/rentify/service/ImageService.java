@@ -6,7 +6,6 @@ import com.example.rentify.dto.IncomingImagesDTO;
 import com.example.rentify.entity.Apartment;
 import com.example.rentify.entity.Image;
 import com.example.rentify.mapper.ImageMapper;
-import com.example.rentify.projections.ImageProjection;
 import com.example.rentify.repository.ApartmentRepository;
 import com.example.rentify.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,13 +30,13 @@ public class ImageService {
     private final ApartmentRepository apartmentRepository;
 
     public void add(IncomingImagesDTO imagesDTO) {
-        Apartment apartment = apartmentRepository.getById(imagesDTO.getApartmentId());
-        Set<ImageDTO> savedImages = saveToFs(imagesDTO.getImages());
-        for (ImageDTO imageDTO : savedImages) {
-            Image image = imageMapper.toEntity(imageDTO);
-            image.setApartment(apartment);
-            imageRepository.save(image);
-        }
+            Apartment apartment = apartmentRepository.getById(imagesDTO.getApartmentId());
+            Set<ImageDTO> savedImages = saveToFs(imagesDTO.getImages());
+            for (ImageDTO imageDTO : savedImages) {
+                Image image = imageMapper.toEntity(imageDTO);
+                image.setApartment(apartment);
+                imageRepository.save(image);
+            }
     }
 
     @SneakyThrows
@@ -63,12 +62,12 @@ public class ImageService {
         imageRepository.deleteById(id);
     }
 
-    public double calculateSizeInMB(MultipartFile image) {
-        return (double) image.getSize() / (1_000_000);
+    public void deleteImagesWithIds(List<Integer> ids){
+        ids.forEach(imageRepository::deleteById);
     }
 
-    public ImageProjection numAndSum(Integer apartmentId) {
-        return imageRepository.numAndSum(apartmentId);
+    public double calculateSizeInMB(MultipartFile image) {
+        return (double) image.getSize() / (1_000_000);
     }
 
     public Set<ImageDTO> encodeImages(List<Image> images) {
@@ -76,6 +75,7 @@ public class ImageService {
         images.forEach(image->{
             try {
                 ImageDTO imageDTO=new ImageDTO();
+                imageDTO.setId(image.getId());
                 Path path = Paths.get(image.getPath());
                 byte[] imageBytes = Files.readAllBytes(path);
                 imageDTO.setPath(new String(Base64.getEncoder().encode(imageBytes)));
@@ -89,10 +89,8 @@ public class ImageService {
 
     public ImagePreview getEncodedById(Integer id) throws IOException {
         Image image = imageRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-
         Path path = Paths.get(image.getPath());
         byte[] imageBytes = Files.readAllBytes(path);
-
         String encodedImage = new String(Base64.getEncoder().encode(imageBytes));
         return new ImagePreview(encodedImage, image.getPath().split("\\.")[1]);
     }

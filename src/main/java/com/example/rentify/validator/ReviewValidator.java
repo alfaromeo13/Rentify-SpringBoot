@@ -58,7 +58,7 @@ public class ReviewValidator implements Validator {
             errors.rejectValue("apartmentId",
                     "apartment.id.required",
                     "Apartment id is required!");
-        else if (!apartmentService.existsById(apartmentId))
+        else if (apartmentService.existsById(apartmentId))
             errors.rejectValue("apartmentId", "invalid.id", "Invalid apartment id!");
     }
 

@@ -1,5 +1,6 @@
 package com.example.rentify.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.io.Serializable;
@@ -11,5 +12,6 @@ public class RentalDTO implements Serializable {
     private Double rentalPrice;
     private StatusDTO status;
     private UserDTO user;
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private Date startDate, endDate;
 }

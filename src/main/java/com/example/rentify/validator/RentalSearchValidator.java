@@ -41,7 +41,7 @@ public class RentalSearchValidator implements Validator {
     private void validateApartment(Integer apartmentId, Errors errors) {
         if (apartmentId == null)
             errors.rejectValue("apartmentId", "apartment.id.required", "Apartment id is required!");
-        else if (!apartmentService.existsById(apartmentId))
+        else if (apartmentService.existsById(apartmentId))
             errors.rejectValue("apartmentId", "invalid.id", "Invalid apartment id!");
     }
 }

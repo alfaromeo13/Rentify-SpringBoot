@@ -1,8 +1,11 @@
 package com.example.rentify.service;
 
 import com.example.rentify.dto.ApartmentDTO;
+import com.example.rentify.dto.IncomingImagesDTO;
 import com.example.rentify.dto.NotificationDTO;
 import com.example.rentify.entity.Apartment;
+import com.example.rentify.entity.ApartmentAttribute;
+import com.example.rentify.entity.Attribute;
 import com.example.rentify.mapper.ApartmentMapper;
 import com.example.rentify.mapper.ImageMapper;
 import com.example.rentify.projections.AdminApartmentProjection;
@@ -20,10 +23,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -53,7 +53,7 @@ public class ApartmentService {
             apartments.forEach(apartment -> { //we calculate number of stars forEach apartment
                 Double numberOfStars = reviewService.numberOfStars(apartment.getId());
                 apartment.setGrade(numberOfStars != null ? (int) Math.round(numberOfStars) : 0);
-                ApartmentDTO temp=apartmentMapper.toDTO(apartment);
+                ApartmentDTO temp = apartmentMapper.toDTO(apartment);
                 temp.setLiked(userService.isApartmentLiked(apartment.getId()));
                 apartmentRepository.save(apartment);
                 temp.setImages(imageService.encodeImages(apartment.getImages())); //we encode each apartment image to base64
@@ -73,10 +73,10 @@ public class ApartmentService {
         messagingTemplate.convertAndSend(TopicConstants.CREATED_APARTMENT_TOPIC, savedDTO);
     }
 
-    public void activateById(Integer id) {
+    public void reverseState(Integer id) {
         if (apartmentRepository.existsById(id)) {
             Apartment apartment = apartmentRepository.getById(id);
-            apartment.setIsActive(true);
+            apartment.setIsActive(!apartment.getIsActive());
             apartmentRepository.save(apartment);
         }
     }
@@ -84,6 +84,7 @@ public class ApartmentService {
     public void approveById(Integer id) {
         if (apartmentRepository.existsById(id)) {
             Apartment apartment = apartmentRepository.getById(id);
+            apartment.setIsActive(true);
             apartment.setIsApproved(true);
             apartmentRepository.save(apartment);
             NotificationDTO notification=new NotificationDTO();
@@ -93,9 +94,11 @@ public class ApartmentService {
        }
     }
 
-    public void update(Integer id, ApartmentDTO apartmentDTO) {
+    public void update(Integer id, ApartmentDTO apartmentDTO, IncomingImagesDTO newImages, List<Integer> deleted) {
         apartmentDTO.setId(id);
-        apartmentDTO.setIsActive(true);
+        apartmentDTO.setIsApproved(false);
+        if(newImages.getImages() != null) imageService.add(newImages);
+        if(deleted != null) imageService.deleteImagesWithIds(deleted);
         apartmentDTO.setImages(imageMapper.toDTOList(apartmentRepository.getById(id).getImages()));
         save(apartmentDTO);
     }
@@ -105,13 +108,7 @@ public class ApartmentService {
     }
 
     public boolean existsById(Integer id) {
-        return apartmentRepository.existsById(id);
-    }
-
-    public void delete(Integer id) {
-        Apartment apartment = apartmentRepository.getById(id);
-        apartment.setIsActive(false);
-        apartmentRepository.save(apartment);
+        return !apartmentRepository.existsById(id);
     }
 
     public void notApprove(Integer id) {

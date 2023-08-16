@@ -28,19 +28,13 @@ public class ConversationController {
 
     @PostMapping
     public ResponseEntity<Map<String, String>> create(@RequestBody CreateConversationDTO conversation) {
-        String conversationId = conversationService.create(
-                conversation.getUsernameFrom(),
-                conversation.getUsernameTo()
-        );
-        return new ResponseEntity<>(
-                Map.of("conversationId", conversationId),
-                HttpStatus.CREATED
-        );
+        String conversationId = conversationService.create(conversation.getUsernameFrom(), conversation.getUsernameTo());
+        return new ResponseEntity<>(Map.of("conversationId", conversationId), HttpStatus.CREATED);
     }
 
-    @GetMapping("by-user/{username}")
-    public ResponseEntity<List<RedisConversation>> allByUser(@PathVariable String username) {
-        List<RedisConversation> conversations = conversationService.getAllByUsername(username);
+    @GetMapping("by-user") //send back conversations based on username inside token
+    public ResponseEntity<List<RedisConversation>> allForUser() {
+        List<RedisConversation> conversations = conversationService.getAllByUsername();
         return new ResponseEntity<>(conversations, HttpStatus.OK);
     }
 

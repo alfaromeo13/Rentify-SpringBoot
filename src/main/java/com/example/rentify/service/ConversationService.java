@@ -1,5 +1,6 @@
 package com.example.rentify.service;
 
+import com.example.rentify.dto.CreateConversationDTO;
 import com.example.rentify.dto.MessageDTO;
 import com.example.rentify.entity.RedisConversation;
 import com.example.rentify.ws.TopicConstants;
@@ -10,7 +11,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,10 +24,12 @@ public class ConversationService {
     private final RedisConversationRepository redisConversationRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public String create(String usernameFrom, String usernameTo) {
+    public String create(CreateConversationDTO conversation) {
+        String usernameTo = conversation.getUsernameTo();
+        String usernameFrom = SecurityContextHolder.getContext().getAuthentication().getName();
         RedisConversation redisConversation = new RedisConversation(usernameFrom, usernameTo);
         redisConversationRepository.save(redisConversation);
-        //we notify both users to subscribe to chis conversation
+        //we notify both users to subscribe to this conversation
         messagingTemplate.convertAndSend(TopicConstants.NEW_CONVERSATION_TOPIC + usernameTo, redisConversation);
         messagingTemplate.convertAndSend(TopicConstants.NEW_CONVERSATION_TOPIC + usernameFrom, redisConversation);
         return redisConversation.getId();
@@ -40,8 +42,8 @@ public class ConversationService {
         ).collect(Collectors.toList());
         return allConversations.stream()
                 .filter(conversation -> conversation != null &&
-                        (conversation.getUsernameFrom().equals(username) ||
-                                conversation.getUsernameTo().equals(username)))
+                        (conversation.getUsernameFrom().equals(username)
+                                || conversation.getUsernameTo().equals(username)))
                 .collect(Collectors.toList());
     }
 

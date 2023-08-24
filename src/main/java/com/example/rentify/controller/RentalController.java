@@ -1,7 +1,6 @@
 package com.example.rentify.controller;
 
 import com.example.rentify.dto.RentalApartmentDTO;
-import com.example.rentify.dto.RentalDTO;
 import com.example.rentify.dto.RentalSearchDTO;
 import com.example.rentify.exception.ValidationException;
 import com.example.rentify.service.RentalService;

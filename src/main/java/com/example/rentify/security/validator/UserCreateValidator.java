@@ -40,7 +40,9 @@ public class UserCreateValidator implements Validator {
     private void validateUsername(String username, Errors errors) {
         if (StringUtils.isBlank(username))
             errors.rejectValue("username", "username.invalid", "Username is not valid!");
-        else if (StringUtils.isNotBlank(username) && userRepository.existsByUsername(username))
+        else if(username.length() > 15)
+            errors.rejectValue("username", "username.invalid", "Maximum username length is 15 characters!");
+        else if (userRepository.existsByUsername(username))
             errors.rejectValue("username", "username.invalid", "Username already taken!");
     }
 

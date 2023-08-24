@@ -52,7 +52,6 @@ public class ImageService {
             Files.write(path, image.getBytes());
             ImageDTO imageDTO = new ImageDTO();
             imageDTO.setPath(fullPath);
-            imageDTO.setSize(calculateSizeInMB(image));
             imageDTOs.add(imageDTO);
         }
         return imageDTOs;
@@ -64,10 +63,6 @@ public class ImageService {
 
     public void deleteImagesWithIds(List<Integer> ids){
         ids.forEach(imageRepository::deleteById);
-    }
-
-    public double calculateSizeInMB(MultipartFile image) {
-        return (double) image.getSize() / (1_000_000);
     }
 
     public Set<ImageDTO> encodeImages(List<Image> images) {

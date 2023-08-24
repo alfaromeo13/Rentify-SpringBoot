@@ -44,18 +44,17 @@ public class RentalService {
     public List<RentalApartmentDTO> userRentingHistory(Pageable pageable) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Page<Rental> rentals = rentalRepository.findRentalsByUsername(username, pageable);
-        return rentals.getContent()
-                .stream()
-                .map(rentalMapper::toRentalDTO)
-                .collect(Collectors.toList());
+        return rentals.getContent().stream().map(rentalMapper::toRentalDTO).collect(Collectors.toList());
     }
 
-    //we schedule a task to run every hour
+    //we schedule a task to run every day at midnight (00:00:00) at the beginning of each day.
     @Scheduled(cron = "0 0 * * * *") // cron expressions
     @CacheEvict(value = "rentals", allEntries = true)
     public void checkEnded() {
-        log.info("cron job triggered...");
-        List<Rental> rentals = rentalRepository.findByStatusNameAndEndDate("rented", new Date());
+        log.info("check for ended rental (cron job triggered...)");
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -1); // Subtract 1 day
+        List<Rental> rentals = rentalRepository.findByStatusNameAndEndDate("rented", calendar.getTime());
         rentals.forEach(rental -> rental.setStatus(new Status("ended")));
         rentalRepository.saveAll(rentals);
     }
@@ -156,9 +155,6 @@ public class RentalService {
     public List<RentalApartmentDTO> filter(Date to, Date from, String username, String propertyTitle,Pageable pageable) {
         String owner = SecurityContextHolder.getContext().getAuthentication().getName();
         Page<Rental> rentals = rentalRepository.findFilteredRentals(to,from,username,propertyTitle,owner,pageable);
-        return rentals.getContent()
-                .stream()
-                .map(rentalMapper::toRentalDTO)
-                .collect(Collectors.toList());
+        return rentals.getContent().stream().map(rentalMapper::toRentalDTO).collect(Collectors.toList());
     }
 }

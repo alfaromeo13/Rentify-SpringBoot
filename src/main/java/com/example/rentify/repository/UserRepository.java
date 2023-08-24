@@ -35,6 +35,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query(value = "select user from User user join fetch user.roles where user.id = :id")
     User findUserWithRoles(@Param("id") Integer id);
 
+    @Query(value="select user from User user join user.roles as roles where roles.name like 'ROLE_REGISTERED'")
+    Page<User> findAllJPQL(Pageable pageable);
+
     @Query(value = "select apartment.id from User user " +
             "join user.favoriteApartments apartment where user.username = :username")
     Page<Integer> favouriteApartmentsForUser(@Param("username") String username, Pageable pageable);

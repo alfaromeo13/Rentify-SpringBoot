@@ -21,9 +21,6 @@ public class Image {
     @Column
     private String path; //full path to the image
 
-    @Column(name = "size_mb")
-    private Double size;
-
     @ToString.Exclude
     @JsonBackReference
     @JoinColumn(name = "apartment_id")

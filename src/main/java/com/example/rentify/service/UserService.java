@@ -124,7 +124,7 @@ public class UserService {
     }
 
     public List<UserDTO> find(Pageable pageable) {
-        Page<User> usersPage = userRepository.findAll(pageable);
+        Page<User> usersPage = userRepository.findAllJPQL(pageable);
         return usersPage.hasContent() ? userMapper.toDTOList(usersPage.getContent()) : Collections.emptyList();
     }
 

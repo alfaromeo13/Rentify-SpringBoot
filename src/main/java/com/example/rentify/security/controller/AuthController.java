@@ -44,12 +44,16 @@ public class AuthController {
             UsernamePasswordAuthenticationToken authenticationToken = new
                     UsernamePasswordAuthenticationToken(userLoginDTO.getUsername(), userLoginDTO.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
-            if (!userService.isActive(authentication.getName())) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            if (!userService.isActive(authentication.getName())) {
+                errors.rejectValue("password", "password.error", "Account isn't active");
+                throw new ValidationException("Authentication failed: ", errors);
+            }
             SecurityContextHolder.getContext().setAuthentication(authentication);
             //we set generated token in piece of ram and send tit back to the user
             return new ResponseEntity<>(jwtTokenProvider.createToken(authentication), HttpStatus.OK);
         } catch (AuthenticationException e) {
-            errors.rejectValue("password", "password.error", "Password or username incorrect");
+            if(!errors.hasErrors())
+                errors.rejectValue("password", "password.error", "Password or username incorrect");
             throw new ValidationException("Authentication failed: " + e.getMessage(), errors);
         }
     }

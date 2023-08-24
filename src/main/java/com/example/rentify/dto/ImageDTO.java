@@ -9,5 +9,4 @@ import java.io.Serializable;
 public class ImageDTO implements Serializable {
     private Integer id;
     private String path;
-    private Double size;
 }

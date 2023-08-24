@@ -31,10 +31,10 @@ public class RedisMessageConversationController {
         RedisConversation conversation = redisConversationRepository
                 .findById(conversationId)
                 .orElseThrow(() -> new EntityNotFoundException("Conversation not exists. Id: " + conversationId));
-
         MessageDTO messageDTO = new ObjectMapper().readValue(payload, MessageDTO.class);
         conversation.appendMessage(messageDTO);
         conversation.setIsOpened(false);
+        log.info("STIGLA NOVA PORUKA");
         redisConversationRepository.save(conversation);
         messagingTemplate.convertAndSend(TopicConstants.CONVERSATION_TOPIC + conversationId, messageDTO);
     }

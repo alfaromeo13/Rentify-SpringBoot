@@ -7,7 +7,6 @@ import com.example.rentify.ws.repository.RedisConversationRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Controller;
 
 import javax.persistence.EntityNotFoundException;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor //this isn't rest controller
 public class RedisMessageConversationController {
@@ -29,12 +27,10 @@ public class RedisMessageConversationController {
     public void receiveMessage(@DestinationVariable("conversationId") String conversationId,
                                @Payload String payload) {
         RedisConversation conversation = redisConversationRepository
-                .findById(conversationId)
-                .orElseThrow(() -> new EntityNotFoundException("Conversation not exists. Id: " + conversationId));
+                .findById(conversationId).orElseThrow(() -> new EntityNotFoundException("Conversation not exists. Id: " + conversationId));
         MessageDTO messageDTO = new ObjectMapper().readValue(payload, MessageDTO.class);
         conversation.appendMessage(messageDTO);
         conversation.setIsOpened(false);
-        log.info("STIGLA NOVA PORUKA");
         redisConversationRepository.save(conversation);
         messagingTemplate.convertAndSend(TopicConstants.CONVERSATION_TOPIC + conversationId, messageDTO);
     }

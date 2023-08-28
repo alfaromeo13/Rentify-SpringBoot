@@ -13,6 +13,7 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
         messages
             .simpDestMatchers("/topic/**").permitAll()
             .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).permitAll();
+        //sve sto ide na topic je otvoreno i tipovi kao sto su poruke i subscribe su dozvoljeni
     }
 
     @Override

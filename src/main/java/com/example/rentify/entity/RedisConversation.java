@@ -22,11 +22,13 @@ public class RedisConversation implements Serializable { //Redis je key value st
     //definisemo strukturu konverzacije koju cuvamo unutar redisa
     @Id
     private String id;
+    //usernameFrom i usernameTo je bitno samo zbog islistavanja konverzacija da bi za odredjenog usera kad se loguje
+    //nasli njegove konverzacije ( ako mu je ime sendera ili receivera )
     private String usernameFrom; // johndoe, heril, jovan
     private String usernameTo; // heril, johndoe
     private Date createdAt;
     private Boolean isOpened;
-    private List<MessageDTO> messages = new ArrayList<>();
+    private List<MessageDTO> messages = new ArrayList<>();//poruke imaju ko je posiljaoc koje poruke
 
     public RedisConversation(String usernameFrom, String usernameTo) {
         this.usernameFrom = usernameFrom;

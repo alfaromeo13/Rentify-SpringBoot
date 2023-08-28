@@ -41,9 +41,9 @@ public class ConversationService {
                 redisConversationRepository.findAll().spliterator(), false
         ).collect(Collectors.toList());
         return allConversations.stream()
-                .filter(conversation -> conversation != null &&
-                        (conversation.getUsernameFrom().equals(username)
-                                || conversation.getUsernameTo().equals(username)))
+                .filter(conversation -> conversation != null
+                        && (conversation.getUsernameFrom().equals(username)
+                        ||  conversation.getUsernameTo().equals(username)))
                 .collect(Collectors.toList());
     }
 

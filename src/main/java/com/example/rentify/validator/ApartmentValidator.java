@@ -44,7 +44,7 @@ public class ApartmentValidator implements Validator {
         validateUser(apartment.getUser(), errors);
         validateDescription(apartment.getDescription(), errors);
         validateNumOfBedrooms(apartment.getNumOfBedrooms(), errors);
-        validateNumOfBathrooms(apartment.getNumOfBedrooms(), errors);
+        validateNumOfBathrooms(apartment.getNumOfBathrooms(), errors);
         validatePeriod(apartment.getPeriod(), errors);
         validateType(apartment.getPropertyType(), errors);
         validatePhoneNumber(apartment.getNumber(), errors);

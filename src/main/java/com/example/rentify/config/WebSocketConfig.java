@@ -9,7 +9,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 @Slf4j
 @Configuration
-@EnableWebSocketMessageBroker
+@EnableWebSocketMessageBroker //ova anotacija otvara sokete
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override

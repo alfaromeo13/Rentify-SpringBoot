@@ -28,7 +28,7 @@ public class ConversationController {
 
     @PostMapping
     public ResponseEntity<Map<String, String>> create(@RequestBody CreateConversationDTO conversation) {
-        String conversationId = conversationService.create(conversation);
+        String conversationId = conversationService.create(conversation);  //we return conversationId and we subscribe to it on front
         return new ResponseEntity<>(Map.of("conversationId", conversationId), HttpStatus.CREATED);
     }
 

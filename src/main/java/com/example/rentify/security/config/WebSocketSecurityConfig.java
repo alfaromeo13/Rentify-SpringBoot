@@ -13,11 +13,17 @@ public class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBro
         messages
             .simpDestMatchers("/topic/**").permitAll()
             .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE).permitAll();
-        //sve sto ide na topic je otvoreno i tipovi kao sto su poruke i subscribe su dozvoljeni
+
+        //specifies that messages sent to destinations starting with "/topic/" are permitted for
+        //all users without authentication. This is often used for broadcasting messages to subscribed clients.
+
+        //allows messages of type MESSAGE and SUBSCRIBE to be received without authentication.
+        //This means clients can send messages and subscribe to topics without being authenticated.
     }
 
     @Override
     protected boolean sameOriginDisabled() {
         return true;
     }
+    //useful when you're dealing with cross-origin WebSocket connections, allowing connections from different domains.
 }

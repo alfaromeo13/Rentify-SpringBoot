@@ -29,9 +29,8 @@ public class ConversationService {
         String usernameFrom = SecurityContextHolder.getContext().getAuthentication().getName();
         RedisConversation redisConversation = new RedisConversation(usernameFrom, usernameTo);
         redisConversationRepository.save(redisConversation);
-        //we notify both users to subscribe to this conversation
+        //we notify destination user to subscribe to this conversation
         messagingTemplate.convertAndSend(TopicConstants.NEW_CONVERSATION_TOPIC + usernameTo, redisConversation);
-        messagingTemplate.convertAndSend(TopicConstants.NEW_CONVERSATION_TOPIC + usernameFrom, redisConversation);
         return redisConversation.getId();
     }
 

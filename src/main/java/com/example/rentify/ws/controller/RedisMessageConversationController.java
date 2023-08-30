@@ -24,10 +24,10 @@ public class RedisMessageConversationController {
 
     @SneakyThrows
     @MessageMapping("/receive/{conversationId}")
-    public void receiveMessage(@DestinationVariable("conversationId") String conversationId,
-                               @Payload String payload) {
+    public void receiveMessage(@DestinationVariable("conversationId") String conversationId, @Payload String payload) {
         RedisConversation conversation = redisConversationRepository
-                .findById(conversationId).orElseThrow(() -> new EntityNotFoundException("Conversation not exists. Id: " + conversationId));
+                .findById(conversationId).orElseThrow(()
+                        -> new EntityNotFoundException("Conversation not exists. Id: " + conversationId));
         MessageDTO messageDTO = new ObjectMapper().readValue(payload, MessageDTO.class);
         conversation.appendMessage(messageDTO);
         conversation.setIsOpened(false);

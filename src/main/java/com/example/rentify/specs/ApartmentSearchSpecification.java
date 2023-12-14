@@ -34,7 +34,7 @@ public class ApartmentSearchSpecification implements Specification<Apartment> {
             // When mapping entity class fields to dto class fields our mapper calls 'get()'
             // method in background.Get() method, will for null field make additional sql
             // query to fetch that data .That is why we need to 'join fetch' so that we don't
-            // make additional calls for those values.Instead we fetch them all in same response
+            // make additional calls for those values.Instead, we fetch them all in same response
         }
         predicateList.add(root.get("id").in(ids));
         filter.all(root, criteriaBuilder, predicateList);

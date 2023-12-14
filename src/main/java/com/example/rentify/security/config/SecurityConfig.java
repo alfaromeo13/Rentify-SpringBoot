@@ -30,7 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final HttpUnauthorizedEntryPoint httpUnauthorizedException;
 
     @Override
-    @SneakyThrows //when users send login information we define which password encoding will be used
+    @SneakyThrows //when users send login information, we define which password encoding will be used
     public void configure(AuthenticationManagerBuilder auth) {
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }

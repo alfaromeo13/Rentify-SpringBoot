@@ -15,7 +15,7 @@ public class ApartmentIdSpecification implements Specification<Apartment> {
 
     private final Filter filter;
 
-    @Override
+    @Override //this one retrieves apartment ids
     public Predicate toPredicate(Root<Apartment> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicateList = new ArrayList<>();
         filter.all(root, criteriaBuilder, predicateList);
